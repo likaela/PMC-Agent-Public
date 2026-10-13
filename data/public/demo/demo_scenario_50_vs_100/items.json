@@ -1,0 +1,8 @@
+[
+  {"material_code": "DEMO-PMC-01", "name": "演示智能控制终端", "unit": "台"},
+  {"material_code": "DEMO-MODULE-01", "name": "演示控制组件", "unit": "件"},
+  {"material_code": "DEMO-BOARD-01", "name": "演示主板", "unit": "件"},
+  {"material_code": "DEMO-CHIP-01", "name": "演示芯片", "unit": "件"},
+  {"material_code": "DEMO-MOTOR-01", "name": "演示电机", "unit": "件"},
+  {"material_code": "DEMO-SCREW-01", "name": "演示紧固件", "unit": "件"}
+]

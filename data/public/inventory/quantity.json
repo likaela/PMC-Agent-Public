@@ -1,0 +1,28 @@
+{
+  "confirmations": [
+    {
+      "source_uri": "release-source://2026年库存表+料号查询表及成品库存表(1).xlsx",
+      "source_file": "2026年库存表+料号查询表及成品库存表(1).xlsx",
+      "content_sha256": "8a98044c1c660a37d4ea7dd9aa9e1f9d946fc44f3bdc7ebae8f3a3f207104843",
+      "sheet_name": "库存表",
+      "quantity_field": "库存",
+      "unit": "片",
+      "confirmed_by": "release-authorized",
+      "reason": "当前评审版基础数量核对采用已核验主库存账面数量作为实际库存；不确认正式排程可用量、预留、精确快照或期间变动，不扩展至未来新增来源。",
+      "recorded_at": "2026-10-10T14:08:20+00:00",
+      "user_statement": "当前交付产品BOM与已核验主库存数量按片核对；仅适用于已绑定来源。",
+      "applies_to_existing_source_only": true,
+      "quantity_role": "actual_stock_for_review",
+      "product_scope": [
+        {
+          "product": "KQ-Z112",
+          "revision": "V01"
+        },
+        {
+          "product": "KQ-BHX3588M",
+          "revision": "V01"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+[Unit]
+Description=PMC-Agent production API
+After=network.target
+
+[Service]
+Type=simple
+User=pmc-agent
+Group=pmc-agent
+WorkingDirectory=/opt/PMC-Agent
+EnvironmentFile=-/opt/PMC-Agent/.env
+Environment=DATA_ROOT=/opt/PMC-Agent/data
+Environment=HOST=127.0.0.1
+Environment=PORT=8000
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/PMC-Agent/venv/bin/python -m scripts.run_public
+Restart=on-failure
+RestartSec=3
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/PMC-Agent/data/runtime
+
+[Install]
+WantedBy=multi-user.target

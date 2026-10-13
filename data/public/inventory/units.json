@@ -1,0 +1,17 @@
+{
+  "confirmations": [
+    {
+      "source_uri": "release-source://2026年库存表+料号查询表及成品库存表(1).xlsx",
+      "source_file": "2026年库存表+料号查询表及成品库存表(1).xlsx",
+      "content_sha256": "8a98044c1c660a37d4ea7dd9aa9e1f9d946fc44f3bdc7ebae8f3a3f207104843",
+      "sheet_name": "库存表",
+      "quantity_field": "库存",
+      "unit": "片",
+      "confirmed_by": "release-authorized",
+      "reason": "人工确认当前企业主库存表数量的计量口径；仅补充单位审计，不确认可用量、库存时点或重复记录真实性。",
+      "recorded_at": "2026-10-10T10:17:17+00:00",
+      "user_statement": "当前交付产品BOM与已核验主库存数量按片核对；仅适用于已绑定来源。",
+      "applies_to_existing_source_only": true
+    }
+  ]
+}

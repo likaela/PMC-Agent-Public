@@ -1,0 +1,90 @@
+{
+  "format": "pmc_public_runtime_v1",
+  "files": {
+    "facts_path": {
+      "path": "bom/published.db",
+      "sha256": "ffabe54407814f394d1f0a7c58c4d0e762dc6701f53c11416f32a4e37e11b973"
+    },
+    "inventory_path": {
+      "path": "inventory/observations.json",
+      "sha256": "893cc262447967117b306ccb0e3508101cae2861493fb7ccb03ac28a84570d26"
+    },
+    "units_path": {
+      "path": "inventory/units.json",
+      "sha256": "77090521b198341b15d89ef5334b8fb2dafa37ace75732079103a4a06edfe56e"
+    },
+    "quantity_path": {
+      "path": "inventory/quantity.json",
+      "sha256": "c4a33ac29c545e59aaabdf940efc81a9ed5aa4f6df1114b9ec48d52575b25166"
+    },
+    "business_manifest_path": {
+      "path": "products/kq-z112/manifest.json",
+      "sha256": "dcfb56de02008a81f04dfec9b0373c21928babc6a98581b368cf1e6296cdb710"
+    },
+    "catalog_path": {
+      "path": "products/catalog.json",
+      "sha256": "b954f6d96bed6fa969c7c155e94505e55a57ed8b98c4f9d1cf12ee06cc76594d"
+    },
+    "current_bom": {
+      "path": "products/kq-z112/bom.json",
+      "sha256": "d05dbd1cf08cc0ec730884de178ccb04ff2e810c13cc1336f688b36b245d87d8"
+    },
+    "current_inventory": {
+      "path": "products/kq-z112/inventory.json",
+      "sha256": "b88a97f27c1466573ffcdbc628e25a9acb6cc06089b152b60a9e1a3dcc4fd098"
+    },
+    "current_aliases": {
+      "path": "products/kq-z112/aliases.json",
+      "sha256": "c2de8839e65327807a8dcfbfb84431b1cc829eb7d8820697bb50f2b270f4c53c"
+    },
+    "demo_manifest": {
+      "path": "demo/demo_scenario_50_vs_100/manifest.json",
+      "sha256": "535ff7464652b5d64f72deac48813e54e8c88b56be38303603c5a1efb2b11840"
+    },
+    "demo_items": {
+      "path": "demo/demo_scenario_50_vs_100/items.json",
+      "sha256": "1c2ab50f074f802b7c9098aff6ced16bdf742f77b3afdea35cc8ec23b4d93cff"
+    },
+    "demo_bom_facts": {
+      "path": "demo/demo_scenario_50_vs_100/bom_facts.json",
+      "sha256": "6d22c1489f7e79cad1f2e5f992f383313f77242aa9fd4af11ce72544641e3a8b"
+    },
+    "demo_inventory_facts": {
+      "path": "demo/demo_scenario_50_vs_100/inventory_facts.json",
+      "sha256": "13fba74bd75322efb2436bb7043e0d559ba9887f1a8b0db65bd47685144d3b8d"
+    },
+    "demo_purchase_parameters": {
+      "path": "demo/demo_scenario_50_vs_100/purchase_parameters.json",
+      "sha256": "d79e25dd8f4464fb54364f33183e0d61c16ae43f3db2aaf954d70fe2567cd0fc"
+    },
+    "demo_inbound_facts": {
+      "path": "demo/demo_scenario_50_vs_100/inbound_facts.json",
+      "sha256": "1ed7401239a723f403fef875403bac54be652cf4f274272c4e6f03465643cbd4"
+    }
+  },
+  "authorization": "User authorized public distribution of required business data on 2026-10-12",
+  "excluded": [
+    "accounts",
+    "sessions",
+    "archives",
+    "unrelated inventory sheets/materials"
+  ],
+  "products": [
+    {
+      "product_code": "KQ-Z112",
+      "revision": "V01-C34",
+      "bom_line_count": 34
+    },
+    {
+      "product_code": "KQ-BHX3588M",
+      "revision": "V01",
+      "bom_line_count": 91
+    },
+    {
+      "product_code": "DEMO-PMC-01",
+      "revision": "V01",
+      "synthetic": true,
+      "bom_line_count": 3
+    }
+  ]
+}

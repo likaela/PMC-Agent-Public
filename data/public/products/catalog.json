@@ -1,0 +1,22 @@
+{
+  "products": [
+    {
+      "product_code": "KQ-Z112",
+      "revision": "V01-C34",
+      "bom_line_count": 34
+    },
+    {
+      "product_code": "KQ-BHX3588M",
+      "revision": "V01",
+      "bom_line_count": 91
+    },
+    {
+      "product_code": "DEMO-PMC-01",
+      "revision": "V01",
+      "synthetic": true,
+      "bom_line_count": 3
+    }
+  ],
+  "current_product": "KQ-Z112",
+  "current_material_count": 34
+}

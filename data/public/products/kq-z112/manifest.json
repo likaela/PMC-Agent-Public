@@ -1,0 +1,38 @@
+{
+  "format": "current_business_bom_v1",
+  "dataset_version": "kq-z112-v01-c34",
+  "product": "KQ-Z112",
+  "revision": "V01-C34",
+  "material_count": 34,
+  "synthetic": false,
+  "files": {
+    "bom": {
+      "path": "bom.json",
+      "sha256": "d05dbd1cf08cc0ec730884de178ccb04ff2e810c13cc1336f688b36b245d87d8"
+    },
+    "inventory": {
+      "path": "inventory.json",
+      "sha256": "b88a97f27c1466573ffcdbc628e25a9acb6cc06089b152b60a9e1a3dcc4fd098"
+    },
+    "aliases": {
+      "path": "aliases.json",
+      "sha256": "c2de8839e65327807a8dcfbfb84431b1cc829eb7d8820697bb50f2b270f4c53c"
+    }
+  },
+  "confirmations": {
+    "bom": {
+      "content_sha256": "d05dbd1cf08cc0ec730884de178ccb04ff2e810c13cc1336f688b36b245d87d8",
+      "unit": "片",
+      "source": "existing_human_confirmation_and_current_configuration_authorization"
+    },
+    "inventory": {
+      "content_sha256": "b88a97f27c1466573ffcdbc628e25a9acb6cc06089b152b60a9e1a3dcc4fd098",
+      "unit": "片",
+      "source": "existing_human_confirmation_and_current_configuration_authorization"
+    }
+  },
+  "provenance": {
+    "source_file": "bom.json"
+  },
+  "release_note": "Authorized current product data; source quantities unchanged"
+}

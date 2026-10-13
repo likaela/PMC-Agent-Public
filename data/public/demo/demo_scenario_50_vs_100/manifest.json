@@ -1,0 +1,11 @@
+{
+  "scenario_id": "demo_scenario_50_vs_100",
+  "synthetic": true,
+  "title": "50台齐套 / 100台缺料：独立比赛场景",
+  "product": "DEMO-PMC-01",
+  "revision": "V01",
+  "effective_from": "2026-10-01",
+  "effective_date": "2026-10-02",
+  "snapshot_at": "2026-10-02T00:00:00+00:00",
+  "start_date": "2026-10-20"
+}

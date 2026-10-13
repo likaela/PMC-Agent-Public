@@ -1,0 +1,3 @@
+# Reuse the application pins; pytest 9 includes the subtests fixture.
+-r requirements.txt
+pytest==9.1.1

@@ -1,0 +1,36 @@
+# Local secrets, accounts and runtime state
+.env
+.env.*
+!.env.example
+!frontend/.env.example
+*.local.*
+data/runtime/
+data/private/
+.runtime/
+*.db
+*.sqlite
+*.sqlite3
+!data/public/bom/published.db
+*.db-wal
+*.db-shm
+*.db-journal
+*.zip
+*.log
+*.dump
+
+# Dependencies, builds and test output
+venv/
+.venv/
+node_modules/
+dist/
+build/
+__pycache__/
+*.pyc
+.pytest_cache/
+test-results/
+playwright-report/
+outputs/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

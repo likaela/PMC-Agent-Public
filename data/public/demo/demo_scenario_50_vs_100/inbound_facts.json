@@ -1,0 +1,6 @@
+[
+  {"material_code": "DEMO-BOARD-01", "supplier_code": "DEMO-SUP-BOARD", "order_no": "DEMO-CLOSED-BOARD", "ordered_qty": "10", "received_qty": "10", "in_transit_qty": "0", "expected_arrival_date": "2026-10-01", "status": "received"},
+  {"material_code": "DEMO-CHIP-01", "supplier_code": "DEMO-SUP-CHIP", "order_no": "DEMO-CLOSED-CHIP", "ordered_qty": "50", "received_qty": "50", "in_transit_qty": "0", "expected_arrival_date": "2026-10-01", "status": "received"},
+  {"material_code": "DEMO-MOTOR-01", "supplier_code": "DEMO-SUP-MOTOR", "order_no": "DEMO-CLOSED-MOTOR", "ordered_qty": "20", "received_qty": "20", "in_transit_qty": "0", "expected_arrival_date": "2026-10-01", "status": "received"},
+  {"material_code": "DEMO-SCREW-01", "supplier_code": "DEMO-SUP-SCREW", "order_no": "DEMO-CLOSED-SCREW", "ordered_qty": "100", "received_qty": "100", "in_transit_qty": "0", "expected_arrival_date": "2026-10-01", "status": "received"}
+]

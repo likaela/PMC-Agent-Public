@@ -1,0 +1,10 @@
+[
+  {"material_code": "DEMO-BOARD-01", "batch_no": "DEMO-BOARD-A", "location": "DEMO-L1", "on_hand_qty": "40", "available_qty": "40", "reserved_qty": "0", "received_at": "2026-09-01T00:00:00+00:00", "expiry_date": "2027-12-31"},
+  {"material_code": "DEMO-BOARD-01", "batch_no": "DEMO-BOARD-B", "location": "DEMO-L2", "on_hand_qty": "35", "available_qty": "35", "reserved_qty": "0", "received_at": "2026-09-10T00:00:00+00:00", "expiry_date": "2027-12-31"},
+  {"material_code": "DEMO-CHIP-01", "batch_no": "DEMO-CHIP-A", "location": "DEMO-L1", "on_hand_qty": "160", "available_qty": "160", "reserved_qty": "0", "received_at": "2026-09-01T00:00:00+00:00", "expiry_date": "2027-12-31"},
+  {"material_code": "DEMO-CHIP-01", "batch_no": "DEMO-CHIP-B", "location": "DEMO-L2", "on_hand_qty": "140", "available_qty": "140", "reserved_qty": "0", "received_at": "2026-09-10T00:00:00+00:00", "expiry_date": "2027-12-31"},
+  {"material_code": "DEMO-MOTOR-01", "batch_no": "DEMO-MOTOR-A", "location": "DEMO-L1", "on_hand_qty": "80", "available_qty": "80", "reserved_qty": "0", "received_at": "2026-09-01T00:00:00+00:00", "expiry_date": "2027-12-31"},
+  {"material_code": "DEMO-MOTOR-01", "batch_no": "DEMO-MOTOR-B", "location": "DEMO-L2", "on_hand_qty": "70", "available_qty": "70", "reserved_qty": "0", "received_at": "2026-09-10T00:00:00+00:00", "expiry_date": "2027-12-31"},
+  {"material_code": "DEMO-SCREW-01", "batch_no": "DEMO-SCREW-A", "location": "DEMO-L1", "on_hand_qty": "320", "available_qty": "320", "reserved_qty": "0", "received_at": "2026-09-01T00:00:00+00:00", "expiry_date": "2027-12-31"},
+  {"material_code": "DEMO-SCREW-01", "batch_no": "DEMO-SCREW-B", "location": "DEMO-L2", "on_hand_qty": "280", "available_qty": "280", "reserved_qty": "0", "received_at": "2026-09-10T00:00:00+00:00", "expiry_date": "2027-12-31"}
+]

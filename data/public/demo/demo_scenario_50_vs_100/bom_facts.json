@@ -1,0 +1,7 @@
+[
+  {"parent_material_code": "DEMO-PMC-01", "revision": "V01", "child_material_code": "DEMO-MODULE-01", "qty_per": "1", "unit": "件"},
+  {"parent_material_code": "DEMO-PMC-01", "revision": "V01", "child_material_code": "DEMO-MOTOR-01", "qty_per": "2", "unit": "件"},
+  {"parent_material_code": "DEMO-PMC-01", "revision": "V01", "child_material_code": "DEMO-SCREW-01", "qty_per": "8", "unit": "件"},
+  {"parent_material_code": "DEMO-MODULE-01", "revision": "V01", "child_material_code": "DEMO-BOARD-01", "qty_per": "1", "unit": "件"},
+  {"parent_material_code": "DEMO-MODULE-01", "revision": "V01", "child_material_code": "DEMO-CHIP-01", "qty_per": "4", "unit": "件"}
+]

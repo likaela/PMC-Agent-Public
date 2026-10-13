@@ -1,0 +1,37 @@
+name: deployable-public-release
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  ubuntu:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: pip install -r requirements-dev.txt
+      - run: python -m pytest
+      - run: python -m scripts.audit_public_release
+      - run: python -m scripts.check_public_release_source
+      - run: npm ci && npm run typecheck && VITE_API_BASE_URL=/ npm run build
+        working-directory: frontend
+      - name: Production Docker and real HTTP
+        run: |
+          docker compose up -d --build --wait --wait-timeout 240
+          bash scripts/check_health.sh http://127.0.0.1:8080
+          curl --fail http://127.0.0.1:8080/ > /tmp/pmc-index.html
+          grep '<div id="app"' /tmp/pmc-index.html
+          python -m scripts.verify_deployment_http --base-url http://127.0.0.1:8080
+      - name: Diagnostics
+        if: failure()
+        run: docker compose logs --no-color
+      - name: Stop containers
+        if: always()
+        run: docker compose down

@@ -1,0 +1,1056 @@
+{
+  "records": {
+    "1654900600101": [
+      {
+        "material_code": "1654900600101",
+        "name": "连接器",
+        "recorded_stock_qty": "0",
+        "location": "A2-3",
+        "batch_no": "23053776",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 1,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "1654900600101",
+        "name": "连接器",
+        "recorded_stock_qty": "0",
+        "location": "B2-3-2",
+        "batch_no": "2307527",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 2,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "1654900600101",
+        "name": "连接器",
+        "recorded_stock_qty": "0",
+        "location": "B2-3-2",
+        "batch_no": "25082680",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 3,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "1654900600101",
+        "name": "连接器",
+        "recorded_stock_qty": "5",
+        "location": "B2-3-2",
+        "batch_no": "26043212",
+        "site": "北京",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 4,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "14S6250162201": [
+      {
+        "material_code": "14S6250162201",
+        "name": "芯片",
+        "recorded_stock_qty": "7",
+        "location": "天15#",
+        "batch_no": "2029H6GK",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 5,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "14S6250162201",
+        "name": "芯片",
+        "recorded_stock_qty": "489",
+        "location": "防中1-4",
+        "batch_no": "2047+",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 6,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "14S0200800101": [
+      {
+        "material_code": "14S0200800101",
+        "name": "芯片",
+        "recorded_stock_qty": "3",
+        "location": "防中1",
+        "batch_no": "KA8119",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 7,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "14S0200800101",
+        "name": "芯片",
+        "recorded_stock_qty": "3",
+        "location": "防中1-5",
+        "batch_no": "KA9427",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 8,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "14S0200800101",
+        "name": "芯片",
+        "recorded_stock_qty": "2",
+        "location": "防上1-5 2U",
+        "batch_no": "2527",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 9,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "14S6212805101": [
+      {
+        "material_code": "14S6212805101",
+        "name": "芯片",
+        "recorded_stock_qty": "8",
+        "location": "天15#",
+        "batch_no": "21+",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 10,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "105A513034101": [
+      {
+        "material_code": "105A513034101",
+        "name": "表贴电阻",
+        "recorded_stock_qty": "9899",
+        "location": "F4-1099",
+        "batch_no": "221111",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 11,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "1119622181201": [
+      {
+        "material_code": "1119622181201",
+        "name": "高分子电容",
+        "recorded_stock_qty": "1167",
+        "location": "F1-0006",
+        "batch_no": "H1GP",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 12,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "1211110060101": [
+      {
+        "material_code": "1211110060101",
+        "name": "磁珠",
+        "recorded_stock_qty": "0",
+        "location": "470#",
+        "batch_no": "25+",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 13,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "1211110060101",
+        "name": "磁珠",
+        "recorded_stock_qty": "0",
+        "location": "G5-1593",
+        "batch_no": "25+",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 14,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "1211110060101",
+        "name": "磁珠",
+        "recorded_stock_qty": "0",
+        "location": "455#",
+        "batch_no": "25+",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 15,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "1211110060101",
+        "name": "磁珠",
+        "recorded_stock_qty": "0",
+        "location": "455#",
+        "batch_no": "25+XD250837066",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 16,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "1211110060101",
+        "name": "磁珠",
+        "recorded_stock_qty": "897",
+        "location": "G5-1606",
+        "batch_no": "26+",
+        "site": "北京",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 17,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "1211110060101",
+        "name": "磁珠",
+        "recorded_stock_qty": "4000",
+        "location": "G5-1609",
+        "batch_no": "25+",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 18,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "105A503904101": [
+      {
+        "material_code": "105A503904101",
+        "name": "表贴电阻",
+        "recorded_stock_qty": "1805",
+        "location": "G4-1351",
+        "batch_no": "221111",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 19,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "1124433BB1101": [
+      {
+        "material_code": "1124433BB1101",
+        "name": "表贴电容",
+        "recorded_stock_qty": "7896",
+        "location": "F4-1039",
+        "batch_no": "2002",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 20,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "1124433BB1101",
+        "name": "表贴电容",
+        "recorded_stock_qty": "9684",
+        "location": "F4-1060",
+        "batch_no": "20230129",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 21,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "1121522061401": [
+      {
+        "material_code": "1121522061401",
+        "name": "表贴电容",
+        "recorded_stock_qty": "579",
+        "location": "F5-1516",
+        "batch_no": "2037",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 22,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "105A530114101": [
+      {
+        "material_code": "105A530114101",
+        "name": "表贴电阻",
+        "recorded_stock_qty": "2032",
+        "location": "F4-1148",
+        "batch_no": "230512",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 23,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "105A710034201": [
+      {
+        "material_code": "105A710034201",
+        "name": "表贴电阻",
+        "recorded_stock_qty": "222",
+        "location": "F4-1105",
+        "batch_no": "221019",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 24,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "105A702204201": [
+      {
+        "material_code": "105A702204201",
+        "name": "表贴电阻",
+        "recorded_stock_qty": "5963",
+        "location": "G4-1366",
+        "batch_no": "201216",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 25,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "105A702204201",
+        "name": "表贴电阻",
+        "recorded_stock_qty": "8900",
+        "location": "G4-1377",
+        "batch_no": "2020",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 26,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "1315700214101": [
+      {
+        "material_code": "1315700214101",
+        "name": "MOS管",
+        "recorded_stock_qty": "2164",
+        "location": "F2-0329",
+        "batch_no": "202110",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 27,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "14SA010801101": [
+      {
+        "material_code": "14SA010801101",
+        "name": "芯片",
+        "recorded_stock_qty": "0",
+        "location": "防中1-4",
+        "batch_no": "2318A",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 28,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "14SA010801101",
+        "name": "芯片",
+        "recorded_stock_qty": "2",
+        "location": "防中1-4",
+        "batch_no": "2605",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 29,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "1232948055201": [
+      {
+        "material_code": "1232948055201",
+        "name": "晶振 贴片",
+        "recorded_stock_qty": "73",
+        "location": "天9#",
+        "batch_no": "220708",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 30,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "1232948055201",
+        "name": "晶振 贴片",
+        "recorded_stock_qty": "428",
+        "location": "天9#",
+        "batch_no": "22530",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 31,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "1119647281201": [
+      {
+        "material_code": "1119647281201",
+        "name": "高分子电容",
+        "recorded_stock_qty": "2068",
+        "location": "F1-0012",
+        "batch_no": "25+",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 32,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "1121510051201": [
+      {
+        "material_code": "1121510051201",
+        "name": "表贴电容",
+        "recorded_stock_qty": "0",
+        "location": "F5-1479",
+        "batch_no": "2048",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 33,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "1121510051201",
+        "name": "表贴电容",
+        "recorded_stock_qty": "1736",
+        "location": "F5-1490",
+        "batch_no": "2B03A",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 34,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "1212302800101": [
+      {
+        "material_code": "1212302800101",
+        "name": "磁珠",
+        "recorded_stock_qty": "1239",
+        "location": "F5-1443",
+        "batch_no": "220324",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 35,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "1212302800101",
+        "name": "磁珠",
+        "recorded_stock_qty": "188",
+        "location": "天1#",
+        "batch_no": "2214",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 36,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "105A512134101": [
+      {
+        "material_code": "105A512134101",
+        "name": "表贴电阻",
+        "recorded_stock_qty": "5830",
+        "location": "F4-1104",
+        "batch_no": "WH202042308",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 37,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "11215228B1101": [
+      {
+        "material_code": "11215228B1101",
+        "name": "表贴电容",
+        "recorded_stock_qty": "9102",
+        "location": "F4-1063",
+        "batch_no": "2015",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 38,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "1655502021101": [
+      {
+        "material_code": "1655502021101",
+        "name": "白色端子 插针",
+        "recorded_stock_qty": "5",
+        "location": "307#",
+        "batch_no": "1924",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 39,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "1655502021101",
+        "name": "白色端子 插针",
+        "recorded_stock_qty": "6",
+        "location": "307#",
+        "batch_no": "2217",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 40,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "1124427BB0311": [
+      {
+        "material_code": "1124427BB0311",
+        "name": "表贴电容",
+        "recorded_stock_qty": "7411",
+        "location": "F4-1038",
+        "batch_no": "2102",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 41,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "14S0120001101": [
+      {
+        "material_code": "14S0120001101",
+        "name": "芯片",
+        "recorded_stock_qty": "0",
+        "location": "防上2-1",
+        "batch_no": "2240",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 42,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "14S0120001101",
+        "name": "芯片",
+        "recorded_stock_qty": "0",
+        "location": "防上2-1",
+        "batch_no": "2325",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 43,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "14S0120001101",
+        "name": "芯片",
+        "recorded_stock_qty": "1",
+        "location": "防上2-2",
+        "batch_no": "2527",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 44,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "1653005207101": [
+      {
+        "material_code": "1653005207101",
+        "name": "直插排针",
+        "recorded_stock_qty": "1869",
+        "location": "天25#",
+        "batch_no": "220401",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 45,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "1304100040101": [
+      {
+        "material_code": "1304100040101",
+        "name": "LED",
+        "recorded_stock_qty": "0",
+        "location": "F2-0331",
+        "batch_no": "21110401",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 46,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "1304100040101",
+        "name": "LED",
+        "recorded_stock_qty": "0",
+        "location": "171#",
+        "batch_no": "25+",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 47,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      },
+      {
+        "material_code": "1304100040101",
+        "name": "LED",
+        "recorded_stock_qty": "3003",
+        "location": "G5-1597",
+        "batch_no": "20250512",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 48,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "14S8525601201": [
+      {
+        "material_code": "14S8525601201",
+        "name": "芯片",
+        "recorded_stock_qty": "1",
+        "location": "防上2-3",
+        "batch_no": "2324",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 49,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "1231980050201": [
+      {
+        "material_code": "1231980050201",
+        "name": "晶体谐振器",
+        "recorded_stock_qty": "87",
+        "location": "天9#",
+        "batch_no": "230626",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 50,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "105A510014201": [
+      {
+        "material_code": "105A510014201",
+        "name": "表贴电阻",
+        "recorded_stock_qty": "308",
+        "location": "F4-1149",
+        "batch_no": "220105",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 51,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "1301005441601": [
+      {
+        "material_code": "1301005441601",
+        "name": "二极管",
+        "recorded_stock_qty": "227",
+        "location": "80#",
+        "batch_no": "2306",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 52,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "11215478B0101": [
+      {
+        "material_code": "11215478B0101",
+        "name": "表贴电容",
+        "recorded_stock_qty": "5666",
+        "location": "F4-1068",
+        "batch_no": "2013",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 53,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "1232933051201": [
+      {
+        "material_code": "1232933051201",
+        "name": "晶振 贴片",
+        "recorded_stock_qty": "78",
+        "location": "天9#",
+        "batch_no": "230626",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 54,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "105A515024201": [
+      {
+        "material_code": "105A515024201",
+        "name": "表贴电阻",
+        "recorded_stock_qty": "9291",
+        "location": "G5-1582",
+        "batch_no": "220327",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 55,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ],
+    "1232932051201": [
+      {
+        "material_code": "1232932051201",
+        "name": "晶体谐振器",
+        "recorded_stock_qty": "54",
+        "location": "天9#",
+        "batch_no": "230626",
+        "site": "天津",
+        "inventory_unit": "片",
+        "provenance": {
+          "source_file": "inventory.json",
+          "sheet_name": "current_inventory",
+          "row_number": 56,
+          "dataset_version": "kq-z112-v01-c34"
+        },
+        "duplicate_observation": false,
+        "raw_inventory_unit": null
+      }
+    ]
+  },
+  "source_file": "inventory.json",
+  "sheet_name": "库存表",
+  "record_count": 56,
+  "unique_material_count": 34,
+  "row_errors": [],
+  "duplicate_observation_count": 0,
+  "excluded_sheets": [],
+  "unit_confirmation": {
+    "unit": "片",
+    "source_kind": "confirmed_working_copy"
+  },
+  "quantity_confirmation": {
+    "source_uri": null,
+    "source_file": "inventory.json",
+    "sheet_name": "库存表",
+    "quantity_field": "recorded_stock_qty",
+    "unit": "片",
+    "confirmed_by": "release-authorized",
+    "reason": "Approved current business configuration; identical verified source quantities",
+    "recorded_at": "2026-10-12T01:58:21.276333+00:00",
+    "user_statement": "当前交付产品BOM与已核验主库存数量按片核对；仅适用于已绑定来源。",
+    "applies_to_existing_source_only": true,
+    "quantity_role": "actual_stock_for_review",
+    "product_scope": [
+      {
+        "product": "KQ-Z112",
+        "revision": "V01-C34"
+      }
+    ],
+    "confirmation_id": "current-kq-z112-v01-c34",
+    "source_kind": "confirmed_working_copy"
+  }
+}

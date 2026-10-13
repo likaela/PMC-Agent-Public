@@ -1,0 +1,9 @@
+# Canonical source/script newlines; business package bytes stay immutable.
+* text=auto eol=lf
+data/public/** -text whitespace=cr-at-eol
+*.sh text eol=lf
+*.service text eol=lf
+Dockerfile text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+deploy/nginx/*.conf text eol=lf

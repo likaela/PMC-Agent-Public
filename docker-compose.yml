@@ -1,0 +1,29 @@
+services:
+  backend:
+    build:
+      context: .
+      target: backend
+    environment:
+      DATA_ROOT: /app/data
+      PMC_PUBLIC_DATA_ROOT: /app/data/public
+      PMC_RUNTIME_ROOT: /app/data/runtime
+      HOST: 0.0.0.0
+      PORT: 8000
+    volumes:
+      - pmc_runtime:/app/data/runtime
+    restart: unless-stopped
+    init: true
+    security_opt:
+      - no-new-privileges:true
+  frontend:
+    build:
+      context: .
+      target: web
+    ports:
+      - "${PMC_BIND_IP:-127.0.0.1}:${PMC_HTTP_PORT:-8080}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  pmc_runtime:
