@@ -3,12 +3,44 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#356CF0" />
+    <meta name="theme-color" content="#10141D" />
     <meta
       name="description"
       content="PMC-Agent 制造业智能计划助手：查询物料，查看结论与来源。"
     />
     <link rel="icon" href="/favicon.svg" />
+    <script id="theme-bootstrap">
+      (() => {
+        let theme = "dark";
+        try {
+          if (localStorage.getItem("pmc-agent-theme") === "light")
+            theme = "light";
+        } catch (_) {}
+        document.documentElement.dataset.theme = theme;
+        document
+          .querySelector('meta[name="theme-color"]')
+          .setAttribute("content", theme === "light" ? "#F5F7FB" : "#10141D");
+      })();
+    </script>
+    <style>
+      /* Critical first-paint tokens; full palette is in src/theme.css. */
+      html {
+        --boot-bg: #10141d;
+        --boot-text: #e7edf6;
+        color-scheme: dark;
+        background: var(--boot-bg);
+      }
+      html[data-theme="light"] {
+        --boot-bg: #f5f7fb;
+        --boot-text: #17243b;
+        color-scheme: light;
+      }
+      body {
+        margin: 0;
+        background: var(--boot-bg);
+        color: var(--boot-text);
+      }
+    </style>
     <title>PMC-Agent · 制造业智能计划助手</title>
   </head>
   <body>

@@ -28,6 +28,31 @@ def conversational(message: str) -> bool:
     return bool(re.fullmatch(rf"(?:{phrase})(?:[，,、\s]*(?:{phrase}))*", text, re.I))
 
 
+_FABRICATION = re.compile(r"编一个|编造|伪造|虚构|假数据|随便编|帮我编|捏造|杜撰|造个假|造假")
+_UNRELATED = re.compile(r"天气|气温|下雨|股票|基金|彩票|笑话|写诗|翻译|新闻|电影|音乐|旅游|菜谱|星座|游戏|体育")
+_BUSINESS = re.compile(
+    r"生产|投产|投料|备料|产量|产能|齐套|缺料|缺口|急缺|缺|不足|紧张|库存|存量|批次|库位|BOM|物料|料号|元器件|"
+    r"采购|补货|供应商|MOQ|成本|价格|报价|订单|在途|到货|交期|开工|排产|工单|领料|扣减|"
+    r"产品|单位|来源|依据|原因|为什么|结果|明细|清单|需求|风险|重复|记录|个数|数量|多少|几[个件条项]", re.IGNORECASE)
+
+
+def refusal_kind(message: str) -> str | None:
+    """判断应拒答还是照常路由：编造数据 / 与 PMC 无关。
+
+    只用于阻断“默认业务查询”的误答：业务词、数字、产品编码或寒暄都不会被拦截。
+    """
+    text = (message or "").strip()
+    if not text or conversational(text):
+        return None
+    if _FABRICATION.search(text):
+        return "fabrication"
+    if _UNRELATED.search(text):
+        return "unrelated"
+    if _BUSINESS.search(text) or re.search(r"\d", text):
+        return None
+    return "unrelated"
+
+
 def product_discovery(message: str) -> tuple[bool, str | None]:
     """Explicit catalog requests cannot inherit a prior production object."""
     if re.search(r"这个产品|该产品|所选产品|当前产品", message) and not re.search(r"产品目录|哪些产品", message):

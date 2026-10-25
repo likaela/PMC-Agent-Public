@@ -1,30 +1,45 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch, onMounted, onBeforeUnmount } from "vue";
 import Icon from "./Icon.vue";
 import StatusBadge from "./StatusBadge.vue";
+import WarningList from "./WarningList.vue";
+import AnalysisState from "./AnalysisState.vue";
+import ThoughtLine from "./ThoughtLine.vue";
 import { useAgent } from "../composables/useAgent";
-import { formatNumber, statusText } from "../data/model";
-import { sourceLabel } from "../services/productLanguage";
-defineProps<{ activeProduct?: string | null }>();
-defineEmits<{ source: []; continue: [code: string] }>();
-const { result, selected, messages, pending, retry } = useAgent();
-const metrics = computed(() => result.value?.metrics?.filter(m => m.value != null && m.value.trim() !== "") ?? []);
-const purchaseFields = computed(() => {
-  const rows = result.value?.purchases ?? [];
-  return {shortage: rows.some(r => r.shortage != null), suggested: rows.some(r => r.suggested != null),
-    cost: rows.some(r => r.cost != null), supplier: rows.some(r => r.supplier != null || r.leadTime != null),
-    risk: rows.some(r => r.risk != null || r.reasons.length > 0)};
+import { statusText } from "../data/model";
+import { isTraceComplete, settledSteps } from "../services/analysisTrace";
+defineEmits<{ source: []; details: [] }>();
+const { result, pending, selected, retry, canSend, session, messages, executeInventory } = useAgent();
+const confirmed = ref(false), credential = ref(""), now = ref(Date.now());
+let expiryTimer: ReturnType<typeof setInterval> | undefined;
+onMounted(() => { expiryTimer = setInterval(() => { now.value = Date.now(); }, 1000); });
+onBeforeUnmount(() => { clearInterval(expiryTimer); credential.value = ""; });
+watch(() => [selected.value?.id, session.value?.session_id], () => {
+  confirmed.value = false;
+  credential.value = "";
 });
-const errorTitles = {
-  network: "请求失败，请重试",
-  mapping: "当前结果暂无法完整展示",
-  unconfigured: "接口尚未配置",
-  unsupported: "请选择已提供的演示场景",
-  timeout: "等待结果超时",
-  session: "请恢复或新建会话",
-  invalid: "请检查查询条件",
-  server: "分析服务暂不可用",
-};
+const inventory = computed(() => result.value?.backend?.inventoryOperation);
+const expiration = computed(() => inventory.value?.expiresAt ? Date.parse(inventory.value.expiresAt) : NaN);
+const expired = computed(() => !Number.isFinite(expiration.value) || expiration.value <= now.value);
+const executable = computed(() => inventory.value?.kind === "preview" &&
+  inventory.value.canExecute && inventory.value.executionAvailable && !expired.value &&
+  !!inventory.value.previewId && canSend.value &&
+  selected.value?.id === messages.value.at(-1)?.id &&
+  inventory.value.boundSessionId === session.value?.session_id &&
+  result.value?.backend?.sessionId === session.value?.session_id &&
+  result.value?.product === session.value?.product_code);
+function confirmExecution() {
+  const allowed = confirmed.value && executable.value && !!credential.value;
+  const oneTimeCredential = credential.value;
+  credential.value = "";
+  confirmed.value = false;
+  if (allowed) void executeInventory(oneTimeCredential, true);
+}
+// Backend-reported tool trace for the selected answer, including restored history.
+const traceSteps = computed(() => settledSteps(result.value?.backend?.steps));
+const traceComplete = computed(() =>
+  isTraceComplete(result.value?.backend?.steps),
+);
 </script>
 <template>
   <section
@@ -35,235 +50,121 @@ const errorTitles = {
     :aria-busy="pending"
   >
     <div class="card-heading">
-      <h2 id="result-title"><Icon name="file" :size="19" />分析结论</h2>
+      <h2 id="result-title"><span class="report-step">01</span>分析结论</h2>
       <span class="subtle-label">{{
-        pending
-          ? "等待响应"
-          : selected &&
-              (selected.id !== messages.at(-1)?.id ||
-                (activeProduct &&
-                  result?.product &&
-                  activeProduct !== result.product))
-            ? "历史回答对应结果（非本次请求）"
-            : result
-              ? "本次回答对应结果"
-              : "本次查询"
+        pending ? "等待响应" : result ? "与所选回答同步" : "本次查询"
       }}</span>
     </div>
-    <div v-if="pending" class="result-loading">
-      <div class="loading-symbol"><Icon name="sparkles" :size="26" /></div>
-      <h3>正在等待分析结果</h3>
-      <p>本次请求完成后，将在这里展示结论与依据。</p>
-      <div class="skeleton"></div>
-      <div class="skeleton short"></div>
-      <div class="skeleton"></div>
-    </div>
-    <div v-else-if="selected?.error" class="result-empty error-state">
-      <span class="empty-icon warning"
-        ><Icon
-          :name="selected.error.code === 'unconfigured' ? 'link' : 'alert'"
-          :size="29"
-      /></span>
-      <h3>{{ errorTitles[selected.error.code] }}</h3>
-      <p>{{ selected.error.message }}</p>
-      <button
-        v-if="selected.error.code !== 'unsupported'"
-        class="secondary-button"
-        @click="retry()"
-      >
-        <Icon name="retry" :size="16" />重试原问题
-      </button>
-    </div>
-    <div v-else-if="!result" class="result-empty">
-      <span class="empty-icon"><Icon name="layers" :size="32" /></span>
-      <h3>
-        {{
-          selected?.result?.conversation
-            ? "本轮为交流回复"
-            : selected?.state === "cancelled"
-              ? "本次分析已取消"
-              : "让每个问题都有清晰的落点"
-        }}
-      </h3>
-      <p>
-        {{
-          selected?.result?.conversation
-            ? "本轮没有执行业务分析。可选择左侧历史回答查看对应结果，或继续输入产品编码发起查询。"
-            : selected?.state === "cancelled"
-              ? "已停止等待，在线请求请先恢复会话确认服务端结果。"
-              : "发送问题后，查看分析结论、物料缺口和可追溯的数据来源。"
-        }}
-      </p>
-      <button
-        v-if="selected?.state === 'cancelled'"
-        class="secondary-button"
-        @click="retry()"
-      >
-        <Icon name="retry" :size="16" />重试原问题
-      </button>
-      <div v-else class="empty-preview">
-        <span><Icon name="checkcircle" :size="16" />结论摘要</span
-        ><span><Icon name="layers" :size="16" />物料明细</span
-        ><span><Icon name="link" :size="16" />数据来源</span>
-      </div>
-    </div>
-    <div v-else class="result-body">
-      <p
-        v-if="
-          result.product && activeProduct && result.product !== activeProduct
-        "
-        class="result-explanation"
-        role="note"
-      >
-        此回答属于{{ result.product }}；当前输入产品为{{ activeProduct }}。
-        <button class="text-button" @click="$emit('continue', result.product)">
-          继续分析此产品
-        </button>
-      </p>
-      <div class="result-kicker">
-        <StatusBadge
-          :tone="
-            result.status === 'ready'
-              ? 'green'
-              : [
-                    'partial',
-                    'blocked',
-                    'zero',
-                    'conflict',
-                    'uncalculable',
-                    'no-facts',
-                  ].includes(result.status)
-                ? 'orange'
-                : 'blue'
+    <Transition name="report-swap" mode="out-in">
+      <AnalysisState
+        v-if="pending || !result"
+        :key="pending ? 'pending' : selected?.state"
+      />
+      <div v-else :key="selected?.id" class="result-body">
+        <ThoughtLine
+          v-if="traceSteps.length"
+          :working="false"
+          :done-label="traceComplete ? '分析完成' : '分析结束'"
+          :settled-ms="selected?.elapsedMs"
+          :steps="traceSteps"
+          :default-open="selected?.elapsedMs != null"
+          collapsible
+        />
+        <div class="result-kicker">
+          <StatusBadge
+            :tone="
+              result.status === 'ready'
+                ? 'green'
+                : ['partial', 'zero', 'conflict', 'uncalculable'].includes(
+                      result.status,
+                    )
+                  ? 'orange'
+                  : 'blue'
+            "
+            >{{
+              result.backend
+                ? result.backend.status === "ok"
+                  ? "查询完成"
+                  : result.backend.status === "needs_input"
+                    ? "请补充条件"
+                    : result.backend.status === "invalid_query"
+                      ? "输入无效"
+                      : "业务数据未完整返回"
+                : statusText[result.status]
+            }}</StatusBadge
+          ><span>{{ result.sources[0]?.kind }}</span>
+        </div>
+        <h3>{{ result.title }}</h3>
+        <p class="result-explanation">{{ result.answer }}</p>
+        <section v-if="inventory" class="inventory-confirmation" aria-label="库存预览与执行回执">
+          <template v-if="inventory.kind === 'preview'">
+            <p>仅生成领料预览，尚未扣减库存。请核对物料需求与批次分配。</p>
+            <p v-if="!inventory.executionAvailable">当前环境未开放库存执行。</p>
+            <p v-else-if="expired">预览已失效或有效期无法核实，请重新生成预览。</p>
+            <p v-else-if="!executable && inventory.canExecute">请在原会话的最新有效预览中操作。</p>
+          </template>
+          <p v-else-if="inventory.executed">库存扣减已确认，以下为服务端保存的执行回执。</p>
+          <p v-else>当前没有已确认成功的库存扣减回执。</p>
+          <ul v-if="inventory.blockers.length">
+            <li v-for="blocker in inventory.blockers" :key="blocker">{{ blocker }}</li>
+          </ul>
+          <div v-if="inventory.allocations.length" class="table-scroll" tabindex="0" aria-label="批次分配与库存回执明细">
+            <table>
+              <thead><tr><th>物料</th><th>批次</th><th>批次日期</th><th>扣减数量</th><th>扣减前</th><th>扣减后</th></tr></thead>
+              <tbody><tr v-for="(allocation, index) in inventory.allocations" :key="index">
+                <td>{{ allocation.materialCode ?? '—' }}</td><td>{{ allocation.batch ?? '—' }}</td>
+                <td>{{ allocation.receivedAt ?? '—' }}</td><td>{{ allocation.quantity ?? '—' }}</td>
+                <td>{{ allocation.before ?? '—' }}</td><td>{{ allocation.after ?? '—' }}</td>
+              </tr></tbody>
+            </table>
+          </div>
+          <form v-if="executable" class="inventory-confirmation-form" @submit.prevent="confirmExecution">
+            <label><input v-model="confirmed" type="checkbox" />我已核对本次预览，明确确认库存扣减</label>
+            <label>库存执行凭据<input v-model="credential" type="password" autocomplete="off" aria-label="库存执行凭据" placeholder="仅用于本次请求" /></label>
+            <button type="submit" class="primary-button" :disabled="!confirmed || !credential || pending">确认执行库存扣减</button>
+          </form>
+        </section>
+        <WarningList :warnings="result.warnings" />
+        <button
+          v-if="
+            result.backend &&
+            !['ok', 'needs_input', 'invalid_query'].includes(
+              result.backend.status,
+            )
           "
-          >{{ statusText[result.status] }}</StatusBadge
-        ><span>{{ sourceLabel(result.sources[0]?.kind) }}</span>
-      </div>
-      <h3>{{ result.title }}</h3>
-      <p v-if="result.slimReview" class="result-explanation">
-        本次结果仅适用于当前分析范围，不代表完整产品生产放行。
-      </p>
-      <p class="result-explanation">{{ result.answer }}</p>
-      <div v-if="metrics.length" class="purchase-grid">
-        <div v-for="metric in metrics" :key="metric.label">
-          <span>{{ metric.label }}</span
-          ><strong>{{ metric.value }}</strong>
-        </div>
-      </div>
-      <div
-        v-if="result.purchases?.length"
-        class="table-scroll"
-        aria-label="采购建议表"
-      >
-        <table>
-          <thead>
-            <tr>
-              <th>物料</th>
-              <th v-if="purchaseFields.shortage">缺口</th>
-              <th v-if="purchaseFields.suggested">建议采购</th>
-              <th v-if="purchaseFields.cost">成本 / 币种</th>
-              <th v-if="purchaseFields.supplier">供应商 / 交期</th>
-              <th v-if="purchaseFields.risk">风险与依据</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(purchase, index) in result.purchases" :key="index">
-              <td>{{ purchase.material }}</td>
-              <td v-if="purchaseFields.shortage">{{ purchase.shortage == null ? '—' : formatNumber(purchase.shortage) }} {{ purchase.shortage == null ? '' : purchase.unit }}</td>
-              <td v-if="purchaseFields.suggested">
-                {{ purchase.suggested == null ? '—' : formatNumber(purchase.suggested) }} {{ purchase.suggested == null ? '' : purchase.unit }}
-              </td>
-              <td v-if="purchaseFields.cost">
-                {{ purchase.cost == null ? '—' : formatNumber(purchase.cost) }}
-                {{ purchase.cost == null ? '' : purchase.currency ?? '' }}
-              </td>
-              <td v-if="purchaseFields.supplier">
-                {{ purchase.supplier ?? '' }}
-                <span v-if="purchase.leadTime != null"> {{ purchase.leadTime }} 天</span>
-              </td>
-              <td v-if="purchaseFields.risk">
-                {{ purchase.risk ?? '' }}
-                <p>{{ purchase.reasons.join("；") }}</p>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <details
-        v-if="result.detailTable"
-        :key="selected?.id"
-        :open="!result.bookObservation"
-      >
-        <summary v-if="result.bookObservation" class="text-button">展开库存记录明细</summary>
-        <div class="table-scroll" aria-label="事实明细表">
-        <table>
-          <thead>
-            <tr>
-              <th v-for="column in result.detailTable.columns" :key="column">
-                {{ column }}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(row, index) in result.detailTable.rows" :key="index">
-              <td v-for="(cell, column) in row" :key="column">
-                {{ cell ?? "—" }}
-              </td>
-            </tr>
-            <tr v-if="!result.detailTable.rows.length">
-              <td :colspan="result.detailTable.columns.length">
-                暂无可展示明细。
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        </div>
-      </details>
-      <div v-if="result.purchase" class="purchase-grid">
-        <div v-if="result.purchase.shortage != null">
-          <span>缺料数量</span
-          ><strong
-            >{{ formatNumber(result.purchase.shortage)
-            }}<small>{{ result.purchase.unit }}</small></strong
+          class="secondary-button"
+          :disabled="!canSend"
+          @click="retry()"
+        >
+          重试原问题
+        </button>
+        <div class="result-links">
+          <button
+            v-if="result.backend?.rows.length"
+            class="result-detail-button"
+            @click="$emit('details')"
           >
-        </div>
-        <div v-if="result.purchase.safetyStock != null">
-          <span>安全库存</span
-          ><strong
-            >{{ formatNumber(result.purchase.safetyStock)
-            }}<small>{{ result.purchase.unit }}</small></strong
+            <Icon name="layers" :size="16" />核对物料明细<Icon
+              name="down"
+              :size="15"
+            /></button
+          ><button
+            v-if="result.sources.length || result.backend"
+            class="source-inline"
+            @click="$emit('source')"
           >
-        </div>
-        <div v-if="result.purchase.suggested != null">
-          <span>建议采购</span
-          ><strong
-            >{{ formatNumber(result.purchase.suggested)
-            }}<small>{{ result.purchase.unit }}</small></strong
-          >
+            <Icon name="link" :size="15" /><span
+              >查看本次分析来源与适用条件</span
+            ><Icon name="arrow" :size="15" />
+          </button>
         </div>
       </div>
-      <p v-if="result.purchase" class="purchase-note">
-        {{ result.purchase.note }}
-      </p>
-      <div v-if="result.conclusion || result.nextAction" class="next-action">
-        <span class="next-action-icon"><Icon name="arrow" :size="18" /></span>
-        <div>
-          <strong>{{ result.conclusion }}</strong>
-          <p>{{ result.nextAction }}</p>
-        </div>
-      </div>
-      <div v-if="result.warnings.length" class="warning-list">
-        <h4><Icon name="alert" :size="16" />使用前请留意</h4>
-        <ul>
-          <li v-for="warning in result.warnings" :key="warning">
-            {{ warning }}
-          </li>
-        </ul>
-      </div>
-      <button class="source-inline" @click="$emit('source')">
-        <Icon name="link" :size="15" /><span>查看本次分析来源与适用条件</span
-        ><Icon name="arrow" :size="15" />
-      </button>
-    </div>
+    </Transition>
   </section>
 </template>
+<style scoped>
+.inventory-confirmation { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border, #e7ebef); }
+.inventory-confirmation-form { display: grid; gap: 12px; margin-top: 14px; }
+.inventory-confirmation-form label { display: block; font-size: 13px; }
+.inventory-confirmation-form input[type="password"] { display: block; width: 100%; margin-top: 6px; padding: 8px; }
+</style>

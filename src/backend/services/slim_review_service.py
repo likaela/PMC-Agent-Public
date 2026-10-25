@@ -37,12 +37,8 @@ def select_dataset(service, product, revision):
             reason = "invalid_material_or_bom_usage"
         elif not row["record_found"]:
             reason = "no_main_inventory_record"
-        elif not row["duplicate_free"]:
-            reason = "unresolved_duplicate_observations"
         elif stock is None or not stock.is_finite():
             reason = "invalid_stock_quantity"
-        elif row["unit"] != "片" or row["inventory_unit"] != "片":
-            reason = "unit_not_confirmed_as_pian"
         elif stock < 0:
             reason = "negative_stock_quantity"
         else:

@@ -24,6 +24,19 @@ from services.persistent_agent_service import PersistentAgentService
 from pydantic import BaseModel, Field, ConfigDict
 router = APIRouter(prefix="/api/v1/agent", tags=["Unified Agent"])
 
+#: Demo 场景标识；仅作为隔离的合成测试环境，默认运行时不可达。
+DEMO_SCENARIO_IDS = ("demo_scenario_50_vs_100",)
+
+
+def demo_scenario_disabled(scenario_id) -> bool:
+    """未显式开启测试环境时，任何 Demo 场景请求都必须被拒绝。"""
+    return scenario_id in DEMO_SCENARIO_IDS and os.getenv("PMC_ALLOW_DEMO_SCENARIO") != "1"
+
+
+def _demo_scenario_error() -> JSONResponse:
+    return JSONResponse(status_code=422, content={"code": "DEMO_SCENARIO_DISABLED",
+        "user_message": "演示场景已移除，当前仅支持 KQ-Z112 与 KQ-BHX3588M。"})
+
 
 class ProductResolveRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -37,6 +50,8 @@ class ProductResolveRequest(BaseModel):
 def resolve_agent_product(request: ProductResolveRequest):
     from agents.product_resolver import resolve_product
     from services.local_reviewer_catalog import local_review_catalog
+    if demo_scenario_disabled(request.scenario_id):
+        return _demo_scenario_error()
     current = None
     if request.session_id:
         try:
@@ -105,6 +120,8 @@ def _product_context(context):
 def create_agent_session(request: AgentSessionCreate | None = None):
     """创建企业会话或显式独立场景会话；不初始化或重建旧 Demo Workflow。"""
     from services.local_business_binding import local_business_binding
+    if request and demo_scenario_disabled(request.scenario_id):
+        return _demo_scenario_error()
     if local_business_binding() and request and request.scenario_id in ("kq_z112_review_slim", "kq_z112_review_slim_synthetic", "review_real_bom_simulation"):
         return JSONResponse(status_code=422, content={"code":"ARCHIVED_CONFIGURATION", "user_message":"旧版本配置已归档，请新建当前产品分析。"})
     product = request.product_code if request else None
@@ -127,10 +144,30 @@ def create_agent_session(request: AgentSessionCreate | None = None):
     return result
 
 
+@router.delete("/sessions")
+def clear_agent_sessions():
+    """清空本机对话历史；业务事实、发布库存与 BOM 数据不受影响。
+
+    当前工作台会话写在 local business 库，通用入口写在默认事实库，两处都要清。
+    """
+    removed = 0
+    try:
+        from services.local_business_binding import local_business_binding
+        binding = local_business_binding()
+        if binding is not None and getattr(binding, "repository", None) is not None:
+            removed += binding.repository.clear_sessions()
+        removed += _persistent_service(None).repository.clear_sessions()
+    except Exception as error:  # 会话表不可用时不静默成功
+        return JSONResponse(status_code=500, content={"code": "CLEAR_FAILED", "user_message": f"清空历史失败：{error}"})
+    return {"status": "ok", "removed": removed}
+
+
 @router.get("/sessions/{session_id}", response_model=AgentSessionHistory)
 def get_agent_session(session_id: str, after: int = Query(0, ge=0), limit: int = Query(50, ge=1, le=200),
                       scenario_id: ScenarioId | None = Query(None)):
     """分页恢复问答、上下文及每次调用的来源证据；不重新查询/计算历史事实。"""
+    if demo_scenario_disabled(scenario_id):
+        return _demo_scenario_error()
     try:
         service = (_current_service(session_id=session_id) if scenario_id is None else None) or _persistent_service(scenario_id)
         history = service.repository.history(session_id, after=after, limit=limit)
@@ -147,6 +184,8 @@ def get_agent_session(session_id: str, after: int = Query(0, ge=0), limit: int =
 def unified_agent_query(request: UnifiedAgentRequest) -> UnifiedAgentResponse:
     """统一自然语言入口，不改变旧 Chat、Demo 或 LangGraph 执行链。"""
     from services.local_business_binding import local_business_binding
+    if demo_scenario_disabled(request.scenario_id):
+        return _demo_scenario_error()
     current_binding = local_business_binding() if (request.session_id or request.persist_session or request.scenario_id or os.getenv("PMC_LOCAL_REVIEW") == "1") else None
     if current_binding and request.scenario_id in ("kq_z112_review_slim", "kq_z112_review_slim_synthetic", "review_real_bom_simulation"):
         return JSONResponse(status_code=422, content={"code":"ARCHIVED_CONFIGURATION", "user_message":"旧版本配置已归档，请新建当前产品分析。"})

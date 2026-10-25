@@ -13,13 +13,21 @@ from services.published_purchase_planning_service import PublishedPurchasePlanni
 
 
 def build_demo_scenario_tools(repository: DemoScenarioRepository) -> dict[str, StructuredTool]:
-    facts = FactQueryService(FactQueryRepository(repository.facts))
+    from repositories.public_data_repository import public_root
+    if public_root():
+        from services.safe_inventory_runtime import OperationalDemoRepository
+        stock_repository = OperationalDemoRepository(repository.facts)
+    else:
+        stock_repository = PublishedPurchaseRepository(repository.facts)
+    facts = FactQueryService(stock_repository)
     capacity = ProductionFeasibilityQueryService(facts)
-    purchase = PublishedPurchasePlanningService(PublishedPurchaseRepository(repository.facts))
+    purchase = PublishedPurchasePlanningService(stock_repository)
 
     def tagged(result):
         # 只添加来源标签，不改任何计算值、完整性或业务状态。
-        return {**result, "provenance": {**(result.get("provenance") or {}),
+        live = ({"runtime_ledger": {"namespace": "demo", "version": stock_repository.ledger.version("demo")}}
+                if hasattr(stock_repository, "ledger") else {})
+        return {**result, "provenance": {**(result.get("provenance") or {}), **live,
                                        "scenario_id": SCENARIO_ID, "synthetic": True}}
 
     def inventory(material_code: str, as_of: str | None = None) -> dict:
@@ -49,6 +57,22 @@ def build_demo_scenario_tools(repository: DemoScenarioRepository) -> dict[str, S
         """复用现有 published 采购规划算法。"""
         return tagged(purchase.query(product, revision, effective_date, quantity, start_date, as_of=as_of))
 
-    return {kind: StructuredTool.from_function(function, name=f"demo_{kind}_query") for kind, function in
+    def consistent(function):
+        if not hasattr(stock_repository, "ledger"):
+            return function
+        from functools import wraps
+        @wraps(function)
+        def run(*args, **kwargs):
+            for _ in range(2):
+                before = stock_repository.ledger.version("demo")
+                result = function(*args, **kwargs)
+                if before == stock_repository.ledger.version("demo"):
+                    return result
+            return {"status": "data_unavailable", "query": {}, "data": None,
+                    "completeness": {}, "provenance": {"synthetic": True},
+                    "warnings": ["库存正在变化，请重试本次查询。"]}
+        return run
+
+    return {kind: StructuredTool.from_function(consistent(function), name=f"demo_{kind}_query") for kind, function in
             dict(inventory=inventory, inventory_batches=inventory_batches, bom=bom, inbound=inbound,
                  production_capacity=production_capacity, purchase_planning=purchase_planning).items()}

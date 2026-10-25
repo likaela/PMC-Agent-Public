@@ -1,0 +1,879 @@
+/* Motion layer:geometry can move; labels, facts and business numbers stay stable. */
+.hero-visual-reveal {
+  min-width: 0;
+}
+.map-stage {
+  perspective: 900px;
+  isolation: isolate;
+}
+.orbit-drawing,
+.core-parallax {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.orbit-drawing {
+  overflow: visible;
+  pointer-events: none;
+}
+.core-parallax {
+  transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+.pmc-float {
+  height: 100%;
+  width: 100%;
+}
+.core-aura {
+  position: absolute;
+  inset: 20% 18%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, var(--focus-glow), transparent 66%);
+  pointer-events: none;
+}
+.capability-node {
+  z-index: 2;
+}
+.motion-preference {
+  color: var(--muted);
+  font-size: 9px;
+}
+.motion-toggle {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+}
+.landing-page .landing-primary {
+  box-shadow:
+    0 5px 24px var(--brand-glow),
+    inset 0 1px 0 var(--shadow-color);
+}
+.landing-card {
+  position: relative;
+  overflow: hidden;
+}
+.landing-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--overlay), transparent);
+  opacity: 0;
+  transition: opacity 200ms;
+}
+.landing-card:hover::before {
+  opacity: 1;
+}
+
+/* The welcome state centers the task, without empty metrics or report placeholders. */
+.workspace-page.is-welcome {
+  min-height: calc(100vh - 250px);
+  display: grid;
+  align-content: center;
+}
+.welcome-workspace {
+  width: min(780px, 100%);
+  margin: 30px auto 44px;
+  text-align: center;
+}
+.welcome-brand {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 20px;
+  color: var(--link);
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  box-shadow:
+    inset 0 1px 0 var(--shadow-color),
+    0 4px 14px var(--brand-glow);
+}
+.welcome-eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 13px;
+}
+.welcome-workspace h1 {
+  font-size: clamp(25px, 2.65vw, 36px);
+  font-weight: 600;
+  letter-spacing: -1px;
+  line-height: 1.45;
+}
+.welcome-description {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.9;
+  margin: 13px 0 27px;
+}
+.welcome-input-area {
+  text-align: left;
+}
+.welcome-composer.composer {
+  padding: 0;
+  border: 0;
+}
+.welcome-composer .composer-input {
+  padding: 16px 18px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow:
+    0 6px 30px var(--brand-glow),
+    0 2px 6px var(--brand-glow);
+}
+.welcome-composer textarea {
+  font-size: 14px;
+  line-height: 1.85;
+}
+.welcome-composer .composer-actions {
+  padding-top: 9px;
+}
+.welcome-composer .composer-hint {
+  padding-left: 5px;
+  margin-top: 11px;
+  color: var(--muted);
+}
+.welcome-input-area .scenario-picker {
+  padding: 11px 0 0;
+  margin: 0;
+  border: 0;
+  background: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.welcome-input-area .scenario-picker > label {
+  margin: 0;
+  font-size: 11px;
+}
+.welcome-input-area .scenario-picker > div {
+  flex: 1;
+}
+.welcome-input-area .scenario-picker select {
+  background: var(--surface-raised);
+  border-color: transparent;
+  padding: 8px 10px;
+  border-radius: 7px;
+  font-size: 11px;
+}
+.welcome-examples-heading {
+  display: flex;
+  justify-content: space-between;
+  margin: 29px 0 12px;
+  font-size: 11px;
+  color: var(--muted);
+  text-align: left;
+}
+.welcome-examples-heading span:last-child {
+  font-size: 10px;
+  color: var(--link);
+}
+.welcome-examples {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  text-align: left;
+}
+.welcome-examples button {
+  text-align: left;
+  padding: 18px 16px 17px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  position: relative;
+  transition:
+    border-color 180ms,
+    box-shadow 180ms,
+    transform 180ms;
+}
+.welcome-examples button > svg:first-child {
+  color: var(--link);
+  display: block;
+  margin-bottom: 18px;
+}
+.welcome-examples strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 550;
+  color: var(--link);
+}
+.welcome-examples small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 8px;
+}
+.welcome-examples .example-arrow {
+  position: absolute;
+  right: 14px;
+  top: 20px;
+  color: var(--muted);
+}
+.welcome-examples button:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px var(--brand-glow);
+}
+.welcome-examples button:active {
+  transform: translateY(0);
+}
+.welcome-footnote {
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  line-height: 1.8;
+}
+.composer-input {
+  transition:
+    border-color 180ms,
+    box-shadow 180ms;
+}
+.composer-input:focus-within,
+.welcome-composer .composer-input:focus-within {
+  border-color: var(--border-strong);
+  box-shadow:
+    0 0 0 4px var(--brand-glow),
+    0 8px 25px var(--brand-glow);
+}
+.send-button,
+.cancel-button {
+  transition:
+    background 160ms,
+    box-shadow 160ms,
+    transform 120ms;
+}
+.send-button:hover:not(:disabled) {
+  box-shadow: 0 3px 10px var(--brand-glow);
+}
+.send-button:active:not(:disabled),
+.cancel-button:active {
+  transform: scale(0.91);
+}
+.cancel-button {
+  white-space: nowrap;
+}
+.prompt-action-enter-active,
+.prompt-action-leave-active {
+  transition:
+    opacity 90ms,
+    transform 90ms;
+}
+.prompt-action-enter-from,
+.prompt-action-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+/* Entry only: mode changes immediately unmount old facts, without a stale exit frame. */
+.analysis-session {
+  animation: workspace-arrive 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes workspace-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.report-swap-enter-active {
+  transition:
+    opacity 240ms ease,
+    transform 240ms ease;
+}
+.report-swap-leave-active {
+  transition: opacity 100ms ease;
+}
+.report-swap-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.report-swap-leave-to {
+  opacity: 0;
+}
+.analysis-skeleton {
+  padding: 24px;
+  min-height: 345px;
+}
+.skeleton-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--link);
+  font-weight: 550;
+}
+.loading-ring {
+  border: 2px solid var(--border);
+  border-top-color: var(--border-strong);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  animation: loading-turn 1s linear infinite;
+}
+.analysis-skeleton > p {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 12px 0 22px;
+}
+.skeleton-report .skeleton {
+  height: 10px;
+  margin-bottom: 13px;
+  background: linear-gradient(
+    90deg,
+    var(--surface-raised) 20%,
+    var(--surface-raised) 48%,
+    var(--surface-raised) 78%
+  );
+  background-size: 220% 100%;
+  animation: skeleton-sweep 1.8s ease-in-out infinite;
+  border-radius: 4px;
+}
+.skeleton-report .skeleton-tag {
+  width: 88px;
+  height: 19px;
+}
+.skeleton-report .skeleton-title {
+  width: 72%;
+  height: 20px;
+  margin-top: 21px;
+}
+.skeleton-report .medium {
+  width: 62%;
+}
+.skeleton-box {
+  margin-top: 24px;
+  padding: 16px 14px 3px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.analysis-skeleton > small {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 22px;
+}
+/* Analysis thought line: live request stages, then the backend's own steps. */
+.thought-line {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--text);
+}
+.thought-head {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+.thought-head.is-interactive {
+  cursor: pointer;
+  border-radius: 6px;
+}
+.thought-head.is-interactive:hover .thought-label {
+  color: var(--link);
+}
+.thought-head.is-interactive:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+.thought-glyph {
+  display: inline-flex;
+  flex: 0 0 auto;
+  color: var(--link);
+}
+.thought-line[data-working] .thought-glyph {
+  animation: thought-breathe 1.6s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+}
+.thought-label {
+  font-weight: 550;
+  white-space: nowrap;
+  transition: color 160ms ease;
+}
+.thought-line[data-working] .thought-label {
+  background-image: linear-gradient(
+    100deg,
+    var(--muted) 30%,
+    var(--text) 50%,
+    var(--muted) 70%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: thought-shimmer 1.8s linear infinite;
+}
+.thought-timer {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.thought-chevron {
+  color: var(--muted);
+  transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.thought-chevron.is-open {
+  transform: rotate(180deg);
+}
+.thought-trace {
+  display: grid;
+  grid-template-rows: 0fr;
+  width: 100%;
+  transition: grid-template-rows 280ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.thought-trace[data-open] {
+  grid-template-rows: 1fr;
+}
+.thought-trace-inner {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.thought-trace[data-open] .thought-trace-inner {
+  opacity: 1;
+}
+.thought-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 0;
+  padding: 9px 0 1px 1px;
+  list-style: none;
+  font-size: 12px;
+  color: var(--muted);
+}
+.thought-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  animation: thought-step-in 320ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+.thought-step-icon {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  color: var(--muted);
+}
+.thought-step-label {
+  min-width: 0;
+}
+.thought-step-detail {
+  font-size: 11px;
+  color: var(--error);
+}
+.thought-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--link);
+  animation: thought-pulse 1.4s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+}
+.thought-ring {
+  width: 5px;
+  height: 5px;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+}
+.thought-step[data-state="done"] .thought-step-icon {
+  color: var(--green);
+}
+.thought-step[data-state="done"] .thought-step-label {
+  opacity: 0.62;
+}
+.thought-step[data-state="active"] .thought-step-label {
+  color: var(--text);
+  font-weight: 550;
+}
+.thought-step[data-state="upcoming"] {
+  opacity: 0.45;
+}
+.thought-step[data-state="failed"] .thought-step-icon,
+.thought-step[data-state="failed"] .thought-step-label {
+  color: var(--error);
+}
+.result-body > .thought-line {
+  margin-bottom: 16px;
+}
+.analysis-skeleton > .thought-line {
+  margin-bottom: 2px;
+}
+@keyframes thought-shimmer {
+  to {
+    background-position: -125% 0;
+  }
+}
+@keyframes thought-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes thought-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes thought-step-in {
+  from {
+    transform: translateY(-3px);
+  }
+  to {
+    transform: none;
+  }
+}
+.materials-card tbody tr td {
+  transition: background-color 150ms;
+}
+.materials-card tbody tr:hover td {
+  background: var(--surface-raised);
+}
+.materials-card tbody tr.shortage-row:hover td {
+  background: var(--surface-raised);
+}
+@keyframes loading-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes skeleton-sweep {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+/* Native dialog provides a real focus trap, Escape dismissal and background inertness. */
+.source-drawer {
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  overflow: hidden;
+}
+.source-drawer::backdrop {
+  background: var(--overlay);
+  backdrop-filter: blur(3px);
+}
+.source-drawer-panel {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: min(560px, 100%);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  box-shadow: -16px 0 70px var(--brand-glow);
+}
+.drawer-header {
+  padding: 28px 28px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.drawer-header .eyebrow {
+  font-size: 9px;
+  color: var(--link);
+  letter-spacing: 1.5px;
+}
+.drawer-header h2 {
+  font-size: 21px;
+  font-weight: 600;
+  margin-top: 11px;
+}
+.drawer-header p:last-child {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 11px;
+}
+.drawer-header .icon-button {
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  width: 34px;
+  height: 34px;
+}
+.source-drawer .source-details {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+  overscroll-behavior: contain;
+}
+.source-drawer .source-disclaimer {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 20px;
+  line-height: 1.85;
+  background: var(--surface-raised);
+  padding: 12px;
+  border-radius: 8px;
+  align-items: flex-start;
+}
+.source-drawer .source-disclaimer svg {
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.source-drawer .source-record {
+  background: var(--surface);
+  padding: 18px;
+  border-color: var(--border);
+  border-radius: 9px;
+}
+.source-drawer .source-record.highlighted {
+  border-color: var(--border-strong);
+  background: var(--surface-raised);
+}
+.source-drawer .source-record-title {
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.source-drawer .source-record-title strong {
+  font-size: 13px;
+  color: var(--link);
+  flex: 1;
+  min-width: 170px;
+}
+.source-drawer .source-record-title .badge {
+  font-size: 9px;
+}
+.source-drawer .source-record dl {
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 20px;
+  font-size: 12px;
+}
+.source-drawer .source-record dt {
+  color: var(--muted);
+  margin-bottom: 5px;
+  font-size: 10px;
+}
+.source-drawer .source-record dd {
+  color: var(--link);
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.drawer-footer {
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 18px 24px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.drawer-enter-active,
+.drawer-leave-active {
+  transition:
+    transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 200ms;
+}
+.drawer-enter-from,
+.drawer-leave-to {
+  transform: translateX(100%);
+  opacity: 0.7;
+}
+@media (max-width: 760px) {
+  .workspace-page.is-welcome {
+    min-height: 0;
+  }
+  .welcome-workspace {
+    margin: 20px auto 26px;
+  }
+  .welcome-brand {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 19px;
+    border-radius: 14px;
+  }
+  .welcome-workspace h1 {
+    font-size: 26px;
+    letter-spacing: -1px;
+  }
+  .welcome-description {
+    font-size: 12px;
+    margin: 12px 5px 23px;
+  }
+  .welcome-composer .composer-input {
+    padding: 13px 13px 10px;
+    border-radius: 14px;
+  }
+  .welcome-composer textarea {
+    font-size: 16px;
+  }
+  .welcome-input-area .scenario-picker {
+    display: block;
+  }
+  .welcome-input-area .scenario-picker > label {
+    margin-bottom: 7px;
+  }
+  .welcome-input-area .scenario-picker select {
+    min-width: 0;
+    font-size: 11px;
+  }
+  .welcome-examples {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .welcome-examples button {
+    padding: 14px 32px 14px 48px;
+  }
+  .welcome-examples button > svg:first-child {
+    position: absolute;
+    left: 16px;
+    top: 17px;
+    width: 18px;
+  }
+  .welcome-examples .example-arrow {
+    top: 20px;
+  }
+  .welcome-examples small {
+    margin-top: 5px;
+  }
+  .welcome-examples-heading {
+    margin-top: 24px;
+  }
+  .welcome-footnote {
+    font-size: 9px;
+    margin-top: 22px;
+  }
+  .analysis-skeleton {
+    min-height: 320px;
+    padding: 20px;
+  }
+  .source-drawer-panel {
+    top: auto;
+    height: 91dvh;
+    border-radius: 18px 18px 0 0;
+  }
+  .drawer-header {
+    padding: 23px 20px 19px;
+  }
+  .drawer-header h2 {
+    font-size: 18px;
+  }
+  .source-drawer .source-details {
+    padding: 18px;
+  }
+  .source-drawer .source-record {
+    padding: 15px;
+  }
+  .drawer-footer {
+    font-size: 10px;
+    padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+  }
+  .drawer-enter-from,
+  .drawer-leave-to {
+    transform: translateY(100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .core-parallax {
+    transform: none !important;
+  }
+  .pmc-reveal {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+  }
+  .pmc-float {
+    transform: none !important;
+  }
+  .landing-card:hover,
+  .landing-primary:hover,
+  .welcome-examples button:hover {
+    transform: none;
+  }
+  .loading-ring,
+  .skeleton-report .skeleton {
+    animation: none;
+  }
+  .thought-line[data-working] .thought-label {
+    background-image: none;
+    -webkit-text-fill-color: currentColor;
+    color: var(--link);
+    animation: none;
+  }
+  .thought-line[data-working] .thought-glyph,
+  .thought-dot,
+  .thought-step {
+    animation: none;
+  }
+  .thought-trace,
+  .thought-trace-inner,
+  .thought-chevron,
+  .thought-label {
+    transition: none;
+  }
+  .workspace-switch-enter-active,
+  .workspace-switch-leave-active,
+  .report-swap-enter-active,
+  .report-swap-leave-active,
+  .drawer-enter-active,
+  .drawer-leave-active,
+  .prompt-action-enter-active,
+  .prompt-action-leave-active {
+    transition: none;
+  }
+}
+
+.source-drawer .source-details:focus-visible {
+  outline-offset: -4px;
+}
+
+@media (max-width: 760px) {
+  .thought-line {
+    font-size: 12px;
+  }
+  .thought-steps {
+    font-size: 11px;
+  }
+  .result-body > .thought-line {
+    margin-bottom: 14px;
+  }
+}

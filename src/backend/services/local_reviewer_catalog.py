@@ -1,20 +1,33 @@
-"""Local reviewer discovery; published enterprise facts and isolated Demo remain separate."""
+"""Local reviewer discovery; published enterprise facts and isolated Demo remain separate.
+
+产品目录只暴露两个已发布企业产品。Demo 场景仅作为隔离的合成测试环境保留在代码与
+`data/public/demo/` 中，不再作为第三个可选择产品出现在任何目录/别名/回退路径上。
+"""
 import json
 
 from repositories.fact_store import PROJECT_ROOT
 from repositories.fact_repository import FactRepository
 from repositories.fact_query_repository import FactQueryRepository
 from services.fact_query_service import FactQueryService
-from services.demo_scenario_agent_service import build_demo_scenario_agent
 from services.slim_review_service import load_dataset, REAL_SLIM
 from tools.published_product_tools import build_published_product_search
+
+#: 业务允许进入运行时产品目录的唯一产品编码。
+PRODUCT_CATALOG = ("KQ-Z112", "KQ-BHX3588M")
+
+
+def published_catalog_rows(rows):
+    """只保留两个企业产品；合成/演示行永不进入产品目录。"""
+    return [row for row in rows
+            if row.get("product_code") in PRODUCT_CATALOG and row.get("synthetic") is not True]
 
 
 def local_review_catalog(store):
     from services.local_business_binding import local_business_binding
+    from services.product_display_names import enrich_product_rows
     binding = local_business_binding()
     if binding:
-        return list(binding.catalog.values())
+        return enrich_product_rows(published_catalog_rows(list(binding.catalog.values())))
     result = build_published_product_search(store).invoke({"limit": 100})
     facts = FactQueryService(FactQueryRepository(FactRepository(store)))
     rows = []
@@ -46,11 +59,5 @@ def local_review_catalog(store):
                 product["default_mode"] = "slim"
                 product["modes"].insert(0, dict(mode="slim", label="标准分析范围", scenario_id=REAL_SLIM,
                     line_count=dataset["retained_material_count"], dataset_version=dataset["dataset_version"]))
-    demo = build_demo_scenario_agent()
-    manifest = demo.repository.manifest
-    demo_facts = FactQueryService(FactQueryRepository(FactRepository(demo.repository.store)))
-    data = demo_facts.query_bom(manifest.product, manifest.revision)["data"]
-    rows.append(dict(product_code=manifest.product, product_name=data["parent_item"].get("name"), revision=manifest.revision,
-        synthetic=True, unit=data["parent_item"].get("unit"), default_mode="full",
-        modes=[dict(mode="full", label="产品分析", scenario_id=manifest.scenario_id, line_count=data["line_count"], dataset_version=None)]))
-    return rows
+    # Demo 产品不再作为目录项暴露；其合成账本仅供隔离测试环境使用。
+    return enrich_product_rows(published_catalog_rows(rows))

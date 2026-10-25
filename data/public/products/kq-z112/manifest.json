@@ -12,7 +12,7 @@
     },
     "inventory": {
       "path": "inventory.json",
-      "sha256": "b88a97f27c1466573ffcdbc628e25a9acb6cc06089b152b60a9e1a3dcc4fd098"
+      "sha256": "6555116b193a67d47231732ee32dbe6f56de01d63ecd54763a095d983abade66"
     },
     "aliases": {
       "path": "aliases.json",
@@ -26,7 +26,7 @@
       "source": "existing_human_confirmation_and_current_configuration_authorization"
     },
     "inventory": {
-      "content_sha256": "b88a97f27c1466573ffcdbc628e25a9acb6cc06089b152b60a9e1a3dcc4fd098",
+      "content_sha256": "6555116b193a67d47231732ee32dbe6f56de01d63ecd54763a095d983abade66",
       "unit": "片",
       "source": "existing_human_confirmation_and_current_configuration_authorization"
     }

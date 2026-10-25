@@ -120,4 +120,7 @@ class CurrentBusinessObservations:
 
     def load(self):
         self.repository.verify_sources(("inventory",))
-        return copy.deepcopy(self.repository.observations)
+        records = copy.deepcopy(self.repository.observations)
+        # 投产扣减流水叠加：已发布文件保持只读，查询按扣减后账面数量生效。
+        from services.safe_inventory_runtime import overlay_observations
+        return overlay_observations(records)

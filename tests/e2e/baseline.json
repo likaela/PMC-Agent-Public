@@ -1,0 +1,273 @@
+{
+ "generated_at": "2026-10-24T13:35:29.680851+00:00",
+ "source": {
+  "bom": "data/public/bom/published.db (sqlite readonly)",
+  "inventory": "data/public/inventory/observations.json",
+  "inventory_sha256": "8fad99916aad4b1fb4ae159b692f32a84a00b32a3b997d37ee179fea2865041d",
+  "inventory_source_file": "副本2026年库存表+料号查询表及成品库存表(2).xlsx"
+ },
+ "rules": [
+  "required = qty_per * quantity",
+  "stock = sum(max(qty) per (batch_no, location))",
+  "duplicate_observation materials are unverified and excluded from deterministic gaps",
+  "missing records are never treated as zero stock"
+ ],
+ "catalog": [
+  "KQ-BHX3588M",
+  "KQ-Z112"
+ ],
+ "products": {
+  "KQ-Z112": {
+   "revision": "V01-C34",
+   "bom_lines": 34,
+   "distinct_materials": 34,
+   "comparable_materials": 34,
+   "duplicate_unverified": [],
+   "missing_record": [],
+   "max_producible": 54,
+   "limiting_material": "105A510014201",
+   "limiting_stock": "1308",
+   "limiting_per": "24.0",
+   "quantity_checks": {
+    "1": {
+     "shortage_count": 0,
+     "sufficient": true,
+     "shortages": []
+    },
+    "2": {
+     "shortage_count": 0,
+     "sufficient": true,
+     "shortages": []
+    },
+    "10": {
+     "shortage_count": 0,
+     "sufficient": true,
+     "shortages": []
+    },
+    "50": {
+     "shortage_count": 0,
+     "sufficient": true,
+     "shortages": []
+    },
+    "54": {
+     "shortage_count": 0,
+     "sufficient": true,
+     "shortages": []
+    },
+    "55": {
+     "shortage_count": 1,
+     "sufficient": false,
+     "shortages": [
+      {
+       "material_code": "105A510014201",
+       "required": "1320.0",
+       "stock": "1308",
+       "gap": "12.0"
+      }
+     ]
+    },
+    "100": {
+     "shortage_count": 3,
+     "sufficient": false,
+     "shortages": [
+      {
+       "material_code": "105A503904101",
+       "required": "3700.0",
+       "stock": "2805",
+       "gap": "895.0"
+      },
+      {
+       "material_code": "105A510014201",
+       "required": "2400.0",
+       "stock": "1308",
+       "gap": "1092.0"
+      },
+      {
+       "material_code": "1121522061401",
+       "required": "1600.0",
+       "stock": "1579",
+       "gap": "21.0"
+      }
+     ]
+    }
+   }
+  },
+  "KQ-BHX3588M": {
+   "revision": "V01",
+   "bom_lines": 91,
+   "distinct_materials": 91,
+   "comparable_materials": 54,
+   "duplicate_unverified": [
+    "14S0180600101",
+    "14S0357030101",
+    "14S9S32321101",
+    "1656254860601"
+   ],
+   "missing_record": [
+    "1059710013201",
+    "1059720003201",
+    "105A502204201",
+    "105A511024101",
+    "105A547504201",
+    "105A549964201",
+    "105A568004201",
+    "105A722014101",
+    "105C113110001",
+    "105C500004001",
+    "105C520000001",
+    "105C537410001",
+    "105C549960001",
+    "11210010B0001",
+    "1121047060001",
+    "11215227B1101",
+    "11216016C1201",
+    "11216100A1101",
+    "11216476B0101",
+    "1122522061601",
+    "1124220BB0101",
+    "1124401AB1101",
+    "1124451CB0101",
+    "11245018B1101",
+    "11245108B0101",
+    "11246016B0201",
+    "1124610051101",
+    "11296011C1201",
+    "11296220A0101",
+    "11296226C1201",
+    "11296227C1201",
+    "1169622052101",
+    "14S6552561101"
+   ],
+   "max_producible": 38,
+   "limiting_material": "105A510024301",
+   "limiting_stock": "1000",
+   "limiting_per": "26.0",
+   "quantity_checks": {
+    "1": {
+     "shortage_count": 0,
+     "sufficient": true,
+     "shortages": []
+    },
+    "2": {
+     "shortage_count": 0,
+     "sufficient": true,
+     "shortages": []
+    },
+    "10": {
+     "shortage_count": 0,
+     "sufficient": true,
+     "shortages": []
+    },
+    "50": {
+     "shortage_count": 2,
+     "sufficient": false,
+     "shortages": [
+      {
+       "material_code": "105A510024301",
+       "required": "1300.0",
+       "stock": "1000",
+       "gap": "300.0"
+      },
+      {
+       "material_code": "105A547014201",
+       "required": "1400.0",
+       "stock": "1389",
+       "gap": "11.0"
+      }
+     ]
+    },
+    "54": {
+     "shortage_count": 2,
+     "sufficient": false,
+     "shortages": [
+      {
+       "material_code": "105A510024301",
+       "required": "1404.0",
+       "stock": "1000",
+       "gap": "404.0"
+      },
+      {
+       "material_code": "105A547014201",
+       "required": "1512.0",
+       "stock": "1389",
+       "gap": "123.0"
+      }
+     ]
+    },
+    "55": {
+     "shortage_count": 2,
+     "sufficient": false,
+     "shortages": [
+      {
+       "material_code": "105A510024301",
+       "required": "1430.0",
+       "stock": "1000",
+       "gap": "430.0"
+      },
+      {
+       "material_code": "105A547014201",
+       "required": "1540.0",
+       "stock": "1389",
+       "gap": "151.0"
+      }
+     ]
+    },
+    "100": {
+     "shortage_count": 5,
+     "sufficient": false,
+     "shortages": [
+      {
+       "material_code": "105A510024301",
+       "required": "2600.0",
+       "stock": "1000",
+       "gap": "1600.0"
+      },
+      {
+       "material_code": "105A547014201",
+       "required": "2800.0",
+       "stock": "1389",
+       "gap": "1411.0"
+      },
+      {
+       "material_code": "105A710034201",
+       "required": "2200.0",
+       "stock": "1216",
+       "gap": "984.0"
+      },
+      {
+       "material_code": "11296100B0101",
+       "required": "2100.0",
+       "stock": "1746",
+       "gap": "354.0"
+      },
+      {
+       "material_code": "1211901210101",
+       "required": "1300.0",
+       "stock": "1132",
+       "gap": "168.0"
+      }
+     ]
+    }
+   }
+  }
+ },
+ "inventory": {
+  "materials": 4974,
+  "records": 6849,
+  "batches": 2308,
+  "locations": 1167,
+  "duplicate_materials": 163,
+  "unit_confirmation": "片"
+ },
+ "focus_material": {
+  "material_code": "105A510014201",
+  "stock": "1308",
+  "records": 1,
+  "batch": "220105",
+  "location": "F4-1149",
+  "per": {
+   "KQ-Z112": "24.0",
+   "KQ-BHX3588M": null
+  }
+ }
+}

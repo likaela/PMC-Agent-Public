@@ -1,0 +1,8 @@
+/* Streamlit's component iframe has scrolling="no". Keep its viewport fixed,
+   but let the Vue content scroll inside it, including on Safari and mobile. */
+html[data-host="streamlit"] #app {
+  height: 100dvh;
+  overflow: auto;
+  overscroll-behavior-y: contain;
+  scrollbar-color: var(--border) var(--background);
+}

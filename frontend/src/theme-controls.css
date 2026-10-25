@@ -1,0 +1,164 @@
+/* Reusable controls use the same dimensions in either theme. */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 3px;
+  padding: 3px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--muted);
+}
+.theme-toggle button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 32px;
+  padding: 5px 9px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 550;
+  white-space: nowrap;
+  transition:
+    background-color 200ms,
+    color 200ms,
+    border-color 200ms,
+    box-shadow 200ms;
+}
+.theme-toggle button:hover {
+  color: var(--text);
+  background: var(--surface-subtle);
+}
+.theme-toggle button[aria-pressed="true"] {
+  background: var(--toggle-selected);
+  color: var(--toggle-selected-text);
+  border-color: var(--border-strong);
+  box-shadow: 0 1px 4px var(--shadow-color);
+}
+.theme-toggle button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.dialog-theme-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 24px 12px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.source-drawer .drawer-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.drawer-footnote {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 190px;
+}
+.landing-page {
+  background-image: radial-gradient(
+    ellipse at 74% 42%,
+    var(--landing-halo),
+    transparent 57%
+  );
+}
+.core-planes {
+  filter: drop-shadow(0 12px 14px var(--chip-shadow));
+}
+.landing-card {
+  box-shadow: var(--shadow);
+}
+:root[data-theme="light"] .sidebar-note,
+:root[data-theme="light"] .welcome-brand,
+:root[data-theme="light"] .nav-item.is-active {
+  box-shadow: none;
+}
+:root[data-theme="light"] .capability-node {
+  border-color: var(--border-strong);
+  box-shadow: 0 4px 14px var(--shadow-color);
+}
+@media (max-width: 760px) {
+  .landing-page {
+    --header-height: 114px;
+  }
+  .landing-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: 60px 46px;
+    gap: 0 10px;
+    align-content: center;
+  }
+  .landing-header nav {
+    display: contents;
+  }
+  .landing-brand {
+    grid-row: 1;
+    grid-column: 1;
+  }
+  .landing-console {
+    grid-row: 1;
+    grid-column: 2;
+    justify-self: end;
+  }
+  .landing-header .theme-toggle {
+    grid-row: 2;
+    grid-column: 1/-1;
+    justify-self: end;
+  }
+  .topbar {
+    height: auto;
+    min-height: 100px;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-block: 10px;
+  }
+  .topbar-actions {
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .topbar-actions .mode-switch {
+    margin-left: 0;
+  }
+  .dialog-theme-controls {
+    padding-inline: 18px;
+  }
+  .source-drawer .drawer-footer .theme-toggle {
+    margin-left: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle button {
+    transition: none;
+  }
+}
+
+/* Strong secondary ink on tinted surfaces also meets text contrast in light mode. */
+.theme-toggle button,
+.materials-card th,
+.badge--neutral,
+.assistant-message small,
+.assistant-message .message-meta,
+.source-drawer .source-disclaimer {
+  color: var(--muted-strong);
+}
+.theme-toggle button[aria-pressed="true"] {
+  color: var(--toggle-selected-text);
+}

@@ -50,11 +50,12 @@ class EnterpriseBookQueries:
             quantity = None  # Inventory intent never inherits a production target.
         if maximum:
             quantity = None
-        demand = bool(re.search(r"生产|需求|需要多少(?:物料|材料)|数量对照|账面", text)) and quantity is not None
-        if parsed.quantity is not None and re.fullmatch(r"\s*(?:\d+|[零〇一二三四五六七八九十百千万两]+)\s*(?:片|个|件)\s*[。？！?！]?\s*", text):
+        demand = bool(re.search(r"生产|需求|需要多少(?:物料|材料)|数量对照|账面|再算|重算|核算|算一次|算一下", text)) and quantity is not None
+        from services.production_request_context import bare_quantity
+        if parsed.quantity is not None and bare_quantity(text):
             demand = True
         needs_quantity = quantity is None and bool(re.search(r"生产|做", text))
-        purchase = bool(re.search(r"采购建议|给个采购|采购多少|补货|需要采购|材料需要采购", text))
+        purchase = bool(re.search(r"采购建议|给个采购|采购多少|采购数量|采购量|买多少|补货|需要采购|材料需要采购", text))
         followup = bool(re.search(r"不够|不足|缺料|差多少|缺口|未匹配|没.*记录|为什么|依据|来源|来自哪里|怎么.*判断|哪些(?:物料|材料).*(?:影响|限制)|限制在哪里", text))
         switch = bool(re.search(r"换成|切换", text)) and bool(previous)
         if not (stock or demand or purchase or followup or switch or needs_quantity or maximum):
@@ -84,7 +85,16 @@ class EnterpriseBookQueries:
                 return None
             result = self.tools["enterprise_book_inventory_query"].invoke(dict(material_code=code))
             if result["status"] == "item_not_found":
-                return None  # Existing identity handling, not a fake raw match.
+                # 明确区分“未找到料号”和“库存缺失/为零”：这里是当前查询范围内未找到。
+                from agents.orchestrator import OrchestratedTurn
+                answer = (f"未找到物料编码 {code} 的匹配记录，请核对料号。"
+                          " 当前查询范围内未找到该料号，这不代表库存为零，也不代表它一定不存在于全部库存中。")
+                response = dict(intent="inventory", status="item_not_found", answer=answer,
+                    structured_data=dict(query_type="inventory", query=dict(material_code=code),
+                        data=dict(material_code=code, record_found=False, scope="current_query_range"),
+                        completeness={"record_found": False}, completed_steps=[]),
+                    provenance=None, warnings=[])
+                return OrchestratedTurn(response, copy.deepcopy(context), [])
             return self._turn(result, context, inventory=True, message=message)
         if maximum:
             result = self.tools["enterprise_book_capacity_query"].invoke(dict(product=code, revision=revision))
@@ -172,6 +182,12 @@ class EnterpriseBookQueries:
                 "逐项来源可在来源详情查看。")
         if result["status"] == "ok" and re.search(r"未匹配|没.*记录", message) and data.get("no_record_materials"):
             response["answer"] += "无记录物料示例：" + "、".join(data["no_record_materials"][:5]) + "；完整列表见明细。"
+        if result["status"] == "ok" and re.search(r"换成|切换", message) and data.get("product"):
+            quantity = data.get("requested_quantity")
+            head = (f"已切换到 {data['product']}"
+                    + (f"，按 {quantity} {data.get('product_unit') or '片'}重新核算。" if quantity is not None else "。"))
+            if not response["answer"].startswith(head):
+                response["answer"] = head + response["answer"]
         return OrchestratedTurn(response, saved, [record.reference()])
 
     @staticmethod
@@ -185,20 +201,21 @@ class EnterpriseBookQueries:
             maximum = data.get("verified_material_capacity")
             if maximum is None:
                 return prefix + f"已找到{code} / {data['revision']}的BOM和库存明细，当前没有可比较的数量记录，未计算产量上限。"
-            text = prefix + f"按本次核验的Excel库存，已核算{code}的{data['verified_material_count']}项物料，已核算物料的产量上限为{maximum}{data['product_unit']}。"
+            text = prefix + f"按本次核验的Excel库存，{code}有库存记录的{data['verified_material_count']}项物料，其产量上限为{maximum}{data['product_unit']}。"
             if data["capacity_scope"] == "complete":
                 text += "已覆盖本次BOM全部物料。"
             elif maximum == 0:
                 text += "其中必需物料不足1片用量，完整BOM也无法满足任何正整数数量的物料需求。"
             else:
-                text += "该上限仅覆盖已核算物料，不代表完整BOM齐套。"
+                text += "该上限仅覆盖有库存记录的物料，不代表完整BOM齐套。"
             if data["limiting_materials"]:
                 text += "限制物料：" + "；".join(f"{r['material_code']}（库存{r['stock_qty']}，单耗{r['qty_per']}）" for r in data["limiting_materials"][:5]) + "。"
             return text
         if "total_material_count" not in data:
             row = rows[0]
-            unit = row["inventory_unit"] or "（单位未确认）"
-            total = f"账面数量合计 {row['recorded_stock_qty']} {unit}。" if row["recorded_stock_qty"] is not None else "合计待核验，请查看原始记录。"
+            unit = row["inventory_unit"] or ""
+            total = (f"账面数量合计 {row['recorded_stock_qty']} {unit}。" if row["recorded_stock_qty"] is not None
+                else f"库存表未查询到{code}。")
             return prefix + (f"{code} 在主库存表有 {row['record_count']} 条记录，{total}"
                 if row["record_found"] else f"{code} 在主库存表无记录。")
         count = data["total_material_count"]; matched = data["matched_material_count"]
@@ -206,6 +223,8 @@ class EnterpriseBookQueries:
             return prefix + f"本次生产{data['requested_quantity']}片{code}，已计算{sum(r['required_qty'] is not None for r in rows)}项BOM需求。BOM需求已保留；库存文件本次读取失败，请稍后重试。"
         scope = "推演库存覆盖" if data["source_summary"].get("review_scenario") else "主库存表匹配"
         text = prefix + f"{code} / {data['revision']}：{count}项物料，{scope}{matched}项。"
+        if data.get("missing_stock_material_count"):
+            text += f"库存未查询到{data['missing_stock_material_count']}种，需求明细已保留，尚不能计算其采购数量。"
         if data["requested_quantity"] is not None:
             text += f"本次生产 {data['requested_quantity']} {data['product_unit'] or '单位待确认'}，已计算 {sum(r['required_qty'] is not None for r in rows)} 项BOM需求。"
         else:
@@ -218,17 +237,20 @@ class EnterpriseBookQueries:
         if data.get("quantity_review"):
             state = data.get("quantity_check_status")
             if state == "sufficient":
-                text += f"按当前确认的实际库存数量核对，可以满足生产{data['requested_quantity']}片的物料需求。"
+                text += (f"按当前确认的实际库存数量核对，{data['comparable_material_count']}项物料全部满足，"
+                    f"可以满足生产{data['requested_quantity']}{data.get('product_unit') or '片'}的物料需求，无需补充材料。")
             elif state == "insufficient":
-                text += f"按当前库存数量核对，{len(data['book_shortages'])}项物料不足。"
-                text += "；".join(f"{r['name'] or r['material_code']}缺少{r['shortage_qty']}片" for r in data["book_shortages"][:5]) + "。"
+                gaps = data["book_shortages"]
+                ok_count = data["comparable_material_count"] - len(gaps)
+                text += f"按当前库存数量逐项核对：{ok_count}项满足、{len(gaps)}项不足。"
+                # 结论只给摘要，缺口逐项明细由下方物料明细表承载，避免正文过长。
+                text += f"不足物料（需补充）共{len(gaps)}种，缺口明细见下方物料明细表；按缺口补齐后方可齐套。"
             elif data["requested_quantity"] is not None:
                 text += "已有记录的物料已逐项计算，尚不能证明全部齐套。"
-            unresolved = data["total_material_count"] - data["comparable_material_count"]
-            if data["requested_quantity"] is not None and unresolved:
-                text += f"另有{unresolved}项无库存记录或记录待核验，详见明细。"
+            if data["requested_quantity"] is not None and data.get("missing_stock_material_count"):
+                text += "无记录物料保留需求明细，未生成缺口或采购数量；未查询到不等于零库存。"
             if data["source_summary"].get("review_scenario"):
                 text = "【评审推演：包含合成补充库存，不代表真实库存】\n" + text
-            return text + "右侧可查看需求、实际库存、缺口和来源。"
+            return text
         text += "右侧可查看全部需求、账面数量、库位批次和行级来源。账面数量不等于可用库存；当前不能批准生产。"
         return text

@@ -13,9 +13,12 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "playwright test",
     "test:e2e": "playwright test",
-    "format": "prettier --write src tests *.ts *.json index.html"
+    "format": "prettier --write src tests *.ts *.json index.html",
+    "test:unit": "node --test tests/store.test.mjs tests/live.test.mjs tests/conversation.test.mjs tests/thoughtline.test.mjs"
   },
   "dependencies": {
+    "@vueuse/core": "14.4.0",
+    "motion-v": "2.6.0",
     "vue": "^3.5.22",
     "vue-router": "^4.5.1"
   },

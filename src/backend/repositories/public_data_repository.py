@@ -1,6 +1,6 @@
 """Portable, checksum-bound release inputs; never stores runtime state."""
-import copy
 import hashlib
+import copy
 import json
 import os
 from pathlib import Path
@@ -29,11 +29,21 @@ class PublicInventoryRepository:
     def __init__(self, path):
         self.path = Path(path).resolve(strict=True)
         self.checksum = hashlib.sha256(self.path.read_bytes()).hexdigest()
+        self._cache_key = None
+        self._cache = None
     def load(self):
-        raw = self.path.read_bytes()
-        if hashlib.sha256(raw).hexdigest() != self.checksum:
-            raise ValueError("Released inventory changed")
-        data = json.loads(raw)
-        if data.get("format") != "pmc_excel_observations_v1":
-            raise ValueError("Invalid released observations")
-        return copy.deepcopy(data["observations"])
+        # 全量库存表体量较大：按 (mtime, size) 缓存解析结果，返回时不再复制整份记录，
+        # 调用方只做只读筛选（如按料号裁剪披露范围）。
+        stat = self.path.stat()
+        cache_key = (stat.st_mtime_ns, stat.st_size)
+        if self._cache is None or self._cache_key != cache_key:
+            raw = self.path.read_bytes()
+            if hashlib.sha256(raw).hexdigest() != self.checksum:
+                raise ValueError("Released inventory changed")
+            data = json.loads(raw)
+            if data.get("format") != "pmc_excel_observations_v1":
+                raise ValueError("Invalid released observations")
+            self._cache_key, self._cache = cache_key, copy.deepcopy(data["observations"])
+        # Cache only the immutable input. Runtime balances are never cached here.
+        from services.safe_inventory_runtime import overlay_observations
+        return overlay_observations(copy.deepcopy(self._cache))

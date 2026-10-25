@@ -1,206 +1,194 @@
-import {
-  QueryError,
-  type BackendRequest,
-  type BackendResponse,
-  type BackendSession,
-  type BackendHistory,
-  type ScenarioId,
-  type AgentQueryService,
-} from "../data/model";
-import {
-  adaptBackendResponse,
-  validateBackendResponse,
-} from "./responseAdapter";
-
-export interface ClientOptions {
-  baseUrl?: string;
-  timeoutMs?: number;
-  fetch?: typeof fetch;
-}
-export function configuredBaseUrl(): string {
-  const value =
-    (import.meta.env?.VITE_API_BASE_URL as string | undefined)?.trim() ?? "";
-  return value === "/" ? "/" : value.replace(/\/+$/, "");
-}
-function publicError(status: number): QueryError {
-  if (status === 404)
-    return new QueryError("session", "当前会话不存在或已失效，请新建分析。");
-  if (status === 409)
-    return new QueryError("session", "当前会话已有新消息，请恢复会话后重试。");
-  if (status === 400 || status === 422)
-    return new QueryError("invalid", "查询条件不完整或无效，请检查输入。");
-  return new QueryError("server", "分析服务暂时异常，请稍后重试。");
-}
-export function createAgentClient(options: ClientOptions = {}) {
-  const configured = options.baseUrl ?? configuredBaseUrl();
-  const base = configured.replace(/\/+$/, "");
-  const timeout = options.timeoutMs ?? 30000;
-  const fetcher = options.fetch ?? globalThis.fetch;
-  async function request(
-    path: string,
-    body: unknown | undefined,
-    signal?: AbortSignal,
-  ): Promise<unknown> {
-    if (!configured)
-      throw new QueryError(
-        "unconfigured",
-        "请先配置后端 API 地址，再使用在线查询。",
-      );
-    if (!Number.isFinite(timeout) || timeout <= 0)
-      throw new QueryError("unconfigured", "请求超时配置无效。");
-    if (signal?.aborted) throw new DOMException("停止等待", "AbortError");
-    const controller = new AbortController();
-    let timedOut = false;
-    const abort = () => controller.abort();
-    signal?.addEventListener("abort", abort, { once: true });
-    const timer = setTimeout(() => {
-      timedOut = true;
-      controller.abort();
-    }, timeout);
-    try {
-      const response = await fetcher(`${base}${path}`, {
-        method: body === undefined ? "GET" : "POST",
-        headers:
-          body === undefined
-            ? undefined
-            : { "Content-Type": "application/json" },
-        body: body === undefined ? undefined : JSON.stringify(body),
-        signal: controller.signal,
-      });
-      // Reviewed public messages only; never render arbitrary exception bodies.
-      if (!response.ok) throw publicError(response.status);
-      try {
-        return await response.json();
-      } catch {
-        throw new QueryError("mapping", "服务返回内容暂无法展示，请稍后重试。");
-      }
-    } catch (error) {
-      if (signal?.aborted) throw new DOMException("停止等待", "AbortError");
-      if (timedOut)
-        throw new QueryError(
-          "timeout",
-          "分析等待超时，请恢复会话确认结果后重试。",
-        );
-      if (error instanceof QueryError) throw error;
-      throw new QueryError("network", "无法连接分析服务，请检查连接后重试。");
-    } finally {
-      clearTimeout(timer);
-      signal?.removeEventListener("abort", abort);
-    }
+import { QueryError, type AgentQueryService } from "../data/model";
+import { adaptBackendResponse } from "./responseAdapter";
+import type { Product, HistoryPage, ProductResolution } from "./backendTypes";
+import { streamlitRequest } from "./streamlitBridge";
+const prefix = "/api/v1/agent";
+// All requests stay same-origin. Vite proxies development only; production needs a reverse proxy.
+export async function requestJson(
+  path: string,
+  signal: AbortSignal,
+  body?: unknown,
+  method?: "DELETE",
+  extraHeaders?: Record<string, string>,
+): Promise<unknown> {
+  let response: Response;
+  try {
+    const transport = import.meta.env.VITE_STREAMLIT === "true" ? streamlitRequest : fetch;
+    response = await transport(path, {
+      signal,
+      method: method ?? (body === undefined ? "GET" : "POST"),
+      headers: { "Content-Type": "application/json", ...extraHeaders },
+      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+    });
+  } catch (error) {
+    if (signal.aborted) throw error;
+    throw new QueryError(
+      "network",
+      "无法连接后端，请检查服务后重试。",
+      "CONNECTION_FAILED",
+    );
   }
+  let payload: unknown;
+  try {
+    payload = await response.json();
+  } catch {
+    throw new QueryError(
+      response.ok ? "mapping" : "network",
+      response.ok
+        ? "后端没有返回有效 JSON，请检查同源代理。"
+        : "后端连接失败或代理不可用，请检查后端服务后刷新历史。",
+      "INVALID_JSON",
+      response.status,
+    );
+  }
+  const value = payload as Record<string, unknown>;
+  if (!response.ok)
+    throw new QueryError(
+      "network",
+      typeof value?.user_message === "string"
+        ? value.user_message
+        : `请求失败（HTTP ${response.status}）`,
+      typeof value?.code === "string" ? value.code : "HTTP_ERROR",
+      response.status,
+      payload,
+    );
+  return payload;
+}
+export function createLiveService(): AgentQueryService {
   return {
-    async queryAgent(
-      input: BackendRequest,
-      signal?: AbortSignal,
-    ): Promise<BackendResponse> {
-      const body: BackendRequest = { message: input.message };
-      if (input.session_id) body.session_id = input.session_id;
-      if (input.scenario_id) body.scenario_id = input.scenario_id;
-      if (input.persist_session !== undefined)
-        body.persist_session = input.persist_session;
-      if (input.catalog_order !== undefined)
-        body.catalog_order = input.catalog_order;
-      return validateBackendResponse(
-        await request("/api/v1/agent/query", body, signal),
-      );
-    },
-    async createSession(
-      scenarioId?: ScenarioId,
-      signal?: AbortSignal,
-      productCode?: string,
-    ): Promise<BackendSession> {
-      return validateSession(
-        await request(
-          "/api/v1/agent/sessions",
-          {
-            ...(scenarioId ? { scenario_id: scenarioId } : {}),
-            ...(productCode ? { product_code: productCode } : {}),
-          },
-          signal,
-        ),
-      );
-    },
-    async getSession(
-      sessionId: string,
-      scenarioId?: ScenarioId,
-      after = 0,
-      signal?: AbortSignal,
-    ): Promise<BackendHistory> {
-      const params = new URLSearchParams({
-        after: String(after),
-        limit: "200",
-      });
-      if (scenarioId) params.set("scenario_id", scenarioId);
-      const value = await request(
-        `/api/v1/agent/sessions/${encodeURIComponent(sessionId)}?${params}`,
-        undefined,
-        signal,
-      );
-      const session = validateSession(value);
-      const turns = (value as Record<string, unknown>).turns;
-      if (!Array.isArray(turns))
-        throw new QueryError("mapping", "会话记录暂无法展示。");
-      const checked = turns.map((turn) => {
-        if (
-          !turn ||
-          typeof turn !== "object" ||
-          typeof turn.turn_id !== "string" ||
-          typeof turn.user_query !== "string" ||
-          typeof turn.created_at !== "string" ||
-          !Number.isSafeInteger(turn.sequence_no) ||
-          turn.sequence_no <= after
+    async catalog(signal) {
+      const value = (await requestJson(`${prefix}/catalog`, signal)) as {
+        products?: Product[];
+      };
+      if (
+        !Array.isArray(value.products) ||
+        value.products.some(
+          (p) =>
+            !p.product_code ||
+            !Array.isArray(p.modes) ||
+            !p.modes.some((m) => m.mode === p.default_mode),
         )
-          throw new QueryError("mapping", "会话记录暂无法展示。");
-        return { ...turn, response: validateBackendResponse(turn.response) };
-      });
-      return { ...session, turns: checked };
+      )
+        throw new QueryError("mapping", "产品目录结构不完整。");
+      // Published product scopes only. Demo/scenario data cannot enter this app.
+      return value.products
+        .filter(
+          (p) =>
+            p.synthetic === false &&
+            p.modes.some(
+              (m) => m.mode === p.default_mode && m.scenario_id === null,
+            ),
+        )
+        .map((p) => ({
+          ...p,
+          modes: p.modes.filter((m) => m.scenario_id === null),
+        }));
     },
-  };
-}
-function validateSession(value: unknown): BackendSession {
-  if (!value || typeof value !== "object")
-    throw new QueryError("mapping", "会话信息暂无法展示。");
-  const s = value as Record<string, unknown>;
-  if (
-    typeof s.session_id !== "string" ||
-    !s.session_id ||
-    typeof s.conversation_id !== "string" ||
-    typeof s.created_at !== "string" ||
-    typeof s.updated_at !== "string" ||
-    !Number.isSafeInteger(s.context_version) ||
-    !s.context ||
-    typeof s.context !== "object" ||
-    Array.isArray(s.context)
-  )
-    throw new QueryError("mapping", "会话信息暂无法展示。");
-  return value as BackendSession;
-}
-export const queryAgent = (input: BackendRequest, signal?: AbortSignal) =>
-  createAgentClient().queryAgent(input, signal);
-export const createSession = (scenarioId?: ScenarioId, signal?: AbortSignal) =>
-  createAgentClient().createSession(scenarioId, signal);
-export const getSession = (
-  id: string,
-  scenarioId?: ScenarioId,
-  after = 0,
-  signal?: AbortSignal,
-) => createAgentClient().getSession(id, scenarioId, after, signal);
-export function createLiveService(
-  options: ClientOptions = {},
-): AgentQueryService {
-  const client = createAgentClient(options);
-  return {
-    async query(input, signal) {
-      return adaptBackendResponse(
-        await client.queryAgent(
+    async resolve(text, session, catalogOrder, signal) {
+      const value = (await requestJson(`${prefix}/resolve`, signal, {
+        message: text,
+        session_id: session?.session_id ?? null,
+        scenario_id: null,
+        catalog_order: catalogOrder,
+      })) as ProductResolution;
+      if (
+        typeof value.status !== "string" ||
+        !(value.product_code === null || typeof value.product_code === "string")
+      )
+        throw new QueryError("mapping", "产品识别响应不完整，请稍后重试。");
+      return value;
+    },
+    async createSession(product, scenario, signal) {
+      if (scenario !== null)
+        throw new QueryError("unsupported", "当前版本仅连接已发布业务数据。");
+      const value = (await requestJson(`${prefix}/sessions`, signal, {
+        product_code: product,
+        scenario_id: scenario,
+      })) as { session_id: string; conversation_id: string };
+      if (!value.session_id || !value.conversation_id)
+        throw new QueryError("mapping", "后端未返回有效会话 ID。");
+      return value;
+    },
+    async history(binding, after, signal) {
+      if (binding.scenario_id !== null)
+        throw new QueryError("unsupported", "该记录不属于当前业务数据范围。");
+      const query = new URLSearchParams({ after: String(after), limit: "50" });
+      if (binding.scenario_id) query.set("scenario_id", binding.scenario_id);
+      const value = (await requestJson(
+        `${prefix}/sessions/${encodeURIComponent(binding.session_id)}?${query}`,
+        signal,
+      )) as HistoryPage;
+      if (!Array.isArray(value.turns))
+        throw new QueryError("mapping", "历史记录结构不完整。");
+      if (
+        value.product_context?.product_code &&
+        value.product_context.product_code !== binding.product_code
+      )
+        throw new QueryError(
+          "mapping",
+          "历史会话与所选产品不一致。",
+          "SESSION_BINDING_MISMATCH",
+        );
+      return value;
+    },
+    async clearSessions(signal) {
+      return requestJson(`${prefix}/sessions`, signal, undefined, "DELETE");
+    },
+    async executeInventory(input, credential, signal) {
+      if (import.meta.env.VITE_STREAMLIT === "true")
+        throw new QueryError("unsupported", "当前连接仅支持查询与预览，未开放库存执行。");
+      if (input.confirmed !== true || !input.session_id || !input.preview_id || !credential)
+        throw new QueryError("unsupported", "请先核对当前预览并明确确认执行。");
+      // This is deliberately separate from query(), with no automatic retry.
+      // Credentials belong only in this request header, never the conversation.
+      if (signal.aborted) throw new DOMException("Cancelled", "AbortError");
+      const controller = new AbortController();
+      const abort = () => controller.abort();
+      signal.addEventListener("abort", abort, { once: true });
+      let timedOut = false;
+      const timer = setTimeout(() => { timedOut = true; controller.abort(); }, 30_000);
+      try {
+        return adaptBackendResponse(await requestJson(
+          "/api/v1/inventory/execute",
+          controller.signal,
           {
-            message: input.text,
             session_id: input.session_id,
-            scenario_id: input.scenario_id,
-            persist_session: input.persist_session,
+            preview_id: input.preview_id,
+            confirmed: true,
+            ...(input.scenario_id == null ? {} : { scenario_id: input.scenario_id }),
           },
-          signal,
-        ),
+          undefined,
+          { "X-Inventory-Write-Token": credential },
+        ));
+      } catch (error) {
+        if (timedOut) throw new QueryError("network", "执行等待超时，请同步历史核实结果；不会自动重试。", "EXECUTION_TIMEOUT");
+        throw error;
+      } finally {
+        clearTimeout(timer);
+        signal.removeEventListener("abort", abort);
+      }
+    },
+    async getInventoryReceipt(input, signal) {
+      if (!input.session_id || !input.preview_id)
+        throw new QueryError("unsupported", "请提供原会话与领料预览后核实回执。");
+      const query = new URLSearchParams({ session_id: input.session_id });
+      return adaptBackendResponse(await requestJson(
+        `/api/v1/inventory/receipts/${encodeURIComponent(input.preview_id)}?${query}`,
+        signal,
+      ));
+    },
+    async query(input, signal) {
+      if (!input.session)
+        throw new QueryError("unconfigured", "请在问题中提供产品型号。");
+      if (input.session.scenario_id !== null)
+        throw new QueryError("unsupported", "当前版本仅连接已发布业务数据。");
+      return adaptBackendResponse(
+        await requestJson(`${prefix}/query`, signal, {
+          message: input.text,
+          session_id: input.session.session_id,
+          persist_session: true,
+          scenario_id: input.session.scenario_id,
+        }),
       );
     },
   };

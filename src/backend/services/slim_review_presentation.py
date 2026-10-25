@@ -14,6 +14,10 @@ class SlimReviewPresentation:
             value = value.replace(code, alias)
         return value
 
+    def _aliases(self, codes):
+        """物料编码列表按既有别名白名单脱敏；未知编码不新增披露。"""
+        return [self.aliases.get(code, code) for code in (codes or []) if code]
+
     def result(self, result):
         data = result.get("data")
         public = {key: copy.deepcopy(result.get(key)) for key in ("status", "completeness")}
@@ -59,14 +63,32 @@ class SlimReviewPresentation:
             "matched_material_count", "comparable_material_count", "inventory_sufficient_for_requested",
             "theoretical_max_quantity", "max_producible_quantity", "formal_production_approved", "quantity_review",
             "quantity_check_status", "stock_read_failed", "slim_review", "scenario_name", "scenario_id",
-            "scenario_product_code", "synthetic", "original_material_count", "excluded_material_count", "dataset_version")}
+            "scenario_product_code", "synthetic", "original_material_count", "excluded_material_count", "dataset_version",
+            # 单位口径与不可核算汇总：只暴露口径与计数，物料编码仍走别名白名单。
+            "requested_unit", "requested_unit_source", "demand_quantity", "partial_comparison",
+            "uncomputable_material_count", "missing_stock_material_count", "purchase_material_count")}
         values.update(materials=[material(row) for row in data["materials"]],
             book_shortages=[material(row) for row in data["book_shortages"]],
             limiting_materials=[material(row) for row in data["limiting_materials"]],
             no_record_materials=[], recommendations=[],
+            unit_conflict_materials=self._aliases(data.get("unit_conflict_materials")),
+            unit_unknown_materials=self._aliases(data.get("unit_unknown_materials")),
+            duplicate_unverified_materials=self._aliases(data.get("duplicate_unverified_materials")),
+            uncomputable_materials=[dict(
+                {key: copy.deepcopy(row.get(key)) for key in ("status", "reason", "unit", "stock_unit",
+                                                              "required_qty", "recorded_stock_qty")},
+                material_code=self.aliases.get(row.get("material_code"), row.get("material_code")))
+                for row in data.get("uncomputable_materials") or []],
             source_summary=dict(source_file="授权主库存记录", sheet_name="已审核库存范围",
                 unit_confirmation=dict(unit="片"), review_scenario=dict(filtered=True, synthetic=self.dataset["synthetic"])),
             deidentification="filtered_and_identifier_redacted_not_anonymous")
+        # Preserve the operation boundary through the existing material allowlist.
+        # Dropping these flags turns a read-only preview into an ordinary result
+        # and loses its session/version binding when history is restored.
+        for key in ("namespace", "preview_id", "session_id", "created_at", "expires_at",
+                    "can_execute", "executable", "execution_available", "executed", "write_policy"):
+            if key in data:
+                values[key] = copy.deepcopy(data[key])
         public["data"] = values
         public["provenance"]["materials"] = [dict(material_code=r["material_code"], rows=r["stock_sources"])
             for r in values["materials"]]

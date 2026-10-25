@@ -4,7 +4,11 @@ import re
 
 
 def maximum_requested(message):
-    return bool(re.search(r"最多|最大(?:可|能)?(?:生产|产能|产量|数量|满足)|生产上限|产能(?:上限)?|数量上限", message))
+    return bool(re.search(
+        r"最多|最大(?:可|能)?(?:生产|产能|产量|数量|满足)|生产上限|产能(?:上限)?|数量上限|"
+        r"(?:库存|存货|现有库存|当前库存)[^。？!?]{0,8}(?:够|能|可)(?:生产|做)(?:多少|几)|"
+        r"(?:够|能|可)(?:生产|做)(?:多少|几)\s*(?:片|台|件|套|个)?|"
+        r"(?:够|能|可)(?:生产|做)到?(?:多少|几)", message))
 
 
 def present_query(response, message, binding=None):
@@ -29,7 +33,8 @@ def present_query(response, message, binding=None):
     presentation["user_warnings"] = [] if value["status"] == "ok" else copy.deepcopy(value.get("warnings", []))
     if data.get("calculation_scope") == "excel_book_observation":
         presentation["user_warnings"] = []  # Scope is already expressed beside the result.
-    elif kind == "inventory" and value["status"] == "ok" and not any(
+    elif kind == "inventory" and value["status"] == "ok" and data.get("calculation_scope") not in (
+            "zero_stock_check", "duplicate_observation_statistics", "inventory_record_statistics") and not any(
             key in data for key in ("expiry_assessments", "stagnant_assessments", "allocations", "safety_stock")):
         item = data.get("canonical_item") or {}
         code = item.get("material_code") or structured.get("query", {}).get("material_code") or "该物料"
