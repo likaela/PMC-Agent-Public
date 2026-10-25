@@ -1,14 +1,28 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, nextTick, watch, onMounted } from "vue";
 import { useAgent } from "../composables/useAgent";
 import Icon from "./Icon.vue";
-const { draft, pending, send, cancel } = useAgent();
-defineProps<{
-  activeProduct?: string | null;
-  products?: { product_code: string }[];
-}>();
-defineEmits<{ switch: [code: string] }>();
+const { draft, pending, send, cancel, canSend, product } = useAgent();
 const composing = ref(false);
+const input = ref<HTMLTextAreaElement>();
+function resizeInput() {
+  const field = input.value;
+  if (!field) return;
+  field.style.height = "auto";
+  field.style.height = `${Math.min(176, Math.max(52, field.scrollHeight))}px`;
+  field.style.overflowY = field.scrollHeight > 176 ? "auto" : "hidden";
+}
+onMounted(resizeInput);
+watch(draft, async () => {
+  await nextTick();
+  resizeInput();
+});
+watch(pending, async (value, before) => {
+  if (before && !value) {
+    await nextTick();
+    input.value?.focus({ preventScroll: true });
+  }
+});
 function onKey(event: KeyboardEvent) {
   if (
     event.key === "Enter" &&
@@ -24,34 +38,22 @@ function onKey(event: KeyboardEvent) {
 </script>
 <template>
   <form class="composer" @submit.prevent="send()">
-    <div class="active-product" aria-label="当前活动产品">
-      <label for="active-product-select">当前产品</label>
-      <select
-        v-if="products?.length"
-        id="active-product-select"
-        :value="activeProduct ?? ''"
-        @change="$emit('switch', ($event.target as HTMLSelectElement).value)"
-      >
-        <option value="" disabled>未选择产品</option>
-        <option
-          v-for="p in products"
-          :key="p.product_code"
-          :value="p.product_code"
-        >
-          {{ p.product_code }}
-        </option>
-      </select>
-      <span v-else>{{ activeProduct ?? "未选择产品" }}</span>
-    </div>
     <label for="query-input" class="sr-only">输入分析问题</label>
     <div class="composer-input">
       <textarea
+        ref="input"
         id="query-input"
+        aria-describedby="composer-hint"
         v-model="draft"
         :disabled="pending"
         maxlength="2000"
         rows="2"
-        placeholder="请输入产品编码和生产数量，或物料编码与查询问题…"
+        :placeholder="
+          product
+            ? `继续询问 ${product.product_code}，或输入新的产品问题…`
+            : '例如：KQ-Z112 生产 2 片，物料够吗？'
+        "
+        @input="resizeInput"
         @keydown="onKey"
         @compositionstart="composing = true"
         @compositionend="composing = false"
@@ -60,46 +62,35 @@ function onKey(event: KeyboardEvent) {
         <span
           ><kbd>Enter</kbd> 发送
           <span class="desktop-only">· Shift + Enter 换行</span></span
-        ><button
-          v-if="pending"
-          class="cancel-button"
-          type="button"
-          @click="cancel()"
-        >
-          <Icon name="stop" :size="14" />取消</button
-        ><button
-          v-else
-          class="send-button"
-          type="submit"
-          :disabled="!draft.trim()"
-          aria-label="发送问题"
-        >
-          <Icon name="send" :size="19" />
-        </button>
+        ><Transition name="prompt-action" mode="out-in"
+          ><button
+            v-if="pending"
+            key="stop"
+            class="cancel-button"
+            aria-label="停止等待本次响应"
+            type="button"
+            title="停止等待本次响应，不代表后端计算已停止"
+            @click="cancel()"
+          >
+            <Icon name="stop" :size="14" />停止等待</button
+          ><button
+            v-else
+            key="send"
+            class="send-button"
+            type="submit"
+            :disabled="!draft.trim() || !canSend"
+            aria-label="发送问题"
+          >
+            <Icon name="send" :size="19" /></button
+        ></Transition>
       </div>
     </div>
-    <p class="composer-hint">
-      可输入产品编码或别称；后续问题沿用当前产品，会话自动保存。
+    <p id="composer-hint" class="composer-hint">
+      {{
+        product
+          ? "沿用当前产品与对话；提到新产品时将单独建立分析。"
+          : "直接输入型号与问题，不必预先选择产品。"
+      }}
     </p>
   </form>
 </template>
-<style scoped>
-.active-product {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: #526581;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
-.active-product select {
-  max-width: 100%;
-  border: 1px solid #dbe5f3;
-  border-radius: 6px;
-  background: #f2f7ff;
-  color: #27528c;
-  padding: 3px 8px;
-  font-size: 12px;
-}
-</style>

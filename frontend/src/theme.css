@@ -1,0 +1,583 @@
+/* Shared semantic palette. Applies at :root so body-mounted dialogs inherit it. */
+:root {
+  color-scheme: var(--color-scheme);
+  --color-scheme: dark;
+  --canvas: #10141d;
+  --background: #141b27;
+  --sidebar: #111824;
+  --surface: #1b2433;
+  --surface-raised: #222e40;
+  --surface-subtle: #172030;
+  --text: #e7edf6;
+  --muted: #a3b1c6;
+  --muted-strong: #b4c2d6;
+  --quiet: #91a0b7;
+  --border: #2c384d;
+  --border-strong: #425570;
+  --primary: #356cf0;
+  --primary-hover: #3063de;
+  --on-primary: #ffffff;
+  --link: #9cbbff;
+  --focus: #aec9ff;
+  --blue-soft: #1d3155;
+  --blue-hover: #253e66;
+  --orange: #f1bd76;
+  --warning-bg: #342c24;
+  --warning-hover: #403328;
+  --green: #7edabb;
+  --success-bg: #183b34;
+  --error: #ffb0a8;
+  --error-bg: #3b2831;
+  --neutral-bg: #2a3445;
+  --overlay: #080e1ab8;
+  --shadow-color: #050b1645;
+  --shadow: 0 2px 8px var(--shadow-color);
+  --brand-glow: #356cf02b;
+  --brand-highlight: #98b6ff40;
+  --focus-glow: #356cf025;
+  --grid-line: #9cbbff08;
+  --skeleton-base: #253247;
+  --skeleton-highlight: #30405a;
+}
+
+/* Original chip illustration palette: independent from business status colors. */
+:root {
+  --orbit-start: #9baeff;
+  --orbit-middle: #51618c;
+  --orbit-end: #a6bdff;
+  --orbit-glow: #7c9fff;
+  --orbit-dot: #bcd2ff;
+  --chip-top-highlight: #b8d3ff;
+  --chip-top-light: #638dff;
+  --chip-top-blue: #3466fb;
+  --chip-top-deep: #1c42d3;
+  --chip-middle-light: #75a3ff;
+  --chip-middle-blue: #356cf0;
+  --chip-middle-deep: #1235a9;
+  --chip-side-light: #2b52c6;
+  --chip-side-deep: #0c1d4a;
+  --chip-base-edge: #355596;
+  --chip-base-fill: #172e63;
+  --chip-base-highlight: #5b86e2;
+  --chip-layer-edge: #79a4ff;
+  --chip-layer-edge-bright: #94b6ff;
+  --chip-rim-fill: #2959dc;
+  --chip-rim-edge: #7fa5ff;
+  --chip-top-edge: #afc8ff;
+  --chip-inner-edge: #d7e5ff;
+  --chip-specular: #deebff;
+  --chip-guide: #8caaff;
+  --chip-label: #fff;
+  --chip-caption: #e0e9ff;
+}
+
+:root {
+  --orbit-start-opacity: 0.6;
+  --orbit-middle-opacity: 0.2;
+  --orbit-end-opacity: 0.5;
+  --chip-top-light-opacity: 0.93;
+  --chip-top-blue-opacity: 0.85;
+  --chip-middle-light-opacity: 0.55;
+  --chip-middle-blue-opacity: 0.6;
+  --chip-middle-deep-opacity: 0.78;
+  --chip-side-opacity: 0.7;
+  --chip-shadow: transparent;
+  --landing-halo: transparent;
+  --scroll-thumb: #425570;
+  --toggle-selected: #253e66;
+  --toggle-selected-text: #e7edf6;
+}
+
+/* Cool-white surfaces; semantic risk colors retain their meaning in both themes. */
+:root[data-theme="light"] {
+  --color-scheme: light;
+  --canvas: #f5f7fb;
+  --background: #f5f7fb;
+  --sidebar: #ffffff;
+  --surface: #ffffff;
+  --surface-raised: #edf2fa;
+  --surface-subtle: #f8faff;
+  --text: #17243b;
+  --muted: #667085;
+  --muted-strong: #59677b;
+  --quiet: #5f6d82;
+  --border: #dce4f0;
+  --border-strong: #b5c5db;
+  --primary: #356cf0;
+  --primary-hover: #285bd6;
+  --on-primary: #ffffff;
+  --link: #285dc8;
+  --focus: #356cf0;
+  --blue-soft: #eaf1ff;
+  --blue-hover: #dee9ff;
+  --orange: #865012;
+  --warning-bg: #fff6e8;
+  --warning-hover: #fff0d5;
+  --green: #15654e;
+  --success-bg: #e9f7f0;
+  --error: #b13236;
+  --error-bg: #fff0f0;
+  --neutral-bg: #edf2fa;
+  --overlay: #14243c52;
+  --shadow-color: #1e42670c;
+  --shadow: 0 3px 16px var(--shadow-color);
+  --brand-glow: #356cf01a;
+  --brand-highlight: #ffffffb3;
+  --focus-glow: #356cf021;
+  --grid-line: #356cf009;
+  --skeleton-base: #e5ecf6;
+  --skeleton-highlight: #f6f9fe;
+  --scroll-thumb: #9eafc7;
+  --toggle-selected: #ffffff;
+  --toggle-selected-text: #285dc8;
+  --landing-halo: #c5d8ff40;
+  --chip-shadow: #285dc83b;
+
+  --orbit-start: #6384b4;
+  --orbit-middle: #9bb0d1;
+  --orbit-end: #547aae;
+  --orbit-glow: #477def;
+  --orbit-dot: #245fde;
+  --orbit-start-opacity: 0.72;
+  --orbit-middle-opacity: 0.48;
+  --orbit-end-opacity: 0.78;
+  --chip-top-highlight: #99c8ff;
+  --chip-top-light: #4a8af5;
+  --chip-top-blue: #245fea;
+  --chip-top-deep: #183fb3;
+  --chip-middle-light: #78a6f8;
+  --chip-middle-blue: #3b76e5;
+  --chip-middle-deep: #285ac6;
+  --chip-side-light: #386bc7;
+  --chip-side-deep: #244795;
+  --chip-base-edge: #6093e7;
+  --chip-base-fill: #3769bb;
+  --chip-base-highlight: #aacbff;
+  --chip-layer-edge: #a5c9ff;
+  --chip-layer-edge-bright: #bfdcff;
+  --chip-rim-fill: #2254ba;
+  --chip-rim-edge: #a0c5ff;
+  --chip-top-edge: #d8e9ff;
+  --chip-inner-edge: #e8f2ff;
+  --chip-specular: #ffffff;
+  --chip-guide: #5784d7;
+  --chip-label: #ffffff;
+  --chip-caption: #e9f3ff;
+  --chip-top-light-opacity: 1;
+  --chip-top-blue-opacity: 1;
+  --chip-middle-light-opacity: 0.78;
+  --chip-middle-blue-opacity: 0.8;
+  --chip-middle-deep-opacity: 0.9;
+  --chip-side-opacity: 0.92;
+}
+
+/* Typed tokens interpolate for 200ms. Older engines fall back to an immediate palette change. */
+@property --canvas {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --background {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --sidebar {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --surface {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --surface-raised {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --surface-subtle {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --text {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --muted {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --quiet {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --border {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --border-strong {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --primary {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --primary-hover {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --on-primary {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --link {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --focus {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --blue-soft {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --blue-hover {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --orange {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --warning-bg {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --warning-hover {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --green {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --success-bg {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --error {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --error-bg {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --neutral-bg {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --overlay {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --shadow-color {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --brand-glow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --brand-highlight {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --focus-glow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --grid-line {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --skeleton-base {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --skeleton-highlight {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --orbit-start {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --orbit-middle {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --orbit-end {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --orbit-glow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --orbit-dot {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-top-highlight {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-top-light {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-top-blue {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-top-deep {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-middle-light {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-middle-blue {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-middle-deep {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-side-light {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-side-deep {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-base-edge {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-base-fill {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-base-highlight {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-layer-edge {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-layer-edge-bright {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-rim-fill {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-rim-edge {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-top-edge {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-inner-edge {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-specular {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-guide {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-label {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-caption {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --chip-shadow {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --landing-halo {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --scroll-thumb {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --toggle-selected {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --toggle-selected-text {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+@property --orbit-start-opacity {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+@property --orbit-middle-opacity {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+@property --orbit-end-opacity {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+@property --chip-top-light-opacity {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+@property --chip-top-blue-opacity {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+@property --chip-middle-light-opacity {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+@property --chip-middle-blue-opacity {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+@property --chip-middle-deep-opacity {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+@property --chip-side-opacity {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+html {
+  transition-property:
+    --muted-strong, --canvas, --background, --sidebar, --surface,
+    --surface-raised, --surface-subtle, --text, --muted, --quiet, --border,
+    --border-strong, --primary, --primary-hover, --on-primary, --link, --focus,
+    --blue-soft, --blue-hover, --orange, --warning-bg, --warning-hover, --green,
+    --success-bg, --error, --error-bg, --neutral-bg, --overlay, --shadow-color,
+    --brand-glow, --brand-highlight, --focus-glow, --grid-line, --skeleton-base,
+    --skeleton-highlight, --orbit-start, --orbit-middle, --orbit-end,
+    --orbit-glow, --orbit-dot, --chip-top-highlight, --chip-top-light,
+    --chip-top-blue, --chip-top-deep, --chip-middle-light, --chip-middle-blue,
+    --chip-middle-deep, --chip-side-light, --chip-side-deep, --chip-base-edge,
+    --chip-base-fill, --chip-base-highlight, --chip-layer-edge,
+    --chip-layer-edge-bright, --chip-rim-fill, --chip-rim-edge, --chip-top-edge,
+    --chip-inner-edge, --chip-specular, --chip-guide, --chip-label,
+    --chip-caption, --chip-shadow, --landing-halo, --scroll-thumb,
+    --toggle-selected, --toggle-selected-text, --orbit-start-opacity,
+    --orbit-middle-opacity, --orbit-end-opacity, --chip-top-light-opacity,
+    --chip-top-blue-opacity, --chip-middle-light-opacity,
+    --chip-middle-blue-opacity, --chip-middle-deep-opacity, --chip-side-opacity;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    transition: none;
+  }
+}
+
+@property --muted-strong {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}

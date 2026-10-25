@@ -4,6 +4,7 @@ Development Excel/LangGraph HTTP routes are intentionally not mounted here.
 Their original app remains unchanged for development and regression tests.
 """
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
@@ -28,7 +29,7 @@ async def lifespan(app):
 
 app = FastAPI(title="PMC-Agent", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
 app.add_middleware(CORSMiddleware, allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
-                   allow_methods=["GET", "POST"], allow_headers=["Content-Type"])
+                   allow_methods=["GET", "POST", "DELETE"], allow_headers=["Content-Type"])
 
 
 @app.middleware("http")
@@ -45,6 +46,10 @@ async def public_boundary(request: Request, call_next):
             pass  # Let the existing schema produce the normal validation error.
     if scenario not in (None, "demo_scenario_50_vs_100"):
         return JSONResponse(status_code=422, content={"code": "INVALID_REQUEST", "user_message": "请选择当前可查询的产品。"})
+    if scenario == "demo_scenario_50_vs_100" and os.getenv("PMC_ALLOW_DEMO_SCENARIO") != "1":
+        # Demo 场景仅是隔离的合成测试环境，默认部署入口不可达。
+        return JSONResponse(status_code=422, content={"code": "DEMO_SCENARIO_DISABLED",
+            "user_message": "演示场景已移除，当前仅支持 KQ-Z112 与 KQ-BHX3588M。"})
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     if request.url.path.startswith("/api/"):
@@ -76,3 +81,5 @@ async def internal_error(request, error):
 
 
 app.include_router(router)
+from api.routes.inventory import router as inventory_router
+app.include_router(inventory_router)

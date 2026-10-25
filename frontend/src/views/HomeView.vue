@@ -1,175 +1,213 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { computed, ref } from "vue";
+import ThemeToggle from "../components/ThemeToggle.vue";
 import Icon from "../components/Icon.vue";
-import StatusBadge from "../components/StatusBadge.vue";
+import BrandMark from "../components/BrandMark.vue";
+import CapabilityCore from "../components/CapabilityCore.vue";
 import { useAgent } from "../composables/useAgent";
-import { demoScenarios, DEMO_SCENARIO_ID } from "../data/demoScenarios";
-const { startEnterpriseAnalysis, setScenario } = useAgent();
+import { useHomePager } from "../composables/useHomePager";
+import "../home.css";
+const root = ref<HTMLElement>();
+const { paged, active, transitioning, duration, go } = useHomePager(root);
+const { draft, pending } = useAgent();
 const router = useRouter();
-const showDemo = ref(false);
-const enterpriseCards = [
+const cards = [
   {
-    id: "enterprise-production",
+    index: "01",
     icon: "layers",
-    title: "BOM与生产需求查询",
-    description: "查询已发布产品和物料组成，按生产数量计算BOM需求。",
-    prompt: "输入产品编码和生产数量",
-    tag: "企业已发布事实",
+    title: "生产目标，拆解到每项物料。",
+    description: "从生产数量出发，核对 BOM 需求、库存与已知缺口。",
+    tag: "生产物料分析",
+    prompt: "KQ-Z112 生产 2 片，物料够吗？",
   },
   {
-    id: "enterprise-inventory",
+    index: "02",
     icon: "database",
-    title: "Excel库存记录查询",
-    description: "查看主库存表的数量、库位、批次及来源；无记录保持未知。",
-    prompt: "输入物料编码查询库存",
-    tag: "未知数据不作估算",
+    title: "库存数字，也要有据可查。",
+    description: "查看已发布库存，区分可用数量与缺失记录。",
+    tag: "库存查询",
+    prompt: "查询 KQ-BHX3588M 的库存",
   },
   {
-    id: "enterprise-purchase",
-    icon: "cart",
-    title: "连续追问与来源查询",
-    description: "保持当前产品上下文，查询材料和来源，查看历史回答。",
-    prompt: "输入产品编码或先问有哪些产品",
-    tag: "历史回答不冒充最新库存",
+    index: "03",
+    icon: "link",
+    title: "看清结论，也看清依据。",
+    description: "沿着分析结果追问，查看物料记录与来源。",
+    tag: "来源追溯",
+    prompt: "查看 KQ-Z112 的 BOM 和来源",
   },
 ];
-const cards = computed(() =>
-  showDemo.value
-    ? demoScenarios.map((s, index) => ({
-        ...s,
-        index: `0${index + 1}`,
-        tag: "演示产品",
-      }))
-    : enterpriseCards.map((s, index) => ({ ...s, index: `0${index + 1}` })),
-);
-function openScenario(id: string) {
-  if (id.startsWith("enterprise-")) {
-    startEnterpriseAnalysis();
-    router.push("/workspace");
-    return;
-  }
-  setScenario(DEMO_SCENARIO_ID);
-  router.push({ path: "/workspace", query: { scenario: id } });
+function openQuestion(question: string) {
+  if (pending.value) return;
+  draft.value = question;
+  void router.push("/workspace");
+}
+function focusMain() {
+  document.getElementById("main-content")?.focus();
 }
 </script>
 <template>
-  <div class="home-page">
-    <section class="hero card">
-      <div class="hero-content">
-        <div class="eyebrow">
-          <span class="tiny-line"></span>从问题到计划，让依据更清楚
-        </div>
-        <h1>复杂的物料问题，<br />从这里<span>理清思路。</span></h1>
-        <p>
-          你的制造业 PMC 智能计划助手。提出问题，读懂分析结论，<br
-            class="desktop-only"
-          />在同一个工作台查看物料明细与数据来源。
-        </p>
-        <RouterLink
-          class="primary-button hero-button"
-          to="/workspace"
-          @click="startEnterpriseAnalysis"
-          >开始分析<Icon name="arrow" :size="19"
-        /></RouterLink>
-        <div class="hero-foot">
-          <Icon name="checkcircle" :size="15" />结论与来源一起呈现<span
-          ></span>保留每一次分析上下文
-        </div>
-      </div>
-      <div class="hero-visual" aria-hidden="true">
-        <div class="visual-grid"></div>
-        <div class="visual-orbit orbit-one"></div>
-        <div class="visual-orbit orbit-two"></div>
-        <div class="floating-tag tag-top">
-          <span class="tag-icon"><Icon name="layers" :size="19" /></span>
-          <div>
-            <small>企业分析入口</small>
-            <strong>输入产品编码 <em>描述生产需求</em></strong>
-          </div>
-        </div>
-        <div class="visual-cube"><Icon name="cube" :size="84" /></div>
-        <div class="floating-tag tag-bottom">
-          <span class="tag-icon orange"><Icon name="alert" :size="19" /></span>
-          <div>
-            <small>企业事实 · 结果可追溯</small>
-            <strong>查询后展示 <em>结果与来源</em></strong>
-          </div>
-          <span class="mini-line"></span>
-        </div>
-        <span class="visual-caption">连接问题、结论与依据</span>
-      </div>
-    </section>
-    <div class="section-heading">
-      <div>
-        <h2>从一个具体问题开始</h2>
-        <p>先提供产品或物料编码，再用自然语言描述需求</p>
-      </div>
-      <span class="subtle-label">{{
-        showDemo
-          ? "演示产品 · 独立数据空间"
-          : "企业分析 · 不预设产品与结果"
-      }}</span>
-    </div>
-    <div class="section-heading">
-      <button class="text-button" @click="showDemo = !showDemo">
-        {{ showDemo ? "返回产品分析入口" : "体验演示产品" }}
-      </button>
-    </div>
-    <section
-      class="scenario-cards"
-      :aria-label="!showDemo ? '企业分析入口' : '演示场景'"
+  <div
+    ref="root"
+    class="landing-page"
+    :class="{ 'is-paged': paged, 'is-switching': transitioning }"
+    :data-page="active + 1"
+    :data-layout="paged ? 'paged' : 'natural'"
+  >
+    <a class="skip-link" href="#main-content" @click.prevent="focusMain"
+      >跳转到主要内容</a
     >
-      <article v-for="card in cards" :key="card.id" class="scenario-card card">
-        <div class="scenario-card-top">
-          <span class="scene-icon"><Icon :name="card.icon" :size="24" /></span
-          ><span class="scene-index">{{ card.index }}</span>
-        </div>
-        <h3>{{ card.title }}</h3>
-        <p>{{ card.description }}</p>
-        <span class="scenario-label">{{ card.tag }}</span
-        ><button class="scenario-question" @click="openScenario(card.id)">
-          <span>{{ card.prompt }}</span
-          ><Icon name="arrow" :size="18" />
-        </button>
-      </article>
-    </section>
-    <section class="home-bottom">
-      <div class="card workflow-card">
-        <div class="card-heading">
-          <h2>一条清晰的分析路径</h2>
-          <Icon name="sparkles" :size="19" />
-        </div>
-        <div class="workflow">
-          <div>
-            <span>1</span><strong>描述目标</strong>
-            <p>产品、数量与适用条件</p>
+    <header class="landing-header">
+      <RouterLink to="/" class="landing-brand" aria-label="PMC-Agent 首页"
+        ><BrandMark :size="30" /><span
+          >PMC-Agent<small>制造业智能计划助手</small></span
+        ></RouterLink
+      >
+      <nav aria-label="首页导航">
+        <button class="landing-nav-link" @click="go(1, true)">应用场景</button
+        ><RouterLink to="/workspace" class="landing-console"
+          >进入工作台<Icon name="arrow" :size="17"
+        /></RouterLink>
+        <ThemeToggle />
+      </nav>
+    </header>
+    <main id="main-content" class="home-viewport" tabindex="-1">
+      <div
+        class="home-track"
+        :style="{
+          transform: paged ? `translate3d(0, -${active * 100}%, 0)` : 'none',
+          '--page-duration': `${duration}ms`,
+        }"
+      >
+        <section
+          id="home-overview"
+          class="home-screen overview-screen"
+          :class="{ 'is-current': active === 0 }"
+          :inert="paged && active !== 0"
+          :aria-hidden="paged && active !== 0 ? true : undefined"
+          aria-labelledby="landing-title"
+        >
+          <div class="screen-content landing-hero">
+            <div class="landing-copy">
+              <div class="landing-eyebrow">
+                <span></span>MANUFACTURING INTELLIGENCE
+              </div>
+              <h1 id="landing-title">
+                让生产计划，<br /><em>每一步都有依据。</em>
+              </h1>
+              <p class="landing-description">
+                从一个问题出发，连接物料、库存与计划。<br />用自然语言查看结论、明细与来源。
+              </p>
+              <div class="landing-actions">
+                <RouterLink to="/workspace" class="landing-primary"
+                  >开始分析<Icon name="arrow" :size="19" /></RouterLink
+                ><button class="landing-secondary" @click="go(1, true)">
+                  了解应用场景<Icon name="down" :size="17" />
+                </button>
+              </div>
+              <p class="landing-mode">
+                <span></span>基于已发布业务数据<small
+                  >自然语言提问 · 结论可追溯</small
+                >
+              </p>
+            </div>
+            <div class="hero-visual-reveal">
+              <CapabilityCore :active="!paged || active === 0" />
+            </div>
           </div>
-          <Icon name="chevron" :size="16" />
-          <div>
-            <span>2</span><strong>阅读结论</strong>
-            <p>先看结论，再看缺口</p>
+          <button class="natural-explore" @click="go(1, true)">
+            探索应用场景<Icon name="down" :size="16" />
+          </button>
+        </section>
+        <section
+          id="home-scenarios"
+          class="home-screen scenarios-screen"
+          :class="{ 'is-current': active === 1 }"
+          :inert="paged && active !== 1"
+          :aria-hidden="paged && active !== 1 ? true : undefined"
+          aria-labelledby="scenarios-heading"
+        >
+          <div class="screen-content scenario-content">
+            <div class="landing-section-heading">
+              <div>
+                <span class="landing-eyebrow">START WITH A QUESTION</span>
+                <h2 id="scenarios-heading">从一个具体问题开始</h2>
+              </div>
+              <p>从提问到依据，连接真实业务数据。</p>
+            </div>
+            <div class="landing-cards">
+              <article
+                v-for="card in cards"
+                :key="card.index"
+                class="landing-card"
+              >
+                <div class="landing-card-top">
+                  <Icon :name="card.icon" :size="23" /><span>{{
+                    card.index
+                  }}</span>
+                </div>
+                <span class="landing-card-tag">{{ card.tag }}</span>
+                <h3>{{ card.title }}</h3>
+                <p>{{ card.description }}</p>
+                <button
+                  class="scenario-question"
+                  :disabled="pending"
+                  @click="openQuestion(card.prompt)"
+                >
+                  <span>{{ card.prompt }}</span
+                  ><Icon name="arrow" :size="17" />
+                </button>
+              </article>
+            </div>
+            <div class="landing-principles">
+              <span><b>01</b>自然语言提问</span
+              ><Icon name="arrow" :size="16" /><span
+                ><b>02</b>结论与物料明细</span
+              ><Icon name="arrow" :size="16" /><span
+                ><b>03</b>来源与适用条件</span
+              ><small>面向 PMC 计划员 · 生产主管 · 采购人员</small>
+            </div>
+            <div class="landing-boundary">
+              <Icon name="info" :size="16" />
+              <p>
+                说出产品型号即可开始；点击问题将填入草稿，发送后查询业务数据。缺失的事实会明确提示。
+              </p>
+            </div>
+            <footer class="landing-footer">
+              <span>PMC-Agent<small> / 让依据连接计划</small></span
+              ><span>查询业务事实，让决策有据可循</span>
+            </footer>
           </div>
-          <Icon name="chevron" :size="16" />
-          <div>
-            <span>3</span><strong>核对依据</strong>
-            <p>来源、时效与边界</p>
-          </div>
-        </div>
+        </section>
       </div>
-      <div class="card boundary-card">
-        <div class="card-heading">
-          <h2>当前能力边界</h2>
-          <StatusBadge tone="blue">事实查询</StatusBadge>
-        </div>
-        <p>
-          查询产品、BOM和库存记录，计算生产需求并核对数量。在标准分析范围内查看最大满足数量与限制物料；
-          通过演示产品体验齐套与采购建议。未知数量不估算，结果仅适用于对应分析范围，不代替生产放行。
-        </p>
-        <div class="boundary-note">
-          <Icon name="shield" :size="16" />演示结果不构成真实生产或采购决策
-        </div>
-      </div>
-    </section>
+    </main>
+    <nav class="home-pagination" aria-label="首页分页">
+      <button
+        v-for="(label, index) in ['产品概览', '应用场景']"
+        :key="index"
+        :aria-label="`${index + 1 === 1 ? '01' : '02'} ${label}`"
+        :aria-current="active === index ? 'step' : undefined"
+        :aria-controls="index === 0 ? 'home-overview' : 'home-scenarios'"
+        @click="go(index, true)"
+      >
+        <span>0{{ index + 1 }}</span
+        ><span>{{ label }}</span>
+      </button>
+    </nav>
+    <div class="home-dock">
+      <span class="page-position">0{{ active + 1 }} <i>/</i> 02</span
+      ><button @click="go(active === 0 ? 1 : 0, true)">
+        {{ active === 0 ? "探索应用场景" : "返回产品概览"
+        }}<Icon
+          name="down"
+          :size="16"
+          :class="{ 'point-up': active === 1 }"
+        /></button
+      ><span class="dock-hint">滚动探索 · ↑ ↓ 翻页</span>
+    </div>
+    <p class="sr-only" aria-live="polite">
+      {{ paged ? `当前第 ${active + 1} 屏，共 2 屏` : "自然滚动布局" }}
+    </p>
   </div>
 </template>

@@ -47,16 +47,28 @@ class SlimReviewQueries:
             requested_alias = aliases[parsed.material_code]
         # Explicit foreign products must not inherit the filtered product.
         if parsed.material_code and parsed.material_code not in (product, dataset.get("display_product_code")) and not requested_alias:
+            if re.search(r"库存|料号|存量|物料", text) and not re.search(r"生产|投产|BOM|物料清单", text):
+                # 料号在当前查询范围内查不到：明确说“未找到”，不能只提示产品范围，也不能当作零库存。
+                return OrchestratedTurn(dict(intent="inventory", status="item_not_found",
+                    answer=(f"未找到物料编码 {parsed.material_code} 的匹配记录，请核对料号。"
+                            f" 当前查询范围（{product}）内未找到该料号；这不代表库存为零。"),
+                    structured_data=dict(query_type="inventory", query=dict(material_code=parsed.material_code),
+                        data=dict(material_code=parsed.material_code, record_found=False, scope="current_query_range"),
+                        completeness={"record_found": False}, completed_steps=[]),
+                    provenance=None, warnings=[]), copy.deepcopy(context), [])
             return OrchestratedTurn(dict(intent="clarification", status="data_unavailable",
                 answer="当前分析范围只适用于所选产品。请选择对应产品后继续查询。",
                 structured_data=dict(data=None, completed_steps=[]), provenance=None, warnings=[]), copy.deepcopy(context), [])
         quantity = parsed.quantity
         previous = context.get("slim_analysis", {})
-        if quantity is None and re.search(r"生产|做", text) and not re.search(r"最多|最大|上限|为什么|原因|限制|影响", text):
+        from agents.query_presentation import maximum_requested
+        maximum = maximum_requested(text)
+        if (quantity is None and re.search(r"生产|做", text) and not maximum
+                and not re.search(r"最多|最大|上限|为什么|原因|限制|影响", text)):
             return self.service_needs_quantity(context, product, dataset["revision"])
-        if re.search(r"再生产\s*\d+", text) and not re.search(r"再多生产", text):
-            return OrchestratedTurn(dict(intent="clarification", status="needs_input", answer="请确认是重新核对该数量，还是在上次数量上追加；例如“生产1片”或“再多生产1片”。",
-                structured_data=dict(data=None, completed_steps=[]), provenance=None, warnings=[]), copy.deepcopy(context), [])
+        # “再生产20套”直接按 20 套核对库存，不再打断追问是否追加：
+        # 用户意图是确认这个数量够不够，是否与上次数量叠加不影响本次核对。
+
         explanation = bool(re.search(r"为什么|原因|来源|哪里|哪些物料限制|哪些.*影响|哪些.*不足|限制在哪里", text))
         refresh = bool(re.search(r"重新计算|按最新|再查一次|重新查询", text))
         if explanation and previous and not refresh:
@@ -67,7 +79,7 @@ class SlimReviewQueries:
                     if ref["tool_name"] == "enterprise_book_demand_analysis" and data.get("slim_review") and (desired is None or data.get("requested_quantity") == desired):
                         return self._turn(ref["result"], context, message, reused=turn["turn_id"])
         produce_max = bool(re.search(r"生产(?:到)?(?:最大|最多)数量|按最大|生产上限", text))
-        capacity = bool(re.search(r"最多|最大|限制产量", text))
+        capacity = bool(re.search(r"最多|最大|限制产量", text)) or maximum
         if produce_max:
             maximum_result = self.tools["enterprise_book_demand_analysis"].invoke(dict(product=product, quantity=None))
             maximum = (maximum_result.get("data") or {}).get("theoretical_max_quantity")
@@ -108,7 +120,10 @@ class SlimReviewQueries:
         data = result.get("data") or {}
         from agents.query_presentation import maximum_requested
         show_maximum = maximum_requested(message)
-        kind = "bom" if re.search(r"BOM|物料组成|参与计算|多少项物料|哪些物料参与|有哪些物料|全部.*物料", message, re.I) else "inventory" if re.search(r"库存|存量", message) and data.get("requested_quantity") is None else "production_capacity"
+        kind = ("production_capacity" if show_maximum else
+            "bom" if re.search(r"BOM|物料组成|参与计算|多少项物料|哪些物料参与|有哪些物料|全部.*物料", message, re.I)
+            else "inventory" if re.search(r"库存|存量", message) and data.get("requested_quantity") is None
+            else "production_capacity")
         saved = copy.deepcopy(context)
         if result["status"] == "ok":
             prior = saved.get("slim_analysis", {})
@@ -138,9 +153,17 @@ class SlimReviewQueries:
                 answer += "本次包含演示库存，仅用于数量模拟。"
             n = data["requested_quantity"]
             if n is not None:
-                answer += f"{scope}{'满足' if data['inventory_sufficient_for_requested'] else '不能满足'}生产{n}片对应的物料需求。"
+                rows = data.get("materials") or []
+                shortages = data["book_shortages"]
+                ok_count = sum(1 for r in rows if r.get("quantity_status") == "sufficient")
+                missing = sum(1 for r in rows if r.get("comparison_status") == "no_stock")
+                verdict = "满足" if data["inventory_sufficient_for_requested"] else "不能满足"
+                answer += (f"按账面数量逐项核对{len(rows)}种物料：{ok_count}种满足、{len(shortages)}种不足"
+                           + (f"、{missing}种库存未查询到" if missing else "") + "；"
+                           + f"{scope}{verdict}生产{n}片对应的物料需求。")
                 if data["book_shortages"]:
-                    answer += "不足物料：" + "；".join(f"{r['name'] or r['material_code']}（{r['material_code']}）缺{r['shortage_qty']}片" for r in data["book_shortages"][:5]) + "。"
+                    # 结论只给数量级判断，缺口明细交由下方物料列表呈现，避免回答冗长。
+                    answer = answer.rstrip("。") + "；不足物料详见下面列表。"
             if show_maximum or re.search(r"限制", message):
                 answer += "限制产量的物料：" + "、".join(f"{r['name'] or r['material_code']}（{r['material_code']}）" for r in data["limiting_materials"][:5]) + "。"
             if re.search(r"来源|哪里", message):

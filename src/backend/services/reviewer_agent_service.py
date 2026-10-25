@@ -77,8 +77,11 @@ class ScopedObservations:
         self.repository, self.allowed = repository, allowed
 
     def load(self):
-        source = copy.deepcopy(self.repository.load())
-        source["records"] = {k: v for k, v in source["records"].items() if k in self.allowed}
+        # 只按料号裁剪披露范围，不改数量与重复口径；全量库存表有数千条记录，
+        # 此处用浅拷贝即可，避免每次查询都深拷贝整份库存。
+        raw = self.repository.load()
+        source = dict(raw)
+        source["records"] = {k: v for k, v in raw["records"].items() if k in self.allowed}
         source["row_errors"] = [e for e in source["row_errors"] if e.get("material_code") in self.allowed]
         source["excluded_sheets"] = []
         source["record_count"] = sum(map(len, source["records"].values()))
@@ -171,7 +174,7 @@ class ReviewBinding:
             data = facts.query_bom(product, repository.revision)["data"]
             self.catalog[product] = dict(product_code=product, product_name=data["parent_item"].get("name"),
                 revision=repository.revision, unit=data["parent_item"].get("unit"), line_count=data["line_count"],
-                synthetic=False, capabilities=["BOM结构", "主库存查询", "生产需求数量", "已知库存数量核对", "已核算物料产量上限", "来源及连续追问"],
+                synthetic=False, capabilities=["BOM结构", "主库存查询", "生产需求数量", "已知库存数量核对", "有库存记录物料产量上限", "来源及连续追问"],
                 limitations=["数量核算仅采用已核验库存记录", "数量核对不代表正式工单放行"])
         demo = build_demo_scenario_agent(runtime_root=self.runtime / "demo")
         demo.enable_orchestrator()

@@ -1,0 +1,21 @@
+{
+  "format": "pmc_product_display_names_v1",
+  "note": "产品展示名称与自然语言联想别名。仅用于下拉展示与用户输入识别，不参与任何业务计算，也不修改已发布BOM/库存事实。",
+  "products": {
+    "KQ-Z112": {
+      "product_name": "飞腾八核核心板",
+      "aliases": ["Z112", "KQZ112", "飞腾八核核心板", "飞腾核心板", "飞腾八核"],
+      "description": "飞腾八核处理器核心板"
+    },
+    "KQ-BHX3588M": {
+      "product_name": "瑞芯微核心模块",
+      "aliases": ["BHX3588M", "BHX3588", "3588", "RK3588", "BHX2588", "KQ-BHX3588", "KQ-BHX2588", "瑞芯微核心模块", "瑞芯微核心板", "3588核心模块"],
+      "description": "瑞芯微RK3588核心模块（含用户常用简称3588）"
+    },
+    "DEMO-PMC-01": {
+      "product_name": "演示用例",
+      "aliases": ["演示用例", "PMC演示", "演示产品", "Demo产品"],
+      "description": "演示用例（合成数据，仅用于体验分析流程）"
+    }
+  }
+}

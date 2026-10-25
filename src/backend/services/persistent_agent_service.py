@@ -55,7 +55,11 @@ quantity 是原文的生产数量，可把中文整数规范化，不能计算�
 def parse_enterprise_query(message: str, *, allow_llm: bool = True) -> tuple[EnterpriseQueryIntent, str]:
     """规则优先；LLM 只可辅助分类，所有标识和数值均由原文核验。"""
     from agents.business_language import normalize_business_dates
+    from services.production_request_context import parse_quantity, identifier_message
     message = normalize_business_dates(message)
+    quantity_request = parse_quantity(message)
+    if quantity_request.status in {"invalid", "ambiguous"}:
+        raise ValueError("生产数量必须是明确的大于0整数")
     if re.search(r"(?:-\s*\d+|\d+\.\d+)\s*(?:台|件|个|套|片)", message):
         raise ValueError("生产数量必须是正整数")
     fact = _rule_intent(message)
@@ -69,13 +73,13 @@ def parse_enterprise_query(message: str, *, allow_llm: bool = True) -> tuple[Ent
         kind = "clarification"
     version, time, effective, start = (_REVISION.search(message), _TIMESTAMP.search(message),
                                       _EFFECTIVE.search(message), _START.search(message))
-    code_message = re.sub(r"(?:\d+(?:\.\d+)?|[零〇一二三四五六七八九十百千万两]+)\s*(?:台|套|件|个|只|片|PCS)", "", message, flags=re.IGNORECASE)
+    code_message = identifier_message(message)
     fields = dict(query_type=kind, material_code=_explicit_material_code(code_message),
                   revision=version.group() if version else None,
                   as_of=time.group() if time else None,
                   effective_date=effective.group(1) if effective else None,
                   start_date=start.group(1) if start else None,
-                  quantity=extract_production_task_fields(message)["quantity"])
+                  quantity=quantity_request.quantity)
     # 日期不能被旧编码正则误当料号。
     if fields["material_code"] in {fields["as_of"], fields["effective_date"], fields["start_date"]}:
         fields["material_code"] = None
@@ -179,6 +183,9 @@ class PersistentAgentService:
         self.orchestrator = None
         self.book_queries = None
         self.book_service = book_service
+        # PMC 扩展问答层（缺料识别/独立物料查询/投产核算与扣减），最先尝试，失败时回退既有流程。
+        from services.pmc_capability_service import PmcCapabilityQueries
+        self.capability_queries = PmcCapabilityQueries(self)
 
     def enable_orchestrator(self) -> None:
         """Opt-in API integration; direct legacy service users keep their existing path."""
@@ -243,8 +250,64 @@ class PersistentAgentService:
             session = self.repository.get_session(session_id)
             history_loader = lambda: self.repository.history(session_id,
                 after=max(0, session["context_version"] - 50), limit=50)["turns"]
-            turn = None
-            if self.book_queries is not None:
+            from services.production_request_context import (parse_quantity, selected_product, selected_revision, expected_unit,
+                compatible_unit, demand_context, restore_demand, is_new_demand, needs_current_demand,
+                inherit_quantity, finish_demand)
+            from agents.orchestrator import OrchestratedTurn
+            request = parse_quantity(message)
+            # 先拦截“编造数据”和与 PMC 无关的问题，避免被默认业务查询误答成生产结论。
+            from agents.business_language import refusal_kind
+            refusal = refusal_kind(message)
+            if refusal is not None:
+                answer = (
+                    "我不能编造库存、BOM 或采购数据，也不会把编造的数据当作真实库存用于生产或采购判断。"
+                    "如果确实需要测试数据，只能在隔离的合成测试环境中生成，并明确标注为模拟数据；"
+                    "公开业务入口只提供 KQ-Z112、KQ-BHX3588M 两款真实企业产品的已核验数据。"
+                ) if refusal == "fabrication" else (
+                    "这个问题不在当前 PMC-Agent 的业务范围内。我只处理生产计划、BOM、库存、缺料和采购相关问题；"
+                    "请提供产品型号（KQ-Z112、KQ-BHX3588M）和具体问题，例如“KQ-Z112 生产 50 片够不够”。"
+                )
+                response = dict(intent="clarification", status="needs_input", answer=answer,
+                    structured_data=dict(operation="out_of_scope", query_type="clarification", data=None,
+                        completed_steps=[], refusal=refusal), provenance=None, warnings=[],
+                    session_id=session_id, conversation_id=session["conversation_id"])
+                response["turn_id"] = self.repository.append_turn(session, original_message, response,
+                    copy.deepcopy(session["context"]), [])
+                return response
+            context = restore_demand(copy.deepcopy(session["context"]), history_loader())
+            product = selected_product(context)
+            unit = expected_unit(self, product) if product and (request.status == "valid" or
+                request.status == "missing" and is_new_demand(message, request)) else None
+            invalid = request.status in {"invalid", "ambiguous"}
+            unit_error = request.status == "valid" and product and is_new_demand(message, request) and not compatible_unit(request.unit, unit)
+            missing = request.status == "missing" and is_new_demand(message, request)
+            if invalid or unit_error or missing:
+                context = demand_context(context, product, request, "invalid" if invalid or unit_error else "needs_quantity", unit=unit)
+                reason = (f"本产品按{unit or '已确认成品单位'}计量，不能把{request.unit}直接换算。请按{unit or '成品单位'}重新输入数量。" if unit_error else
+                    "请一次提供一个明确的大于0的整数生产数量，例如1片、50片或100片。" if invalid else
+                    f"请告诉我希望生产多少{unit or '片'}{product or '该产品'}，例如1、50或100。")
+                status = "invalid_query" if invalid or unit_error else "needs_input"
+                turn = OrchestratedTurn(dict(intent="production_capacity", status=status, answer=reason,
+                    structured_data=dict(operation="quantity_validation", data=None, completed_steps=[],
+                        validation_error="unit_mismatch" if unit_error else request.reason or "quantity_required"),
+                    provenance=None, warnings=[]), context, [])
+            elif request.status == "missing" and needs_current_demand(message) and inherit_quantity(context, product) is None:
+                turn = OrchestratedTurn(dict(intent="clarification", status="needs_input",
+                    answer="请先确认当前产品及大于0的整数生产数量，再生成采购或领料建议。",
+                    structured_data=dict(data=None, completed_steps=[], missing_parameters=["quantity"]), provenance=None, warnings=[]), context, [])
+            else:
+                if request.status == "valid" and is_new_demand(message, request):
+                    context = demand_context(context, product, request, "valid", unit=unit,
+                        revision=selected_revision(context, product))
+                turn = None
+            session = {**session, "context": context}
+            if turn is None and self.capability_queries is not None:
+                try:
+                    turn = self.capability_queries.run(message, session["context"], history_loader, session=session)
+                except Exception:
+                    logger.exception("PMC 扩展问答执行失败，回退既有受控流程")
+                    turn = None
+            if turn is None and self.book_queries is not None:
                 try:
                     turn = self.book_queries.run(message, session["context"], history_loader)
                 except Exception:
@@ -264,7 +327,10 @@ class PersistentAgentService:
                     if active.get("material_code") and active["material_code"] != prior_book.get("product"):
                         turn.context.pop("book_analysis", None)
             if turn is not None:
+                turn.context = finish_demand(turn.context, turn.response, request, message)
                 response = {**turn.response, "session_id": session_id, "conversation_id": session["conversation_id"]}
+                if "current_demand" in turn.context and response["intent"] in {"production_capacity", "purchase_planning"}:
+                    response["structured_data"]["demand_snapshot"] = copy.deepcopy(turn.context["current_demand"])
                 if self.orchestrator.registry.scope == "enterprise":
                     from agents.business_language import price_requested
                     from agents.business_answer import visible_warnings

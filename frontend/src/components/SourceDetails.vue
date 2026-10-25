@@ -1,37 +1,82 @@
 <script setup lang="ts">
-import { ref, watch, nextTick } from "vue";
+import { ref, watch, nextTick, onBeforeUnmount } from "vue";
+import ThemeToggle from "./ThemeToggle.vue";
 import Icon from "./Icon.vue";
 import StatusBadge from "./StatusBadge.vue";
 import type { AgentResult } from "../data/model";
-import { sourceLabel } from "../services/productLanguage";
-const props = defineProps<{ result?: AgentResult; mode: string }>();
-const root = ref<HTMLElement>();
+import { embeddedScrollRoot } from "../interactions/pageScroll";
+const props = defineProps<{ result?: AgentResult }>();
+const dialog = ref<HTMLDialogElement>();
+const closeButton = ref<HTMLButtonElement>();
 const open = ref(false);
 const highlighted = ref<string[]>([]);
+let returnFocus: HTMLElement | null = null;
+let previousOverflow: string | undefined;
+let scrollRoot: HTMLElement | undefined;
+function finishClose() {
+  dialog.value?.close();
+  if (scrollRoot && previousOverflow !== undefined)
+    scrollRoot.style.overflow = previousOverflow;
+  previousOverflow = undefined;
+  scrollRoot = undefined;
+  if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
+  returnFocus = null;
+}
+function close() {
+  open.value = false;
+}
+function trapTab(event: KeyboardEvent) {
+  const targets = [
+    ...(dialog.value?.querySelectorAll<HTMLElement>(
+      'button, a[href], summary, [tabindex="0"]',
+    ) ?? []),
+  ].filter((element) => element.getClientRects().length > 0);
+  const first = targets[0],
+    last = targets[targets.length - 1];
+  if (!first || !last) return;
+  const current = document.activeElement;
+  if (
+    event.shiftKey &&
+    (current === first || !dialog.value?.contains(current))
+  ) {
+    event.preventDefault();
+    last.focus();
+  } else if (
+    !event.shiftKey &&
+    (current === last || !dialog.value?.contains(current))
+  ) {
+    event.preventDefault();
+    first.focus();
+  }
+}
 watch(
   () => props.result,
   () => {
-    open.value = false;
+    close();
+    finishClose();
     highlighted.value = [];
   },
 );
+onBeforeUnmount(finishClose);
 async function reveal(ids: string[] = []) {
-  open.value = true;
   highlighted.value = ids;
+  if (open.value) return;
+  returnFocus =
+    document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+  scrollRoot = embeddedScrollRoot() ?? document.body;
+  previousOverflow = scrollRoot.style.overflow;
+  scrollRoot.style.overflow = "hidden";
+  dialog.value?.showModal();
+  open.value = true;
   await nextTick();
-  root.value?.scrollIntoView({
-    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      ? "instant"
-      : "smooth",
-    block: "start",
-  });
-  root.value?.focus({ preventScroll: true });
+  closeButton.value?.focus({ preventScroll: true });
 }
 defineExpose({ reveal });
 </script>
 <template>
   <section
-    ref="root"
     class="card sources-card"
     tabindex="-1"
     aria-label="数据来源与适用条件"
@@ -40,7 +85,8 @@ defineExpose({ reveal });
       class="source-toggle"
       :aria-expanded="open"
       aria-controls="source-details"
-      @click="open = !open"
+      aria-haspopup="dialog"
+      @click="reveal()"
     >
       <span class="source-title"
         ><span class="source-icon"><Icon name="shield" :size="21" /></span
@@ -48,7 +94,7 @@ defineExpose({ reveal });
           ><strong>数据来源与适用条件</strong
           ><small>{{
             result
-            ? `${result.sources.length} 项分析来源 · ${result.slimReview ? "当前分析范围" : result.backend?.scenario_id ? "演示产品" : "已发布记录"}`
+              ? `${result.sources.length} 项分析来源 · 业务数据`
               : "结论的依据，与结论一样重要"
           }}</small></span
         ></span
@@ -57,84 +103,105 @@ defineExpose({ reveal });
         }}<Icon name="down" :size="17" :class="{ rotated: open }"
       /></span>
     </button>
-    <div v-if="open" id="source-details" class="source-details">
-      <p class="source-disclaimer">
-        <Icon name="info" :size="16" />{{
-          result?.slimReview ? "仅适用于当前分析范围。采用演示库存时会单独标注，不用于完整产品生产放行。" : result?.backend?.scenario_id
-            ? "演示产品数据，仅用于体验分析流程，不用于业务放行。"
-            : "仅展示后端返回的来源，数据时点不等于请求时间。"
-        }}
-      </p>
-      <div v-if="!result?.sources.length" class="source-no-data">
-        本次尚无来源可展示。
-      </div>
-      <article
-        v-for="source in result?.sources"
-        :key="source.id"
-        class="source-record"
-        :class="{ highlighted: highlighted.includes(source.id) }"
+    <Teleport to="body">
+      <dialog
+        ref="dialog"
+        class="source-drawer"
+        aria-labelledby="drawer-title"
+        @cancel.prevent="close"
+        @keydown.tab="trapTab"
+        @click="$event.target === dialog && close()"
       >
-        <div class="source-record-title">
-          <Icon name="file" :size="18" /><strong>{{ source.title }}</strong
-          ><StatusBadge
-            :tone="source.kind === '项目资料示例' ? 'blue' : 'orange'"
-            >{{ sourceLabel(source.kind) }}</StatusBadge
-          >
-        </div>
-        <dl>
-          <div>
-            <dt>引用范围</dt>
-            <dd>
-              {{ source.scope
-              }}
-            </dd>
+        <Transition name="drawer" @after-leave="finishClose">
+          <div v-if="open" class="source-drawer-panel">
+            <header class="drawer-header">
+              <div>
+                <p class="eyebrow">EVIDENCE &amp; CONTEXT</p>
+                <h2 id="drawer-title">数据来源与适用条件</h2>
+                <p>查看结论依据，核对数据边界。</p>
+              </div>
+              <button
+                ref="closeButton"
+                class="icon-button"
+                aria-label="关闭来源详情"
+                @click="close"
+              >
+                <Icon name="close" :size="20" />
+              </button>
+            </header>
+            <div
+              id="source-details"
+              class="source-details"
+              tabindex="0"
+              role="region"
+              aria-label="来源记录"
+            >
+              <p class="source-disclaimer">
+                <Icon
+                  name="info"
+                  :size="16"
+                />以下展示本次回答引用的数据来源；未提供的字段如实标明。
+              </p>
+              <div v-if="!result?.sources.length" class="source-no-data">
+                本次尚无来源可展示。
+              </div>
+              <article
+                v-for="source in result?.sources"
+                :key="source.id"
+                class="source-record"
+                :class="{ highlighted: highlighted.includes(source.id) }"
+              >
+                <div class="source-record-title">
+                  <Icon name="file" :size="18" /><strong>{{
+                    source.title
+                  }}</strong
+                  ><StatusBadge tone="blue">{{ source.kind }}</StatusBadge>
+                </div>
+                <dl>
+                  <div>
+                    <dt>引用范围</dt>
+                    <dd>{{ source.scope }}</dd>
+                  </div>
+                  <div>
+                    <dt>来源文件 / 记录</dt>
+                    <dd>{{ source.reference }}</dd>
+                  </div>
+                  <div>
+                    <dt>原始记录 ID</dt>
+                    <dd>
+                      {{
+                        source.recordId ?? "未提供（展示标识不等同于业务记录）"
+                      }}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>数据版本</dt>
+                    <dd>{{ source.version ?? "未提供" }}</dd>
+                  </div>
+                  <div>
+                    <dt>来源发布时间</dt>
+                    <dd>{{ source.publishedAt ?? "未提供" }}</dd>
+                  </div>
+                  <div class="full-row">
+                    <dt>适用条件</dt>
+                    <dd>{{ source.conditions }}</dd>
+                  </div>
+                </dl>
+              </article>
+              <details v-if="result?.backend" class="backend-audit">
+                <summary>原始响应、警告与审计证据</summary>
+                <pre>{{ JSON.stringify(result.backend.raw, null, 2) }}</pre>
+              </details>
+            </div>
+            <footer class="drawer-footer">
+              <div class="drawer-footnote">
+                <Icon name="shield" :size="16" />请核对来源与适用条件后使用结论
+              </div>
+              <ThemeToggle />
+            </footer>
           </div>
-          <div>
-            <dt>来源文件 / 记录</dt>
-            <dd>{{ source.reference }}</dd>
-          </div>
-          <div v-if="source.version">
-            <dt>数据版本</dt>
-            <dd>{{ source.version }}</dd>
-          </div>
-          <div v-if="source.publishedAt">
-            <dt>来源发布时间</dt>
-            <dd>{{ source.publishedAt }}</dd>
-          </div>
-          <div v-if="source.snapshotAt">
-            <dt>库存快照时点</dt>
-            <dd>{{ source.snapshotAt }}</dd>
-          </div>
-          <div v-if="source.observedAt">
-            <dt>数据观察时间</dt>
-            <dd>{{ source.observedAt }}</dd>
-          </div>
-          <div v-if="source.effectiveFrom">
-            <dt>生效日期</dt>
-            <dd>{{ source.effectiveFrom }}</dd>
-          </div>
-          <div v-if="source.importBatch">
-            <dt>导入批次参考</dt>
-            <dd>{{ source.importBatch.slice(-8) }}</dd>
-          </div>
-          <div v-if="source.sheet">
-            <dt>工作表</dt>
-            <dd>{{ source.sheet }}</dd>
-          </div>
-          <div v-if="source.row">
-            <dt>来源行号</dt>
-            <dd>{{ source.row }}</dd>
-          </div>
-          <div v-if="source.sha256">
-            <dt>文件校验摘要</dt>
-            <dd>{{ source.sha256.slice(0, 12) }}</dd>
-          </div>
-          <div class="full-row">
-            <dt>适用条件</dt>
-            <dd>{{ source.conditions }}</dd>
-          </div>
-        </dl>
-      </article>
-    </div>
+        </Transition>
+      </dialog>
+    </Teleport>
   </section>
 </template>

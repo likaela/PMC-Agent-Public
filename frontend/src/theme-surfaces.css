@@ -1,0 +1,356 @@
+/* Theme role assignments for existing components, including body-mounted overlays. */
+html {
+  background: var(--canvas);
+}
+body,
+#app,
+.route-page {
+  min-height: 100dvh;
+  background: var(--background);
+  color: var(--text);
+}
+.route-page {
+  animation: route-arrive 220ms ease both;
+}
+@keyframes route-arrive {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+::selection {
+  background: var(--blue-hover);
+  color: var(--text);
+}
+:where(input, textarea, select, option, optgroup) {
+  color-scheme: var(--color-scheme);
+}
+select,
+option,
+optgroup {
+  background: var(--surface);
+  color: var(--text);
+}
+:where(input, textarea)::placeholder {
+  color: var(--quiet);
+  opacity: 1;
+}
+.sidebar,
+.mobile-header {
+  background: var(--sidebar);
+  border-color: var(--border);
+}
+.topbar {
+  background: var(--background);
+  border-color: var(--border);
+}
+.card,
+.welcome-examples button,
+.composer-input,
+.welcome-composer .composer-input,
+.help-dialog,
+.source-drawer-panel {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+.nav-item.is-active {
+  background: var(--blue-soft);
+  color: var(--link);
+  border: 1px solid var(--border-strong);
+}
+.nav-item:hover:not(.is-active),
+.secondary-button:hover,
+.icon-button:hover {
+  background: var(--surface-raised);
+}
+.brand-symbol,
+.primary-button,
+.send-button {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+.primary-button:hover,
+.send-button:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+.secondary-button {
+  background: var(--surface);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+.icon-button {
+  color: var(--muted);
+}
+.brand strong,
+.welcome-workspace h1,
+.page-heading h1,
+.card-heading h2,
+.result-body > h3,
+.next-action strong,
+.material-name strong,
+.source-title strong,
+.source-record-title strong,
+.drawer-header h2,
+.welcome-examples strong {
+  color: var(--text);
+}
+:where(
+  .brand small,
+  .page-heading p,
+  .breadcrumb,
+  .eyebrow,
+  .summary-label,
+  .summary-card > small,
+  .composer-hint,
+  .welcome-description,
+  .welcome-footnote,
+  .welcome-eyebrow,
+  .scenario-picker label,
+  .source-title small,
+  .source-record dt,
+  .source-record dd,
+  .drawer-header p,
+  .drawer-footer,
+  .table-footnote,
+  .material-name small,
+  .missing-value,
+  .message-meta,
+  .assistant-message small,
+  .welcome-message p,
+  .page-footer,
+  .table-scroll-hint,
+  .source-disclaimer
+) {
+  color: var(--muted);
+}
+.app-layout .text-button,
+.text-button,
+.source-inline,
+.result-detail-button,
+.report-step,
+.source-icon::before,
+.materials-card .card-heading h2::before {
+  color: var(--link);
+}
+.welcome-brand,
+.assistant-avatar,
+.scene-icon,
+.small-icon,
+.material-icon,
+.source-icon,
+.count-chip {
+  background: var(--surface-raised);
+  color: var(--link);
+  border-color: var(--border);
+}
+.welcome-input-area .scenario-picker select,
+.scenario-picker,
+.sidebar-note,
+.next-action,
+.purchase-grid > div,
+.soft-note,
+.help-steps li::before {
+  background: var(--surface-subtle);
+  border-color: var(--border);
+}
+.welcome-examples button:hover {
+  background: var(--surface-raised);
+  border-color: var(--border-strong);
+  box-shadow: none;
+}
+.welcome-examples small,
+.welcome-examples-heading,
+.composer-actions > span,
+.composer-actions kbd {
+  color: var(--muted);
+}
+.composer-input:focus-within,
+.welcome-composer .composer-input:focus-within {
+  border-color: var(--link);
+  box-shadow: 0 0 0 3px var(--focus-glow);
+}
+.send-button:disabled {
+  background: var(--neutral-bg);
+  color: var(--quiet);
+  opacity: 1;
+}
+.cancel-button {
+  color: var(--text);
+  background: var(--surface-raised);
+  border-color: var(--border-strong);
+}
+.user-message > div {
+  background: var(--blue-soft);
+  color: var(--text);
+}
+.assistant-message {
+  background: var(--surface-subtle);
+  color: var(--text);
+  border-color: var(--border);
+}
+.assistant-message.is-selected {
+  background: var(--surface-raised);
+  border-color: var(--border-strong);
+}
+.assistant-message:hover:not(:disabled) {
+  background: var(--surface-raised);
+}
+.assistant-message p,
+.result-body .result-explanation,
+.next-action p,
+.help-steps p,
+.source-drawer .source-record dd {
+  color: var(--text);
+}
+.warning-list {
+  background: var(--warning-bg);
+  border-color: var(--border-strong);
+}
+.warning-list h4,
+.warning-list ul,
+.shortage-number,
+.materials-card .shortage-number {
+  color: var(--orange);
+}
+.badge--orange {
+  color: var(--orange);
+  background: var(--warning-bg);
+}
+.badge--green {
+  color: var(--green);
+  background: var(--success-bg);
+}
+.badge--blue {
+  color: var(--link);
+  background: var(--blue-soft);
+}
+.badge--neutral {
+  color: var(--muted);
+  background: var(--neutral-bg);
+}
+.error-state .empty-icon,
+.diagnostic {
+  color: var(--error);
+  background: var(--error-bg);
+}
+.inline-notice,
+.mode-banner--live {
+  color: var(--muted);
+  background: var(--surface-subtle);
+}
+.result-detail-button {
+  background: var(--blue-soft);
+  border-color: var(--border);
+}
+.result-detail-button:hover {
+  background: var(--blue-hover);
+}
+.source-inline {
+  background: transparent;
+  border-color: var(--border);
+}
+.source-inline:hover {
+  background: var(--surface-raised);
+}
+.materials-card th {
+  color: var(--muted);
+  background: var(--surface-raised);
+  border-color: var(--border);
+}
+.materials-card td {
+  color: var(--text);
+  border-color: var(--border);
+  background: transparent;
+}
+.materials-card .shortage-row td {
+  background: var(--warning-bg);
+}
+.materials-card tbody tr:hover td {
+  background: var(--surface-raised);
+}
+.materials-card tbody tr.shortage-row:hover td {
+  background: var(--warning-hover);
+}
+.table-search,
+.table-filter {
+  background: var(--surface-subtle);
+  border-color: var(--border);
+  color: var(--muted);
+}
+.table-search input,
+.table-filter select {
+  color: var(--text);
+}
+.table-scroll {
+  border-color: var(--border);
+}
+.skeleton,
+.skeleton-report .skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-base) 20%,
+    var(--skeleton-highlight) 48%,
+    var(--skeleton-base) 78%
+  );
+  background-size: 220% 100%;
+}
+.skeleton-box,
+.card-heading,
+.drawer-header,
+.drawer-footer,
+.source-record,
+.source-drawer .source-record,
+.source-toggle,
+.source-details {
+  border-color: var(--border);
+}
+.loading-ring {
+  border-color: var(--border-strong);
+  border-top-color: var(--link);
+}
+.source-drawer {
+  color: var(--text);
+}
+.source-drawer::backdrop,
+.help-dialog::backdrop,
+.nav-backdrop {
+  background: var(--overlay);
+}
+.source-drawer .source-record {
+  background: var(--surface-subtle);
+}
+.source-drawer .source-record.highlighted {
+  background: var(--blue-soft);
+  border-color: var(--border-strong);
+}
+.source-drawer .source-disclaimer {
+  color: var(--muted);
+  background: var(--surface-raised);
+}
+.source-drawer .source-record-title strong {
+  color: var(--text);
+}
+.source-drawer .source-record dt,
+.source-drawer .drawer-footer,
+.source-drawer .drawer-header p {
+  color: var(--muted);
+}
+.source-toggle:hover {
+  background: var(--surface-raised);
+}
+.source-toggle-label,
+.source-toggle-label svg {
+  color: var(--link);
+}
+:where(.message-list, .table-scroll, .source-details, textarea, select) {
+  scrollbar-color: var(--scroll-thumb) var(--surface-subtle);
+}
+@media (prefers-reduced-motion: reduce) {
+  .route-page {
+    animation: none;
+  }
+}

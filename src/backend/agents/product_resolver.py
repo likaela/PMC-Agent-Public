@@ -76,5 +76,9 @@ def resolve_product(message, catalog, *, current_product=None, catalog_order=Non
 
 
 def product_overview_requested(message, product):
-    return bool(re.fullmatch(r"\s*(?:(?:查询|查看|查一下|看看|看一下|切换到|换成|回到(?:之前的)?)\s*)?"
-        + r"(?:那个|这个)?" + re.escape(product) + r"[。！？?\s]*", message, re.I))
+    if re.fullmatch(r"\s*(?:(?:查询|查看|查一下|看看|看一下|切换到|换成|回到(?:之前的)?|核验|核对|核实|确认|介绍|了解)\s*)?"
+        + r"(?:那个|这个)?" + re.escape(product) + r"[。！？?\s]*", message, re.I):
+        return True
+    # 会话已绑定产品时，“该产品/这个产品/核验该产品”等指代同样按产品概览处理。
+    return bool(re.fullmatch(r"\s*(?:(?:查询|查看|查一下|看看|看一下|核验|核对|核实|确认|介绍|了解)\s*)?"
+        + r"(?:那个|这个|该)?(?:产品|款)[。！？?\s]*", message))

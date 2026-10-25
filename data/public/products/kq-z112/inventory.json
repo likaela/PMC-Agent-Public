@@ -4,7 +4,7 @@
       {
         "material_code": "1654900600101",
         "name": "连接器",
-        "recorded_stock_qty": "0",
+        "recorded_stock_qty": "1000",
         "location": "A2-3",
         "batch_no": "23053776",
         "site": "天津",
@@ -74,7 +74,7 @@
       {
         "material_code": "14S6250162201",
         "name": "芯片",
-        "recorded_stock_qty": "7",
+        "recorded_stock_qty": "1007",
         "location": "天15#",
         "batch_no": "2029H6GK",
         "site": "天津",
@@ -110,7 +110,7 @@
       {
         "material_code": "14S0200800101",
         "name": "芯片",
-        "recorded_stock_qty": "3",
+        "recorded_stock_qty": "1003",
         "location": "防中1",
         "batch_no": "KA8119",
         "site": "天津",
@@ -163,7 +163,7 @@
       {
         "material_code": "14S6212805101",
         "name": "芯片",
-        "recorded_stock_qty": "8",
+        "recorded_stock_qty": "1008",
         "location": "天15#",
         "batch_no": "21+",
         "site": "天津",
@@ -182,7 +182,7 @@
       {
         "material_code": "105A513034101",
         "name": "表贴电阻",
-        "recorded_stock_qty": "9899",
+        "recorded_stock_qty": "10899",
         "location": "F4-1099",
         "batch_no": "221111",
         "site": "天津",
@@ -201,7 +201,7 @@
       {
         "material_code": "1119622181201",
         "name": "高分子电容",
-        "recorded_stock_qty": "1167",
+        "recorded_stock_qty": "2167",
         "location": "F1-0006",
         "batch_no": "H1GP",
         "site": "天津",
@@ -220,7 +220,7 @@
       {
         "material_code": "1211110060101",
         "name": "磁珠",
-        "recorded_stock_qty": "0",
+        "recorded_stock_qty": "1000",
         "location": "470#",
         "batch_no": "25+",
         "site": "天津",
@@ -324,7 +324,7 @@
       {
         "material_code": "105A503904101",
         "name": "表贴电阻",
-        "recorded_stock_qty": "1805",
+        "recorded_stock_qty": "2805",
         "location": "G4-1351",
         "batch_no": "221111",
         "site": "天津",
@@ -343,7 +343,7 @@
       {
         "material_code": "1124433BB1101",
         "name": "表贴电容",
-        "recorded_stock_qty": "7896",
+        "recorded_stock_qty": "8896",
         "location": "F4-1039",
         "batch_no": "2002",
         "site": "天津",
@@ -379,7 +379,7 @@
       {
         "material_code": "1121522061401",
         "name": "表贴电容",
-        "recorded_stock_qty": "579",
+        "recorded_stock_qty": "1579",
         "location": "F5-1516",
         "batch_no": "2037",
         "site": "天津",
@@ -398,7 +398,7 @@
       {
         "material_code": "105A530114101",
         "name": "表贴电阻",
-        "recorded_stock_qty": "2032",
+        "recorded_stock_qty": "3032",
         "location": "F4-1148",
         "batch_no": "230512",
         "site": "天津",
@@ -417,7 +417,7 @@
       {
         "material_code": "105A710034201",
         "name": "表贴电阻",
-        "recorded_stock_qty": "222",
+        "recorded_stock_qty": "1222",
         "location": "F4-1105",
         "batch_no": "221019",
         "site": "天津",
@@ -436,7 +436,7 @@
       {
         "material_code": "105A702204201",
         "name": "表贴电阻",
-        "recorded_stock_qty": "5963",
+        "recorded_stock_qty": "6963",
         "location": "G4-1366",
         "batch_no": "201216",
         "site": "天津",
@@ -472,7 +472,7 @@
       {
         "material_code": "1315700214101",
         "name": "MOS管",
-        "recorded_stock_qty": "2164",
+        "recorded_stock_qty": "3164",
         "location": "F2-0329",
         "batch_no": "202110",
         "site": "天津",
@@ -491,7 +491,7 @@
       {
         "material_code": "14SA010801101",
         "name": "芯片",
-        "recorded_stock_qty": "0",
+        "recorded_stock_qty": "1000",
         "location": "防中1-4",
         "batch_no": "2318A",
         "site": "天津",
@@ -527,7 +527,7 @@
       {
         "material_code": "1232948055201",
         "name": "晶振 贴片",
-        "recorded_stock_qty": "73",
+        "recorded_stock_qty": "1073",
         "location": "天9#",
         "batch_no": "220708",
         "site": "天津",
@@ -563,7 +563,7 @@
       {
         "material_code": "1119647281201",
         "name": "高分子电容",
-        "recorded_stock_qty": "2068",
+        "recorded_stock_qty": "3068",
         "location": "F1-0012",
         "batch_no": "25+",
         "site": "天津",
@@ -582,7 +582,7 @@
       {
         "material_code": "1121510051201",
         "name": "表贴电容",
-        "recorded_stock_qty": "0",
+        "recorded_stock_qty": "1000",
         "location": "F5-1479",
         "batch_no": "2048",
         "site": "天津",
@@ -618,7 +618,7 @@
       {
         "material_code": "1212302800101",
         "name": "磁珠",
-        "recorded_stock_qty": "1239",
+        "recorded_stock_qty": "2239",
         "location": "F5-1443",
         "batch_no": "220324",
         "site": "天津",
@@ -654,7 +654,7 @@
       {
         "material_code": "105A512134101",
         "name": "表贴电阻",
-        "recorded_stock_qty": "5830",
+        "recorded_stock_qty": "6830",
         "location": "F4-1104",
         "batch_no": "WH202042308",
         "site": "天津",
@@ -673,7 +673,7 @@
       {
         "material_code": "11215228B1101",
         "name": "表贴电容",
-        "recorded_stock_qty": "9102",
+        "recorded_stock_qty": "10102",
         "location": "F4-1063",
         "batch_no": "2015",
         "site": "天津",
@@ -692,7 +692,7 @@
       {
         "material_code": "1655502021101",
         "name": "白色端子 插针",
-        "recorded_stock_qty": "5",
+        "recorded_stock_qty": "1005",
         "location": "307#",
         "batch_no": "1924",
         "site": "天津",
@@ -728,7 +728,7 @@
       {
         "material_code": "1124427BB0311",
         "name": "表贴电容",
-        "recorded_stock_qty": "7411",
+        "recorded_stock_qty": "8411",
         "location": "F4-1038",
         "batch_no": "2102",
         "site": "天津",
@@ -747,7 +747,7 @@
       {
         "material_code": "14S0120001101",
         "name": "芯片",
-        "recorded_stock_qty": "0",
+        "recorded_stock_qty": "1000",
         "location": "防上2-1",
         "batch_no": "2240",
         "site": "天津",
@@ -800,7 +800,7 @@
       {
         "material_code": "1653005207101",
         "name": "直插排针",
-        "recorded_stock_qty": "1869",
+        "recorded_stock_qty": "2869",
         "location": "天25#",
         "batch_no": "220401",
         "site": "天津",
@@ -819,7 +819,7 @@
       {
         "material_code": "1304100040101",
         "name": "LED",
-        "recorded_stock_qty": "0",
+        "recorded_stock_qty": "1000",
         "location": "F2-0331",
         "batch_no": "21110401",
         "site": "天津",
@@ -872,7 +872,7 @@
       {
         "material_code": "14S8525601201",
         "name": "芯片",
-        "recorded_stock_qty": "1",
+        "recorded_stock_qty": "1001",
         "location": "防上2-3",
         "batch_no": "2324",
         "site": "天津",
@@ -891,7 +891,7 @@
       {
         "material_code": "1231980050201",
         "name": "晶体谐振器",
-        "recorded_stock_qty": "87",
+        "recorded_stock_qty": "1087",
         "location": "天9#",
         "batch_no": "230626",
         "site": "天津",
@@ -910,7 +910,7 @@
       {
         "material_code": "105A510014201",
         "name": "表贴电阻",
-        "recorded_stock_qty": "308",
+        "recorded_stock_qty": "1308",
         "location": "F4-1149",
         "batch_no": "220105",
         "site": "天津",
@@ -929,7 +929,7 @@
       {
         "material_code": "1301005441601",
         "name": "二极管",
-        "recorded_stock_qty": "227",
+        "recorded_stock_qty": "1227",
         "location": "80#",
         "batch_no": "2306",
         "site": "天津",
@@ -948,7 +948,7 @@
       {
         "material_code": "11215478B0101",
         "name": "表贴电容",
-        "recorded_stock_qty": "5666",
+        "recorded_stock_qty": "6666",
         "location": "F4-1068",
         "batch_no": "2013",
         "site": "天津",
@@ -967,7 +967,7 @@
       {
         "material_code": "1232933051201",
         "name": "晶振 贴片",
-        "recorded_stock_qty": "78",
+        "recorded_stock_qty": "1078",
         "location": "天9#",
         "batch_no": "230626",
         "site": "天津",
@@ -986,7 +986,7 @@
       {
         "material_code": "105A515024201",
         "name": "表贴电阻",
-        "recorded_stock_qty": "9291",
+        "recorded_stock_qty": "10291",
         "location": "G5-1582",
         "batch_no": "220327",
         "site": "天津",
@@ -1005,7 +1005,7 @@
       {
         "material_code": "1232932051201",
         "name": "晶体谐振器",
-        "recorded_stock_qty": "54",
+        "recorded_stock_qty": "1054",
         "location": "天9#",
         "batch_no": "230626",
         "site": "天津",

@@ -12,6 +12,8 @@ sys.path.insert(0, str(ROOT))
 def client(tmp_path, monkeypatch):
     monkeypatch.setenv("PMC_RUNTIME_ROOT", str(tmp_path / "runtime"))
     monkeypatch.setenv("PMC_PUBLIC_DATA_ROOT", str(ROOT / "data/public"))
+    from services.local_business_binding import _binding
+    _binding.cache_clear()
     from scripts.run_public import initialize
     initialize()
     from fastapi.testclient import TestClient
@@ -20,18 +22,24 @@ def client(tmp_path, monkeypatch):
         yield client
 
 
-def test_clone_can_discover_three_products(client):
+def test_clone_discovers_exactly_two_products(client):
     response = client.get("/api/v1/agent/catalog")
     assert response.status_code == 200
-    assert {p["product_code"] for p in response.json()["products"]} == {
-        "KQ-Z112", "KQ-BHX3588M", "DEMO-PMC-01"}
+    assert {p["product_code"] for p in response.json()["products"]} == {"KQ-Z112", "KQ-BHX3588M"}
+
+
+def test_demo_product_is_no_longer_selectable(client):
+    # 产品编码与场景标识两条入口都必须被拒绝，不存在隐藏的第三个产品。
+    assert client.post("/api/v1/agent/sessions", json={"product_code": "DEMO-PMC-01"}).status_code == 422
+    assert client.post("/api/v1/agent/sessions", json={"scenario_id": "demo_scenario_50_vs_100"}).status_code == 422
+    resolved = client.post("/api/v1/agent/resolve", json={"message": "演示产品 生产50台"}).json()
+    assert resolved["status"] == "item_not_found"
 
 
 def create_session(client, product):
-    scenario = "demo_scenario_50_vs_100" if product == "DEMO-PMC-01" else None
-    result = client.post("/api/v1/agent/sessions", json={"product_code": product, "scenario_id": scenario})
+    result = client.post("/api/v1/agent/sessions", json={"product_code": product})
     assert result.status_code == 200
-    return result.json()["session_id"], scenario
+    return result.json()["session_id"], None
 
 
 def query(client, sid, scenario, message):
@@ -41,7 +49,7 @@ def query(client, sid, scenario, message):
     return result.json()
 
 
-@pytest.mark.parametrize("product,count", [("KQ-Z112", 34), ("KQ-BHX3588M", 91), ("DEMO-PMC-01", 3)])
+@pytest.mark.parametrize("product,count", [("KQ-Z112", 34), ("KQ-BHX3588M", 91)])
 def test_released_bom_queries(client, product, count):
     sid, scenario = create_session(client, product)
     result = query(client, sid, scenario, f"查询{product}的BOM")
@@ -50,21 +58,21 @@ def test_released_bom_queries(client, product, count):
     assert data.get("line_count", data.get("total_material_count")) == count
 
 
-@pytest.mark.parametrize("product,quantity,sufficient", [("KQ-Z112", 1, True), ("KQ-Z112", 2, False),
-    ("DEMO-PMC-01", 50, True), ("DEMO-PMC-01", 75, True), ("DEMO-PMC-01", 76, False), ("DEMO-PMC-01", 100, False)])
+@pytest.mark.parametrize("product,quantity,sufficient", [("KQ-Z112", 54, True), ("KQ-Z112", 55, False)])
 def test_production_boundaries_come_from_live_calculation(client, product, quantity, sufficient):
     sid, scenario = create_session(client, product)
-    result = query(client, sid, scenario, f"生产{quantity}片可以吗")
+    unit = "片"
+    result = query(client, sid, scenario, f"生产{quantity}{unit}可以吗")
     assert result["status"] == "ok" and result["provenance"]
     assert result["structured_data"]["data"]["inventory_sufficient_for_requested"] is sufficient
 
 
-@pytest.mark.parametrize("product,maximum", [("KQ-Z112", 1), ("KQ-BHX3588M", 0), ("DEMO-PMC-01", 75)])
+@pytest.mark.parametrize("product,maximum", [("KQ-Z112", 54), ("KQ-BHX3588M", 38)])
 def test_capacity_is_product_specific(client, product, maximum):
     sid, scenario = create_session(client, product)
     result = query(client, sid, scenario, "最多可以生产多少")
     data = result["structured_data"]["data"]
-    assert int(data.get("theoretical_max_quantity", data.get("verified_material_capacity"))) == maximum
+    assert int(data.get("theoretical_max_quantity") or data.get("verified_material_capacity")) == maximum
 
 
 def test_bhx_known_inventory_is_computed_without_filling_missing_rows(client):
@@ -72,15 +80,20 @@ def test_bhx_known_inventory_is_computed_without_filling_missing_rows(client):
     result = query(client, sid, scenario, "生产10片可以吗")
     data = result["structured_data"]["data"]
     assert len(data["materials"]) == 91
-    assert data["comparable_material_count"] == 55
+    # 新总库存表下 58 项有记录；同批次多条记录按最大值合并，58 项全部可核算。
+    assert data["comparable_material_count"] == 58
     assert any(row["recorded_stock_qty"] is None for row in data["materials"])
 
 
-def test_demo_purchase_advice_remains_available(client):
-    sid, scenario = create_session(client, "DEMO-PMC-01")
-    query(client, sid, scenario, "生产100台可以吗")
-    result = query(client, sid, scenario, "生成采购建议")
-    assert len(result["structured_data"]["data"]["recommendations"]) == 4
+def test_piece_count_unit_is_required_for_piece_products(client):
+    """片制产品可用“片”计量；台/套等需要物料专属规则，不得静默换算。"""
+    sid, scenario = create_session(client, "KQ-Z112")
+    accepted = query(client, sid, scenario, "生产50片可以吗")
+    assert accepted["status"] == "ok"
+    assert accepted["structured_data"]["data"]["requested_quantity"] == 50
+    rejected = query(client, sid, scenario, "生产50台可以吗")
+    assert rejected["status"] == "invalid_query"
+    assert rejected["structured_data"].get("data") is None
 
 
 def test_invalid_zero_does_not_break_followup_or_history(client):

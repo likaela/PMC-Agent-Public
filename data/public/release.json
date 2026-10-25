@@ -7,23 +7,27 @@
     },
     "inventory_path": {
       "path": "inventory/observations.json",
-      "sha256": "893cc262447967117b306ccb0e3508101cae2861493fb7ccb03ac28a84570d26"
+      "sha256": "ff7ed40c2b5e7d818462163b32a1a4ccda4879684cb9a688b05c24acecc5d2ab"
     },
     "units_path": {
       "path": "inventory/units.json",
-      "sha256": "77090521b198341b15d89ef5334b8fb2dafa37ace75732079103a4a06edfe56e"
+      "sha256": "16ab8b713706618dd80f4ae1369a898b8cecad45e2b780fc95b5d9fa2349fefd"
     },
     "quantity_path": {
       "path": "inventory/quantity.json",
-      "sha256": "c4a33ac29c545e59aaabdf940efc81a9ed5aa4f6df1114b9ec48d52575b25166"
+      "sha256": "51ab44004075d1669f10b5158a35b73af108343c3960e62a7f2f8c226c6e3fbe"
     },
     "business_manifest_path": {
       "path": "products/kq-z112/manifest.json",
-      "sha256": "dcfb56de02008a81f04dfec9b0373c21928babc6a98581b368cf1e6296cdb710"
+      "sha256": "d1fac0e264fd2c2187dbd8cfab3c3728d78c5afe42747919a996f7b2014b408a"
     },
     "catalog_path": {
       "path": "products/catalog.json",
       "sha256": "b954f6d96bed6fa969c7c155e94505e55a57ed8b98c4f9d1cf12ee06cc76594d"
+    },
+    "product_names": {
+      "path": "products/product_names.json",
+      "sha256": "add8f4c095f72a82ce43fda659d3e2c481fb4eae51f58e036004bef05550ce39"
     },
     "current_bom": {
       "path": "products/kq-z112/bom.json",
@@ -31,7 +35,7 @@
     },
     "current_inventory": {
       "path": "products/kq-z112/inventory.json",
-      "sha256": "b88a97f27c1466573ffcdbc628e25a9acb6cc06089b152b60a9e1a3dcc4fd098"
+      "sha256": "6555116b193a67d47231732ee32dbe6f56de01d63ecd54763a095d983abade66"
     },
     "current_aliases": {
       "path": "products/kq-z112/aliases.json",
@@ -62,12 +66,11 @@
       "sha256": "1ed7401239a723f403fef875403bac54be652cf4f274272c4e6f03465643cbd4"
     }
   },
-  "authorization": "User authorized public distribution of required business data on 2026-10-12",
+  "authorization": "User authorized public distribution of required business data on 2026-10-12; main inventory table replaced on 2026-10-23 with every material's first record increased by 1000",
   "excluded": [
     "accounts",
     "sessions",
-    "archives",
-    "unrelated inventory sheets/materials"
+    "archives"
   ],
   "products": [
     {

@@ -192,6 +192,20 @@ class FactQueryRepository:
             )
             return _cursor_dicts(cursor)
 
+    def published_bom_parent_codes(self) -> set[str]:
+        """一次取回全部已发布 BOM 的父件料号。
+
+        逐行判断“是否为中间组件”时若按料号逐个查询，会为每一行新建一次
+        数据库连接；BOM 行数多时开销显著，因此提供批量口径供上层复用。
+        """
+        with self.store.transaction() as connection:
+            cursor = self.store.execute(
+                connection,
+                "SELECT DISTINCT h.parent_material_code FROM bom_headers h "
+                "JOIN import_batches b ON b.id = h.import_batch_id WHERE b.status = 'published'",
+            )
+            return {row[0] for row in cursor.fetchall()}
+
     def list_unit_conversions(self, item_id: str) -> list[dict[str, object]]:
         """返回已发布的显式换算事实，不从单位名称推导比例。"""
         with self.store.transaction() as connection:
