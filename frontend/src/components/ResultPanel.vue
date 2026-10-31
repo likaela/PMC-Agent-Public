@@ -5,6 +5,10 @@ import StatusBadge from "./StatusBadge.vue";
 import WarningList from "./WarningList.vue";
 import AnalysisState from "./AnalysisState.vue";
 import ThoughtLine from "./ThoughtLine.vue";
+import InventoryGapChart from "./InventoryGapChart.vue";
+import ShortageBarChart from "./ShortageBarChart.vue";
+import InventoryTrendChart from "./InventoryTrendChart.vue";
+import { buildGapGroups, buildShortageGroups, buildInventoryTrends } from "../services/analysisChart";
 import { useAgent } from "../composables/useAgent";
 import { statusText } from "../data/model";
 import { isTraceComplete, settledSteps } from "../services/analysisTrace";
@@ -39,6 +43,21 @@ function confirmExecution() {
 const traceSteps = computed(() => settledSteps(result.value?.backend?.steps));
 const traceComplete = computed(() =>
   isTraceComplete(result.value?.backend?.steps),
+);
+// Pure presentation of the selected result, never a new query or calculation.
+const chartResult = computed(() =>
+  !pending.value && result.value?.backend?.status === "ok"
+    ? result.value.backend : undefined,
+);
+const chartGroups = computed(() =>
+  buildGapGroups(chartResult.value?.rows, chartResult.value?.resultType, chartResult.value?.raw),
+);
+const shortageGroups = computed(() =>
+  buildShortageGroups(chartResult.value?.rows, chartResult.value?.resultType, chartResult.value?.raw),
+);
+const trendSeries = computed(() =>
+  ["inventory", "production", "shortage", "maximum"].includes(chartResult.value?.resultType ?? "")
+    ? buildInventoryTrends(chartResult.value?.raw) : [],
 );
 </script>
 <template>
@@ -96,6 +115,13 @@ const traceComplete = computed(() =>
         </div>
         <h3>{{ result.title }}</h3>
         <p class="result-explanation">{{ result.answer }}</p>
+        <details v-if="chartGroups.length || shortageGroups.length || trendSeries.length"
+          class="result-charts" open>
+          <summary>数据图表 <span>与本次物料明细一致</span></summary>
+          <InventoryGapChart v-if="chartGroups.length" :groups="chartGroups" />
+          <ShortageBarChart v-if="shortageGroups.length" :groups="shortageGroups" />
+          <InventoryTrendChart v-if="trendSeries.length" :series="trendSeries" />
+        </details>
         <section v-if="inventory" class="inventory-confirmation" aria-label="库存预览与执行回执">
           <template v-if="inventory.kind === 'preview'">
             <p>仅生成领料预览，尚未扣减库存。请核对物料需求与批次分配。</p>
@@ -162,6 +188,7 @@ const traceComplete = computed(() =>
     </Transition>
   </section>
 </template>
+<style src="../chart.css"></style>
 <style scoped>
 .inventory-confirmation { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border, #e7ebef); }
 .inventory-confirmation-form { display: grid; gap: 12px; margin-top: 14px; }

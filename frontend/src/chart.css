@@ -1,0 +1,364 @@
+.result-charts {
+  min-width: 0;
+  margin: 16px 0;
+}
+.result-charts > summary {
+  cursor: pointer;
+  color: var(--text);
+  font-size: 12px;
+  padding: 10px 0;
+}
+.result-charts > summary span {
+  margin-left: 8px;
+  color: var(--muted);
+  font-size: 11px;
+}
+/* SVG chart styles reused from the supplied frontend; no page-wide resets. */
+.gap-chart {
+  margin: 4px 0 18px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  min-width: 0;
+}
+.gap-chart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.gap-chart-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+.gap-chart-unit {
+  font-size: 11px;
+  color: var(--muted);
+}
+.gap-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: center;
+  margin: 8px 0 4px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.gap-legend-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  margin-right: 5px;
+  vertical-align: -1px;
+}
+.gap-legend-dot.demand {
+  background: var(--primary);
+}
+.gap-legend-dot.stock {
+  background: var(--green);
+}
+.gap-legend-dot.slot {
+  background: repeating-linear-gradient(
+    45deg,
+    transparent 0 2px,
+    var(--border-strong) 2px 4px
+  );
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+}
+.gap-legend-note {
+  color: var(--quiet);
+}
+.gap-chart-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.gap-svg {
+  display: block;
+  min-width: 100%;
+}
+.gap-grid {
+  stroke: var(--border);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  opacity: 0.7;
+}
+.gap-tick {
+  fill: var(--muted);
+  font-size: 10px;
+}
+.gap-bar.demand {
+  fill: var(--primary);
+}
+.gap-bar.stock {
+  fill: var(--green);
+}
+.gap-bar {
+  cursor: default;
+  transition: opacity 150ms ease;
+}
+.gap-group:hover .gap-bar {
+  opacity: 0.85;
+}
+.gap-slot {
+  fill: none;
+  stroke: var(--border-strong);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+.gap-x-label {
+  fill: var(--muted-strong);
+  font-size: 9px;
+}
+.gap-missing-line {
+  fill: var(--error);
+  font-size: 9px;
+}
+.gap-scroll-hint {
+  display: block;
+  text-align: right;
+  font-size: 10px;
+  color: var(--quiet);
+  margin-top: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .gap-bar {
+    transition: none;
+  }
+}
+
+/* 缺料横向条形图（阶段二，2026-10-29） */
+.shortage-chart {
+  margin: 4px 0 18px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  min-width: 0;
+}
+.shortage-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.shortage-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+.shortage-caption {
+  font-size: 11px;
+  color: var(--muted);
+}
+.shortage-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  align-items: center;
+  margin: 8px 0 10px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.shortage-legend-bar {
+  display: inline-block;
+  width: 14px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--orange);
+  margin-right: 5px;
+}
+.shortage-legend-note {
+  color: var(--quiet);
+}
+.shortage-unit + .shortage-unit {
+  margin-top: 12px;
+}
+.shortage-unit-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.shortage-scroll {
+  max-height: 320px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  padding-right: 4px;
+}
+.shortage-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.shortage-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 36%) minmax(80px, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+.shortage-row:hover {
+  background: var(--surface-raised);
+}
+.shortage-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.shortage-name strong {
+  font-size: 11px;
+  color: var(--text);
+  font-weight: 600;
+  word-break: break-all;
+}
+.shortage-name small {
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.5;
+  word-break: break-all;
+}
+.shortage-track {
+  position: relative;
+  height: 11px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.shortage-fill {
+  display: block;
+  height: 100%;
+  background: var(--orange);
+  border-radius: 2px;
+  min-width: 2px;
+}
+.shortage-value {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  justify-content: flex-end;
+  min-width: 52px;
+  font-variant-numeric: tabular-nums;
+}
+.shortage-value strong {
+  font-size: 12px;
+  color: var(--orange);
+}
+.shortage-value small {
+  font-size: 10px;
+  color: var(--muted);
+}
+.shortage-scroll-hint {
+  display: block;
+  text-align: right;
+  font-size: 10px;
+  color: var(--quiet);
+  margin-top: 4px;
+}
+.shortage-note {
+  margin: 8px 0 0;
+  font-size: 10px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.shortage-note span {
+  display: block;
+}
+@media (max-width: 760px) {
+  .shortage-row {
+    grid-template-columns: minmax(96px, 40%) minmax(64px, 1fr) auto;
+    gap: 8px;
+  }
+  .shortage-scroll {
+    max-height: 280px;
+  }
+}
+
+/* 库存变化趋势（阶段三，2026-10-29） */
+.trend-chart {
+  margin: 4px 0 18px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  min-width: 0;
+}
+.trend-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.trend-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+.trend-caption {
+  font-size: 11px;
+  color: var(--muted);
+}
+.trend-series + .trend-series {
+  margin-top: 12px;
+}
+.trend-series-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: baseline;
+  margin: 8px 0 2px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.trend-series-head strong {
+  color: var(--text);
+}
+.trend-series-head small {
+  font-size: 10px;
+  color: var(--muted);
+}
+.trend-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.trend-grid {
+  stroke: var(--border);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  opacity: 0.7;
+}
+.trend-tick,
+.trend-x-label {
+  fill: var(--muted);
+  font-size: 9px;
+}
+.trend-line {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.trend-point {
+  fill: var(--primary);
+  stroke: var(--surface);
+  stroke-width: 1.5;
+}
+.trend-point:hover {
+  fill: var(--link);
+}
+.trend-note {
+  margin: 2px 0 16px;
+  font-size: 10px;
+  line-height: 1.7;
+  color: var(--quiet);
+}

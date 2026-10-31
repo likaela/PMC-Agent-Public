@@ -184,6 +184,8 @@ export function adaptBackendResponse(payload: unknown): AgentResult {
     columns.push(
       col("recorded_stock_qty", "账面记录数量", true),
       col("actual_stock_qty", "核验库存数量", true),
+      // Already calculated by R19; never convert stock units in the frontend.
+      col("stock_qty_in_bom_unit", "核对库存（物料单位）", true),
       col("available_qty", "可用库存", true),
       col("on_hand_qty", "在库数量", true),
       col("reserved_qty", "预留数量", true),
@@ -211,6 +213,8 @@ export function adaptBackendResponse(payload: unknown): AgentResult {
       );
     }
     columns.push(col("unit", "物料单位"), col("status", "核对状态"));
+    if (rows.some((row) => row.stock_unit != null))
+      columns.push(col("stock_unit", "原库存单位"));
   } else if (kind === "purchase") {
     rows = list(d.recommendations).map((x) => ({
       ...x,
