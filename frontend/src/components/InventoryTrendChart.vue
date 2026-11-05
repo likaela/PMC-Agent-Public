@@ -83,7 +83,7 @@ function xLabels(series: TrendSeries): { x: number; text: string }[] {
   <figure v-if="series.length" class="trend-chart">
     <figcaption class="trend-head">
       <span class="trend-title">库存变化趋势</span>
-      <span class="trend-caption">仅展示后端提供的真实历史快照/流水</span>
+      <span class="trend-caption">历史库存</span>
     </figcaption>
     <section
       v-for="item in series"

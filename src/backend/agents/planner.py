@@ -231,6 +231,9 @@ class AgentPlanner:
         if rule.intent == "inbound":
             return rule, "legacy"  # Existing inbound capability remains outside the five-tool registry.
         try:
+            from services.chart_ai_pipeline import enabled
+            if enabled():
+                return rule, "rule"
             if self.llm_status().get("status") != "ok":
                 return rule, "rule_fallback"
             result = self.llm_factory().with_structured_output(AgentPlan, method="json_mode").invoke([

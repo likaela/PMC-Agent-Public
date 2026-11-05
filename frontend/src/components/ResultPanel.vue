@@ -5,6 +5,8 @@ import StatusBadge from "./StatusBadge.vue";
 import WarningList from "./WarningList.vue";
 import AnalysisState from "./AnalysisState.vue";
 import ThoughtLine from "./ThoughtLine.vue";
+import ChartAiInterpretation from "./ChartAiInterpretation.vue";
+import AgentExecutionTrace from "./AgentExecutionTrace.vue";
 import InventoryGapChart from "./InventoryGapChart.vue";
 import ShortageBarChart from "./ShortageBarChart.vue";
 import InventoryTrendChart from "./InventoryTrendChart.vue";
@@ -80,8 +82,9 @@ const trendSeries = computed(() =>
         :key="pending ? 'pending' : selected?.state"
       />
       <div v-else :key="selected?.id" class="result-body">
+        <AgentExecutionTrace :events="result.backend?.executionTrace" />
         <ThoughtLine
-          v-if="traceSteps.length"
+          v-if="traceSteps.length && !result.backend?.executionTrace?.length"
           :working="false"
           :done-label="traceComplete ? '分析完成' : '分析结束'"
           :settled-ms="selected?.elapsedMs"
@@ -108,7 +111,7 @@ const trendSeries = computed(() =>
                     ? "请补充条件"
                     : result.backend.status === "invalid_query"
                       ? "输入无效"
-                      : "业务数据未完整返回"
+                      : result.backend.status === "model_unavailable" ? "问题理解未完成" : "查询未完成"
                 : statusText[result.status]
             }}</StatusBadge
           ><span>{{ result.sources[0]?.kind }}</span>
@@ -119,18 +122,19 @@ const trendSeries = computed(() =>
           class="result-charts" open>
           <summary>数据图表 <span>与本次物料明细一致</span></summary>
           <InventoryGapChart v-if="chartGroups.length" :groups="chartGroups" />
+          <ChartAiInterpretation :analysis="result.backend?.chartAi" />
           <ShortageBarChart v-if="shortageGroups.length" :groups="shortageGroups" />
           <InventoryTrendChart v-if="trendSeries.length" :series="trendSeries" />
         </details>
         <section v-if="inventory" class="inventory-confirmation" aria-label="库存预览与执行回执">
           <template v-if="inventory.kind === 'preview'">
-            <p>仅生成领料预览，尚未扣减库存。请核对物料需求与批次分配。</p>
-            <p v-if="!inventory.executionAvailable">当前环境未开放库存执行。</p>
-            <p v-else-if="expired">预览已失效或有效期无法核实，请重新生成预览。</p>
+            <p>请核对领料预览中的物料需求与批次分配。</p>
+            <p v-if="!inventory.executionAvailable">库存执行未开放。</p>
+            <p v-else-if="expired">预览已失效，请重新生成。</p>
             <p v-else-if="!executable && inventory.canExecute">请在原会话的最新有效预览中操作。</p>
           </template>
           <p v-else-if="inventory.executed">库存扣减已确认，以下为服务端保存的执行回执。</p>
-          <p v-else>当前没有已确认成功的库存扣减回执。</p>
+          <p v-else>库存回执待核实。</p>
           <ul v-if="inventory.blockers.length">
             <li v-for="blocker in inventory.blockers" :key="blocker">{{ blocker }}</li>
           </ul>
@@ -180,7 +184,7 @@ const trendSeries = computed(() =>
             @click="$emit('source')"
           >
             <Icon name="link" :size="15" /><span
-              >查看本次分析来源与适用条件</span
+              >查看本次分析来源</span
             ><Icon name="arrow" :size="15" />
           </button>
         </div>

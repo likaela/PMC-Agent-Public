@@ -30,7 +30,11 @@ def present_query(response, message, binding=None):
     presentation.update(result_type=result_type, policy_version="business_result_v1")
     # Keep raw warnings with the structured audit/Evidence, not as KPI cards.
     structured.setdefault("audit_warnings", copy.deepcopy(value.get("warnings", [])))
-    presentation["user_warnings"] = [] if value["status"] == "ok" else copy.deepcopy(value.get("warnings", []))
+    # User messages describe the business state; raw diagnostics remain above.
+    states = {"query_failed":"数据读取失败，请重试。", "invalid_query":"请核对查询参数。",
+              "item_not_found":"未找到匹配记录。", "item_alias_ambiguous":"请确认具体物料编码。",
+              "data_unavailable":"本次数据待核实。"}
+    presentation["user_warnings"] = ([states[value["status"]]] if value["status"] in states else [])
     if data.get("calculation_scope") == "excel_book_observation":
         presentation["user_warnings"] = []  # Scope is already expressed beside the result.
     elif kind == "inventory" and value["status"] == "ok" and data.get("calculation_scope") not in (
@@ -42,7 +46,7 @@ def present_query(response, message, binding=None):
         known = [f"{label}{number}{item.get('unit') or ''}" for label, number in fields if number is not None]
         value["answer"] = f"{code}：" + ("；".join(known) + "。" if known else "当前没有可展示的库存数量。")
         if re.search(r"能.*用|可用|预留", message) and data.get("available_qty") is None:
-            value["answer"] += "可用量未知，现有在库数量不能确定可用量。"
+            value["answer"] += "可用量未提供。"
     if kind == "production_capacity" and data and not data.get("slim_review") and data.get("calculation_scope") != "excel_book_observation" and value["status"] == "ok" and result_type != "source":
         n, sufficient = data.get("requested_quantity"), data.get("inventory_sufficient_for_requested")
         if n is not None and not maximum_requested(message) and isinstance(sufficient, bool):
@@ -54,6 +58,5 @@ def present_query(response, message, binding=None):
             if shortages:
                 value["answer"] += "不足物料：" + "；".join(f"{r.get('material_code')}缺{r.get('shortage_qty')}" for r in shortages[:5]) + "。"
             if structured.get("reused_from_turn_id"):
-                value["answer"] = "依据本会话已有结果（不是最新库存重查）：" + value["answer"]
-            value["answer"] += "库存核对不代表正式生产放行。"
+                value["answer"] = "沿用本会话分析结果：" + value["answer"]
     return value

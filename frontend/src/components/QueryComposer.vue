@@ -69,7 +69,7 @@ function onKey(event: KeyboardEvent) {
             class="cancel-button"
             aria-label="停止等待本次响应"
             type="button"
-            title="停止等待本次响应，不代表后端计算已停止"
+            title="停止等待本次响应"
             @click="cancel()"
           >
             <Icon name="stop" :size="14" />停止等待</button

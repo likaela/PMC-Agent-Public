@@ -14,7 +14,7 @@
     "test": "npm run test:unit",
     "test:e2e": "playwright test",
     "format": "prettier --write src tests *.ts *.json index.html",
-    "test:unit": "node --test tests/inventory_confirmation.test.mjs tests/session_execution_isolation.test.mjs tests/chart.test.mjs tests/chart_integration.test.mjs"
+    "test:unit": "node --test tests/inventory_confirmation.test.mjs tests/session_execution_isolation.test.mjs tests/chart.test.mjs tests/chart_integration.test.mjs tests/chart_ai.test.mjs"
   },
   "dependencies": {
     "@vueuse/core": "14.4.0",

@@ -91,6 +91,8 @@ export function createLiveService(): AgentQueryService {
         scenario_id: null,
         catalog_order: catalogOrder,
       })) as ProductResolution;
+      if (value.status === "model_unavailable")
+        throw new QueryError("network", value.answer || "问题理解未完成，请重试。", "MODEL_UNAVAILABLE");
       if (
         typeof value.status !== "string" ||
         !(value.product_code === null || typeof value.product_code === "string")
@@ -161,7 +163,7 @@ export function createLiveService(): AgentQueryService {
           { "X-Inventory-Write-Token": credential },
         ));
       } catch (error) {
-        if (timedOut) throw new QueryError("network", "执行等待超时，请同步历史核实结果；不会自动重试。", "EXECUTION_TIMEOUT");
+        if (timedOut) throw new QueryError("network", "执行等待超时，请同步历史核实结果。", "EXECUTION_TIMEOUT");
         throw error;
       } finally {
         clearTimeout(timer);
@@ -178,16 +180,17 @@ export function createLiveService(): AgentQueryService {
       ));
     },
     async query(input, signal) {
-      if (!input.session)
+      if (!input.session && !input.understandingId)
         throw new QueryError("unconfigured", "请在问题中提供产品型号。");
-      if (input.session.scenario_id !== null)
+      if (input.session && input.session.scenario_id !== null)
         throw new QueryError("unsupported", "当前版本仅连接已发布业务数据。");
       return adaptBackendResponse(
         await requestJson(`${prefix}/query`, signal, {
           message: input.text,
-          session_id: input.session.session_id,
+          session_id: input.session?.session_id ?? null,
           persist_session: true,
-          scenario_id: input.session.scenario_id,
+          scenario_id: input.session?.scenario_id ?? null,
+          ...(input.understandingId ? { understanding_id: input.understandingId } : {}),
         }),
       );
     },

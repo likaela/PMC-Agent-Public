@@ -52,7 +52,7 @@ watch(
             {{ stageText }}<span class="loading-dots">···</span>
           </p>
           <p v-else-if="message.state === 'cancelled'">
-            已停止等待本次响应；不代表后端计算已停止。
+            已停止等待，请同步对话。
           </p>
           <p v-else-if="message.error">{{ message.error.message }}</p>
           <p v-else>{{ message.result?.answer }}</p>

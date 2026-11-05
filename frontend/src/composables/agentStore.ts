@@ -142,11 +142,11 @@ export function createAgentStore(
   function validBinding(s: SessionBinding) {
     return (
       s.scenario_id === null &&
-      products.value.some(
+      ((s.product_code === "" && s.mode === "catalog") || products.value.some(
         (p) =>
           p.product_code === s.product_code &&
           p.modes.some((m) => m.mode === s.mode && m.scenario_id === null),
-      )
+      ))
     );
   }
   function remember() {
@@ -182,8 +182,8 @@ export function createAgentStore(
     }
     markUncertain(currentSessionId(), queryStarted);
     notice.value = needsSync.value
-      ? "已停止等待。后端可能已保存结果，请同步对话后继续。"
-      : "已停止等待，未发送业务查询。可以修改问题后重试。";
+      ? "已停止等待，请同步对话后继续。"
+      : "已停止等待。可以修改问题后重试。";
   }
   function clearMessages() {
     messages.value = [];
@@ -330,6 +330,9 @@ export function createAgentStore(
           ]
         : mapped;
       selectedId.value = messages.value.at(-1)?.id ?? null;
+      const shownCatalog = [...messages.value].reverse().find(message => message.result?.backend?.resultType === "catalog");
+      if (shownCatalog?.result?.backend)
+        catalogOrder = shownCatalog.result.backend.rows.map(row => row.product_code).filter((code): code is string => !!code);
       after = page.turns.at(-1)?.sequence_no ?? (more ? after : 0);
       hasMore.value = page.turns.length === 50;
       // Only this session's own uncertainty can be resolved or reported here.
@@ -373,9 +376,9 @@ export function createAgentStore(
       session.value.turn_id = messages.value.at(-1)?.turnId;
       remember();
       notice.value = recoveredFromLedger
-        ? "已从库存账本核实执行回执，没有重新执行；会话历史尚未同步时以该回执为准。"
+        ? "已从库存账本核实执行回执。"
         : needsSync.value
-        ? "尚未找到本次库存执行回执，请继续核实；不会自动重新执行。"
+        ? "库存执行回执待核实，请同步历史。"
         : hasMore.value
         ? "还有历史记录，加载完成后可继续提问。"
         : "已恢复对话，可以接着问。";
@@ -470,6 +473,29 @@ export function createAgentStore(
         abort.signal,
       );
       if (!current()) return;
+      // AI-enabled resolution references server-owned parsed input. Catalog and
+      // clarification are persisted backend results, not locally authored answers.
+      if (resolved.understanding_id && (resolved.catalog_query || resolved.status !== "ok" || !products.value.some(p => p.product_code === resolved.product_code))) {
+        queryStarted = true;
+        pendingStage.value = "query";
+        const data = await service.query({ text, session: session.value ? { ...session.value } : undefined,
+          understandingId: resolved.understanding_id }, abort.signal);
+        if (!current() || !(await finish(data))) return;
+        if (resolved.catalog_query) catalogOrder = products.value.map(p => p.product_code);
+        if (data.backend?.sessionId) {
+          if (!session.value) {
+            session.value = { session_id: data.backend.sessionId, conversation_id: data.backend.conversationId,
+              product_code: "", mode: "catalog", scenario_id: null };
+            productCode.value = "";
+            scopeMode.value = "catalog";
+          }
+          session.value.session_id = data.backend.sessionId;
+          session.value.conversation_id = data.backend.conversationId || session.value.conversation_id;
+          session.value.turn_id = data.backend.turnId || session.value.turn_id;
+          remember();
+        }
+        return;
+      }
       if (resolved.catalog_query) {
         await finish(catalogResult());
         return;
@@ -557,7 +583,8 @@ export function createAgentStore(
       queryStarted = true;
       pendingStage.value = "query";
       const data = await service.query(
-        { text: executionText, session: { ...session.value! } },
+        { text: resolved.understanding_id ? text : executionText, session: { ...session.value! },
+          ...(resolved.understanding_id ? { understandingId: resolved.understanding_id } : {}) },
         abort.signal,
       );
       if (!current()) return;
@@ -670,8 +697,8 @@ export function createAgentStore(
         uncertainSessions.delete(binding.session_id);
       }
       refreshNeedsSync();
-      notice.value = rejected ? "库存执行未获通过，本次不会自动重试。"
-        : "库存执行结果尚未确认，请同步历史核实；不会自动重试或创建新扣减任务。";
+      notice.value = rejected ? "库存执行未获通过，请检查本次预览。"
+        : "库存执行结果待核实，请同步历史。";
     } finally {
       // The component also clears its input before calling this method.
       credential = "";

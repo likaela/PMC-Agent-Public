@@ -24,8 +24,8 @@ def catalog_kind(message):
     return "enterprise" if re.search(r"只.*(?:企业|正式)|正式企业|企业正式", message) else "synthetic" if re.search(r"哪些.*Demo", message, re.I) else "all"
 
 
-def catalog_query(service, session_id, message, entries):
-    kind = catalog_kind(message)
+def catalog_query(service, session_id, message, entries, *, execution_message=None):
+    kind = catalog_kind(execution_message or message)
     if kind is None:
         return None
     entries = [p for p in entries if kind == "all" or p["synthetic"] == (kind == "synthetic")]
@@ -53,7 +53,9 @@ def overview_query(service, session_id, message, entry, scope):
     """Read the bound published BOM, without invoking inventory/capacity tools."""
     session = service.repository.get_session(session_id)
     args = dict(parent_material_code=entry["product_code"], revision=entry["revision"])
-    output = service.orchestrator.registry.resolve("bom_query").invoke(args)
+    from services.chart_ai_pipeline import tool_execution
+    with tool_execution("bom_query"):
+        output = service.orchestrator.registry.resolve("bom_query").invoke(args)
     data = dict(product=entry["product_code"], revision=entry["revision"], unit=entry.get("unit"),
         line_count=scope["line_count"], analysis_scope=scope["label"], capabilities=entry.get("capabilities", [])) if output["status"] == "ok" else None
     response = dict(intent="fact_query", status=output["status"],

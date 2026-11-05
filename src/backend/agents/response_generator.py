@@ -56,6 +56,9 @@ class ResponseGenerator:
                 kind == "production_capacity" for kind in kinds):
             return NO_EVIDENCE + "。" + fallback, "deterministic"
         try:
+            from services.chart_ai_pipeline import enabled
+            if enabled():
+                return fallback, "deterministic"
             if self.llm_status().get("status") != "ok":
                 return fallback, "rule_fallback"
             result = self.llm_factory().with_structured_output(GroundedReply, method="json_mode").invoke([

@@ -82,6 +82,8 @@ class AgentConversationRepository:
 
     def _append_turn(self, session: dict, message: str, response: dict, context: dict,
                      references: list[dict], *, dedupe_task_id: str | None = None) -> tuple[str, dict | None]:
+        from services.chart_ai_pipeline import finish_response
+        finish_response(response)
         now, turn_id = datetime.now(UTC).isoformat(), str(uuid4())
         version = session["context_version"]
         with self.store.transaction(write_lock=True) as connection:

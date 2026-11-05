@@ -140,7 +140,7 @@ defineExpose({ reveal });
                 <Icon
                   name="info"
                   :size="16"
-                />以下展示本次回答引用的数据来源；未提供的字段如实标明。
+                />本次回答引用的业务数据来源。
               </p>
               <div v-if="!result?.sources.length" class="source-no-data">
                 本次尚无来源可展示。
@@ -170,7 +170,7 @@ defineExpose({ reveal });
                     <dt>原始记录 ID</dt>
                     <dd>
                       {{
-                        source.recordId ?? "未提供（展示标识不等同于业务记录）"
+                        source.recordId ?? "未提供"
                       }}
                     </dd>
                   </div>

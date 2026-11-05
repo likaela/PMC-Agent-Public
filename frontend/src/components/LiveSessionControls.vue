@@ -30,6 +30,7 @@ async function reconnect() {
         ><Icon name="layers" :size="15" />{{ product.product_code
         }}<small>{{ scope?.label }}</small></span
       >
+      <span v-else-if="session" class="context-product"><Icon name="layers" :size="15" />产品目录</span>
       <span v-if="connecting" role="status" class="backend-note">{{
         ready ? "正在同步对话…" : "正在连接业务数据…"
       }}</span>

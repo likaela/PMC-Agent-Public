@@ -21,6 +21,7 @@ export interface ProductResolution {
   answer?: string;
   explicit?: boolean;
   analysis_mode?: string | null;
+  understanding_id?: string;
 }
 export interface SessionBinding {
   session_id: string;
@@ -73,6 +74,19 @@ export interface InventoryExecuteInput {
   confirmed: true;
   scenario_id?: string | null;
 }
+export interface ChartAiView {
+  status: "ok" | "loading" | "unavailable" | "not_applicable";
+  source?: string;
+  sections?: { conclusion: string; findings: string[]; impact: string; actions: string[] };
+  errorCode?: string;
+}
+export interface AgentExecutionEvent {
+  stage: string;
+  status: string;
+  summary: string;
+  durationMs?: number;
+  details: { label: string; value: string }[];
+}
 export interface BackendView {
   resultType: string;
   status: string;
@@ -86,5 +100,7 @@ export interface BackendView {
   /** Backend-reported tool trace (structured_data.completed_steps); never inferred. */
   steps: AnalysisStep[];
   inventoryOperation?: InventoryOperationView;
+  chartAi?: ChartAiView;
+  executionTrace?: AgentExecutionEvent[];
   raw: unknown;
 }

@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import Icon from "./Icon.vue";
 import { formatNumber, type AgentResult } from "../data/model";
-defineProps<{ result?: AgentResult }>();
+const props = defineProps<{ result?: AgentResult }>();
+const actions = computed(() => props.result?.backend?.chartAi?.status === "ok" ? props.result.backend.chartAi.sections?.actions ?? [] : []);
 </script>
 <template>
   <section
@@ -13,7 +15,7 @@ defineProps<{ result?: AgentResult }>();
       <h2 id="recommendation-title">
         <span class="report-step">03</span>建议与下一步
       </h2>
-      <span class="subtle-label">仅供参考 · 需人工核实</span>
+      <span class="subtle-label">下一步操作</span>
     </div>
     <div class="recommendation-content">
       <div v-if="result.purchase" class="purchase-summary">
@@ -42,7 +44,8 @@ defineProps<{ result?: AgentResult }>();
         </div>
         <p class="purchase-note">{{ result.purchase.note }}</p>
       </div>
-      <div class="next-action">
+      <ul v-if="actions.length" class="business-actions"><li v-for="(action, index) in actions" :key="index">{{ action }}</li></ul>
+      <div v-else class="next-action">
         <span class="next-action-icon"><Icon name="arrow" :size="18" /></span>
         <div>
           <strong>{{ result.conclusion }}</strong>

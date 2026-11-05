@@ -5,9 +5,9 @@ import { useAgent } from "../composables/useAgent";
 const { selected, pending, retry, canSend } = useAgent();
 const errorTitles = {
   network: "请求失败，请重试",
-  mapping: "当前结果暂无法完整展示",
+  mapping: "结果读取失败",
   unconfigured: "请补充产品信息",
-  unsupported: "当前问题暂不支持",
+  unsupported: "请明确业务问题",
 };
 </script>
 <template>
@@ -58,7 +58,7 @@ const errorTitles = {
     <p>
       {{
         selected?.state === "cancelled"
-          ? "已停止等待，迟到响应将被忽略；不代表后端计算已停止。同步对话后可继续提问。"
+          ? "已停止等待，请同步对话后继续提问。"
           : "发送问题后，查看分析结论、物料缺口和可追溯的数据来源。"
       }}
     </p>

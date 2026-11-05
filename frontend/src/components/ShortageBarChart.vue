@@ -39,7 +39,7 @@ function speak(item: ShortageItem, unit: string): string {
     <div class="shortage-legend">
       <span><i class="shortage-legend-bar" aria-hidden="true"></i>缺口数量</span
       ><span class="shortage-legend-note"
-        >只列需要处理的物料；未提供/未量化的缺口不计入</span
+        >按已核算缺口排序</span
       >
     </div>
     <section
@@ -99,14 +99,14 @@ function speak(item: ShortageItem, unit: string): string {
           {{
             group.missingStockCount
           }}
-          种物料库存未提供，未计入缺口，请先核实库存。</span
+          种物料库存未匹配，暂不参与缺口核算。</span
         >
         <span v-if="group.unquantifiedCount"
           >另有
           {{
             group.unquantifiedCount
           }}
-          种物料标记为不足但缺口数量未提供，未绘制条形。</span
+          种物料缺口待核实。</span
         >
       </p>
       <ul class="sr-only">

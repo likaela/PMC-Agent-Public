@@ -171,7 +171,7 @@ def _answer(kind: str, result: dict) -> str:
     text = "采购分析基于已发布参数、库存和在途事实。"
     for row in known[:10]:
         text += f" {row.get('material')}：建议采购 {row['suggested_purchase_qty']} {row.get('unit') or ''}。"
-    return text + " 未知的数量、价格或交期不作估算；建议不代表已下单或已到货。"
+    return text + " 建议核实未交付订单与供应商交期。"
 
 
 class PersistentAgentService:
@@ -260,12 +260,9 @@ class PersistentAgentService:
             refusal = refusal_kind(message)
             if refusal is not None:
                 answer = (
-                    "我不能编造库存、BOM 或采购数据，也不会把编造的数据当作真实库存用于生产或采购判断。"
-                    "如果确实需要测试数据，只能在隔离的合成测试环境中生成，并明确标注为模拟数据；"
-                    "公开业务入口只提供 KQ-Z112、KQ-BHX3588M 两款真实企业产品的已核验数据。"
+                    "不能编造库存、BOM或采购数据。请使用实际记录进行核对。"
                 ) if refusal == "fabrication" else (
-                    "这个问题不在当前 PMC-Agent 的业务范围内。我只处理生产计划、BOM、库存、缺料和采购相关问题；"
-                    "请提供产品型号（KQ-Z112、KQ-BHX3588M）和具体问题，例如“KQ-Z112 生产 50 片够不够”。"
+                    "请提供产品编码和BOM、库存或生产数量问题，例如“KQ-Z112生产50片够不够”。"
                 )
                 response = dict(intent="clarification", status="needs_input", answer=answer,
                     structured_data=dict(operation="out_of_scope", query_type="clarification", data=None,
@@ -303,7 +300,9 @@ class PersistentAgentService:
             session = {**session, "context": context}
             if turn is None and self.capability_queries is not None:
                 try:
-                    turn = self.capability_queries.run(message, session["context"], history_loader, session=session)
+                    from services.chart_ai_pipeline import run_business_service
+                    turn = run_business_service(type(self.capability_queries).__name__ + ".run",
+                        lambda: self.capability_queries.run(message, session["context"], history_loader, session=session))
                 except Exception:
                     logger.exception("PMC 扩展问答执行失败，回退既有受控流程")
                     turn = None
@@ -317,7 +316,7 @@ class PersistentAgentService:
                     from agents.orchestrator import OrchestratedTurn
                     safe_context = copy.deepcopy(session["context"])
                     safe_context["last_query_failure"] = dict(intent="inventory", entities={})
-                    turn = OrchestratedTurn(dict(intent="inventory", status="query_failed", answer="企业库存记录暂不可读取，请稍后重试；没有生成替代库存或生产结论。",
+                    turn = OrchestratedTurn(dict(intent="inventory", status="query_failed", answer="库存记录读取失败，请重试。",
                         structured_data=dict(data=None, query={}, completed_steps=[]), provenance=None, warnings=[]), safe_context, [])
             if turn is None:
                 turn = self.orchestrator.run(message, session["context"], history_loader=history_loader)

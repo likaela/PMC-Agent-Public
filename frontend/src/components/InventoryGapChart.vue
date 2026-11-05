@@ -9,13 +9,12 @@
  */
 import { computed } from "vue";
 import {
-  gapSummary,
   niceTicks,
   type GapBar,
   type GapUnitGroup,
 } from "../services/analysisChart";
 const props = defineProps<{ groups: GapUnitGroup[] }>();
-const summary = computed(() => gapSummary(props.groups));
+const summary = computed(() => props.groups.map(group => `需求与库存对比（${group.unit}）：${group.items.length}种物料，${group.missingCount}种库存未匹配。`).join(""));
 
 const BAR_W = 11,
   BAR_GAP = 3,
@@ -79,9 +78,9 @@ function speak(item: GapBar, unit: string): string {
       <span><i class="gap-legend-dot demand" aria-hidden="true"></i>需求量</span
       ><span><i class="gap-legend-dot stock" aria-hidden="true"></i>库存</span
       ><span
-        ><i class="gap-legend-dot slot" aria-hidden="true"></i>未提供 ≠ 0</span
+        ><i class="gap-legend-dot slot" aria-hidden="true"></i>库存未匹配</span
       ><span class="gap-legend-note"
-      >仅对比单位一致的库存；优先使用后端已换算的核对库存</span
+      >按物料单位核对</span
       >
     </div>
     <section

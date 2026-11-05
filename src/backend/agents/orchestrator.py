@@ -79,25 +79,25 @@ class AgentOrchestrator:
         if self.registry.scope == "enterprise":
             if plan.operation == "conversation":
                 turn = self._information(plan, original_context, "ok",
-                    "您好，我是制造企业的PMC助手。可以帮您查看已发布产品BOM、库存与批次，分析生产齐套和采购需求，解释库存风险，并依据已有采购证据起草邮件。"
-                    "您可以说“有哪些产品”，或告诉我产品编码和生产数量。没有权威数据时我会说明限制，不猜测库存或开工结论。")
+                    "您好，我是PMC智能计划助手。可以查询产品BOM、物料与库存，核对生产需求、缺口及补料清单，并提供图表解读。"
+                    "您可以先问“有哪些产品”，或输入产品编码和生产数量。")
                 turn.response["warnings"] = []
                 return turn
             if plan.operation == "external_risk":
                 return self._information(plan, original_context, "data_unavailable",
-                    "当前支持内部库存风险、生产缺料风险、临期与呆滞分析。由于没有权威外部数据源，外部供应链风险和政策影响暂无法判断。")
+                    "外部供应数据未匹配。可查询内部库存、缺料、临期和呆滞记录。")
             if plan.operation in {"explain", "email_draft"} and not language.refresh_requested(message):
                 if failure and (not plan.entities.material_code or plan.entities.material_code not in message
                                 or plan.entities.material_code == failure['entities'].get('material_code')):
                     code = failure['entities'].get('material_code') or '该对象'
                     return self._information(plan, original_context, 'query_failed',
-                        f'上一条对 {code} 的查询未成功，当前没有该次分析结果；不会用其他产品的历史证据替代。请重试该查询。')
+                        f'{code}上一条查询失败，请重试。')
                 try:
                     reused = self._reuse(plan, original_context, history_loader, message)
                 except Exception:
                     logger.exception("读取会话证据失败")
                     return self._information(plan, original_context, "query_failed",
-                        "当前会话证据暂不可用，请稍后重试；未重新计算或生成推断事实。")
+                        "会话记录读取失败，请重试。")
                 if reused is not None:
                     if plan.entities.material_code and plan.entities.material_code in message:
                         reused.context.pop('last_query_failure', None)
@@ -107,7 +107,7 @@ class AgentOrchestrator:
                 # No demand => no shortage cause. Do not revive unrelated or failed evidence.
                 if plan.intent in {"inventory", "inventory_batches", "clarification"}:
                     return self._information(plan, original_context, "needs_input",
-                        "当前只有库存记录，缺少对应需求及缺料原因证据，无法判断缺料风险；请明确生产任务或需求数量。")
+                        "请提供产品与生产数量，以核对物料缺口。")
             if plan.operation in {"inventory_health", "expiry", "stagnation", "safety", "fifo"}:
                 if plan.intent == "clarification":
                     return self._information(plan, original_context, "needs_input",
@@ -216,7 +216,7 @@ class AgentOrchestrator:
                 understood += f"已识别生产数量 {plan.entities.quantity}。"
             next_step = (" 您可以说“有哪些产品”先查看目录，再提供产品编码和生产数量。" if "material_code" in plan.missing_parameters else
                 " 您可以补充“生产50台”，或询问“最多能生产多少”；我会依据已发布事实继续分析。" if "quantity" in plan.missing_parameters else
-                " 请补充这些业务条件，我会继续核验已发布事实；未确认的信息不会自行填写。")
+                " 请补充上述查询参数。")
             response = dict(intent=plan.intent, status="needs_input", answer=understood + "请补充：" + "、".join(labels) + "。未执行事实计算。" + next_step,
                             structured_data=dict(query={"query_type": plan.intent, **plan.entities.model_dump()},
                                                  missing_fields=labels, parser_source=parser_source, completed_steps=[]),
@@ -236,7 +236,10 @@ class AgentOrchestrator:
             try:
                 tool = self.registry.resolve(name)
                 tool_name = tool.name
-                record = collector.collect(tool_name, args, tool.invoke(args))
+                from services.chart_ai_pipeline import tool_execution
+                with tool_execution(tool_name):
+                    output = tool.invoke(args)
+                record = collector.collect(tool_name, args, output)
             except Exception:
                 logger.exception("受控 Agent Tool 执行失败")
                 record = collector.collect(tool_name, args, dict(status="query_failed", query=args, data=None,
@@ -278,7 +281,7 @@ class AgentOrchestrator:
                     response["provenance"] = {**response["provenance"], "context_resolution": resolution.provenance}
                 else:
                     response["provenance"] = [*(response["provenance"] or []), resolution.provenance]
-                prefix = (f"本次查询BOM版本 {plan.entities.revision} 的结构，不代表当前生产有效性。 "
+                prefix = (f"BOM版本：{plan.entities.revision}。 "
                           if set(plan.required_tools) == {"bom_query"} and plan.entities.effective_date is None
                           else f"本次采用BOM版本 {plan.entities.revision}，分析生效日期 {plan.entities.effective_date}。 ")
                 if plan.intent != "bom":
@@ -315,7 +318,7 @@ class AgentOrchestrator:
         if plan.entities.effective_date:
             answer += f"本次生产分析日期为 {plan.entities.effective_date}。"
         else:
-            answer += "请同时明确本次生产分析日期，或明确选择之前已确认的业务情境；不会把历史分析日期用于所有新计划。"
+            answer += "请选择本次分析日期，或沿用已确认的业务情境。"
         answer += "请按“生产50台”这样的句式填写目标数量（单位请替换为本产品已确认单位）。尚未执行生产计算，权威可用库存仍需核验。"
         record = EvidenceCollector().collect('published_bom_context', plan.entities.model_dump(),
             dict(status='data_unavailable', query=plan.entities.model_dump(),

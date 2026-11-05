@@ -46,6 +46,12 @@ def local_business_service(product=None, session_id=None):
         return binding.service(product, binding.catalog[product]["default_mode"])
     if session_id:
         from repositories.agent_conversation_repository import SessionNotFound
+        try:
+            catalog_session = binding.repository.get_session(session_id)
+        except SessionNotFound:
+            catalog_session = None
+        if catalog_session and not (catalog_session["context"].get("product_context") or {}).get("product_code"):
+            return local_business_service()
         for product in binding.catalog:
             service = binding.service(product, binding.catalog[product]["default_mode"])
             try:

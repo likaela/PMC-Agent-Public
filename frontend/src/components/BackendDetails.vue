@@ -24,10 +24,10 @@ defineProps<{ result: AgentResult }>();
       "
       class="backend-note"
     >
-      按所示数据范围核对物料，不代表正式生产放行。未提供与无记录均不等于 0。
+      需求、库存与缺口见下表。
     </p>
     <p v-if="result.backend.resultType === 'purchase'" class="backend-note">
-      采购建议不代表已下单或已到货；数量、约束、价格与成本均由后端提供。
+      结合供应商交期及未交付订单核实补料方案。
     </p>
     <div
       v-if="result.backend.rows.length"
@@ -66,7 +66,7 @@ defineProps<{ result: AgentResult }>();
       </table>
     </div>
     <p v-else class="backend-note">
-      本轮未返回可用的明细表；请阅读回答与来源。未知结构保留在原始证据中。
+      本次查询暂无物料明细。
     </p>
   </section>
 </template>

@@ -80,6 +80,7 @@ export class QueryError extends Error {
 export interface QueryInput {
   text: string;
   session?: SessionBinding;
+  understandingId?: string;
 }
 export interface AgentQueryService {
   catalog?(signal: AbortSignal): Promise<Product[]>;

@@ -153,7 +153,7 @@ watch(
             "
           >
             <Icon name="chat" :size="15" /><span
-              ><strong>{{ item.product_code }}</strong
+              ><strong>{{ item.product_code || "产品目录" }}</strong
               ><small>分析对话 · {{ item.session_id.slice(-6) }}</small></span
             ><span v-if="index === 0" class="recent-new">最近</span>
           </button>
@@ -271,13 +271,13 @@ watch(
         </li>
         <li>
           <strong>核对来源和适用条件</strong>
-          <p>“未提供”不等于 0。库存满足不代表产能、交期或正式生产放行。</p>
+          <p>查看本次引用的BOM、库存记录与核算范围。</p>
         </li>
       </ol>
       <div class="soft-note">
         <Icon name="info" />
         <p>
-          具体能力以已发布业务数据和返回结果为准。切换产品会独立保存对话；最近对话只包含本浏览器记住的会话。
+          切换产品会独立保存对话。可从最近对话恢复分析。
         </p>
       </div>
       <button class="primary-button full-width" @click="help?.close()">

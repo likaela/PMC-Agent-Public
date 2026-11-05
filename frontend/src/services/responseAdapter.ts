@@ -1,3 +1,4 @@
+import { adaptChartAi, adaptExecutionTrace } from "./chartAi";
 import { QueryError, type AgentResult, type Source } from "../data/model";
 import type { BackendView, InventoryOperationView } from "./backendTypes";
 type Obj = Record<string, unknown>;
@@ -171,14 +172,17 @@ export function adaptBackendResponse(payload: unknown): AgentResult {
     if (kind === "production" || kind === "shortage") {
       columns.push(col("required_qty", "需求", true));
       metric("目标数量", d.requested_quantity, unit);
-      // 结论只有“满足 / 存在缺口”两种；未给出生产数量时明确提示，不用“无法判断”兜底。
+      const hasShortage = rows.some(row => row.quantity_status === "shortage" || row.comparison_status === "shortage" || Number(row.shortage_qty ?? row.book_shortage_qty ?? 0) > 0);
+      const hasUnknownStock = rows.some(row => row.record_found === false || row.comparison_status === "no_stock") || Number(d.missing_stock_material_count ?? 0) > 0;
       metric(
         "需求满足",
         d.requested_quantity == null
           ? "未指定生产数量"
           : d.inventory_sufficient_for_requested === true
             ? "所列物料满足"
-            : "存在缺口",
+            : hasShortage ? "存在缺口" : hasUnknownStock
+              ? rows.some(row => row.quantity_status === "sufficient" || row.is_ready === true) ? "已核算部分满足" : "库存待匹配"
+              : "待核对",
       );
     }
     columns.push(
@@ -306,8 +310,8 @@ export function adaptBackendResponse(payload: unknown): AgentResult {
           conditions:
             text(v.reason) ??
             (reused
-              ? "沿用历史证据，不是最新库存重查。"
-              : "按该来源对应范围使用；不代表正式生产或采购指令。"),
+              ? "本会话历史核算记录。"
+              : "本次核算依据。"),
         });
       }
     }
@@ -328,7 +332,7 @@ export function adaptBackendResponse(payload: unknown): AgentResult {
       : [];
   if (d.stock_read_failed === true)
     warnings.push("库存读取失败；已返回的 BOM 与物料需求仍保留。");
-  if (reused) warnings.unshift("沿用本会话历史证据，不代表最新库存重查。");
+  if (reused) warnings.unshift("本次沿用会话历史核算记录。");
   const status =
     r.status === "ok"
       ? "text"
@@ -367,6 +371,8 @@ export function adaptBackendResponse(payload: unknown): AgentResult {
       columns,
       rows: displayRows,
       steps,
+      chartAi: adaptChartAi(s.chart_ai),
+      executionTrace: adaptExecutionTrace(s.execution_trace),
       ...(inventoryOperation ? { inventoryOperation } : {}),
       raw: payload,
     },

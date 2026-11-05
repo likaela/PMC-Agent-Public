@@ -48,6 +48,25 @@ class ProductResolveRequest(BaseModel):
 
 @router.post("/resolve")
 def resolve_agent_product(request: ProductResolveRequest):
+    from services.chart_ai_pipeline import enabled, understand, save_understanding, UnderstandingError
+    if not enabled():
+        return _resolve_agent_product_local(request)
+    try:
+        entries, context = _ai_task_inputs(request)
+        understanding = understand(request.message, entries, context)
+    except UnderstandingError as error:
+        return _ai_request_error(error.code)
+    except SessionNotFound as error:
+        return _session_error(error)
+    from services.chart_ai_pipeline import local_message
+    result = _resolve_agent_product_local(request.model_copy(update={"message": local_message(request.message, understanding) or request.message}))
+    if isinstance(result, dict):
+        understanding["scope"] = dict(session_id=request.session_id, context_version=context.get("_task_context_version"), resolved_product=result.get("product_code"))
+        result["understanding_id"] = save_understanding(request.message, understanding)
+    return result
+
+
+def _resolve_agent_product_local(request: ProductResolveRequest):
     from agents.product_resolver import resolve_product
     from services.local_reviewer_catalog import local_review_catalog
     if demo_scenario_disabled(request.scenario_id):
@@ -182,6 +201,60 @@ def get_agent_session(session_id: str, after: int = Query(0, ge=0), limit: int =
 
 @router.post("/query", response_model=UnifiedAgentResponse)
 def unified_agent_query(request: UnifiedAgentRequest) -> UnifiedAgentResponse:
+    from services.chart_ai_pipeline import (enabled, understand, take_understanding,
+        UnderstandingError, execution, local_message, finish_response, error_response)
+    if not enabled():
+        return _unified_agent_query_local(request)
+    try:
+        if request.understanding_id:
+            entries, context = _ai_task_inputs(request)
+            understanding = take_understanding(request.message, request.understanding_id, session_id=request.session_id, context=context)
+        else:
+            entries, context = _ai_task_inputs(request)
+            understanding = understand(request.message, entries, context)
+    except UnderstandingError as error:
+        return UnifiedAgentResponse.model_validate(error_response(error.code, request.session_id))
+    except SessionNotFound as error:
+        return _session_error(error)
+    normalized = local_message(request.message, understanding)
+    if normalized is None:
+        with execution(understanding):
+            service = (_current_service(session_id=request.session_id) if request.scenario_id is None else None) or _persistent_service(request.scenario_id)
+            session_id = request.session_id or service.repository.create_session()["session_id"]
+            session = service.repository.get_session(session_id)
+            response = dict(intent="clarification",status="needs_input",answer="请明确本次查询的产品和任务。",
+                structured_data={"data":None,"completed_steps":[]},provenance=None,warnings=[],
+                session_id=session_id,conversation_id=session["conversation_id"])
+            response["turn_id"] = service.repository.append_turn(session,request.message,response,session["context"],[])
+            return UnifiedAgentResponse.model_validate(response)
+    with execution(understanding):
+        # Keep the original user text for quantity validation and persistence;
+        # candidate semantics are passed separately to local routing below.
+        from services.chart_ai_pipeline import set_routing_message
+        set_routing_message(normalized)
+        result = _unified_agent_query_local(request)
+        if isinstance(result, UnifiedAgentResponse):
+            return UnifiedAgentResponse.model_validate(finish_response(result.model_dump()))
+        return result
+
+
+def _ai_task_inputs(request):
+    from services.local_reviewer_catalog import local_review_catalog
+    entries = local_review_catalog(create_fact_store())
+    context = {}
+    if request.session_id:
+        service = (_current_service(session_id=request.session_id) if request.scenario_id is None else None) or _persistent_service(request.scenario_id)
+        session = service.repository.get_session(request.session_id)
+        context = {**session["context"], "_task_context_version":session["context_version"]}
+    return entries, context
+
+
+def _ai_request_error(code):
+    return JSONResponse(status_code=503, content={"code":code,
+        "user_message":"问题解析超时，请重试。" if code == "MODEL_TIMEOUT" else "问题解析请求失败，请重试。"})
+
+
+def _unified_agent_query_local(request: UnifiedAgentRequest) -> UnifiedAgentResponse:
     """统一自然语言入口，不改变旧 Chat、Demo 或 LangGraph 执行链。"""
     from services.local_business_binding import local_business_binding
     if demo_scenario_disabled(request.scenario_id):
@@ -205,7 +278,8 @@ def unified_agent_query(request: UnifiedAgentRequest) -> UnifiedAgentResponse:
                 context = service.repository.get_session(session_id)["context"]
                 service.presentation_binding = _product_context(context)
                 current = _product_context(context).get("product_code")
-                resolved = resolve_product(request.message, entries, current_product=current,
+                from services.chart_ai_pipeline import routing_message
+                resolved = resolve_product(routing_message(request.message), entries, current_product=current,
                     catalog_order=request.catalog_order)
                 if resolved["status"] != "ok":
                     return UnifiedAgentResponse(intent="clarification", status=resolved["status"], answer=resolved["answer"],
@@ -227,9 +301,10 @@ def unified_agent_query(request: UnifiedAgentRequest) -> UnifiedAgentResponse:
                     return UnifiedAgentResponse.model_validate(overview_query(service, session_id, request.message, entry, scope))
                 if not resolved.get("catalog_query"):
                     return UnifiedAgentResponse.model_validate(service.query(session_id, request.message, execution_message=message))
-            if catalog_kind(request.message) and database and (current_binding or Path(database).resolve() == DEFAULT_SQLITE_PATH.resolve() or os.getenv("PMC_LOCAL_REVIEW") == "1"):
+            from services.chart_ai_pipeline import routing_message
+            if catalog_kind(routing_message(request.message)) and (current_binding or (database and Path(database).resolve() == DEFAULT_SQLITE_PATH.resolve()) or os.getenv("PMC_LOCAL_REVIEW") == "1"):
                 from services.local_reviewer_catalog import local_review_catalog
-                result = catalog_query(service, session_id, request.message, local_review_catalog(create_fact_store()))
+                result = catalog_query(service, session_id, request.message, local_review_catalog(create_fact_store()), execution_message=routing_message(request.message))
                 return UnifiedAgentResponse.model_validate(result)
             return UnifiedAgentResponse.model_validate(service.query(session_id, request.message))
         except (SessionNotFound, SessionConflict) as error:

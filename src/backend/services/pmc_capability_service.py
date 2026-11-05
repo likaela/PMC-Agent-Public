@@ -710,7 +710,7 @@ class PmcCapabilityQueries:
         """Natural-language issue requests create a preview, never stock movements."""
         if not product or quantity is None:
             question = ("请先选择或指明产品。" if not product else
-                        "请提供大于0的整数生产数量，我会先生成领料预览，不会直接扣减。")
+                        "请提供大于0的整数生产数量，生成领料预览后确认执行。")
             return self._turn("clarification", "needs_input", question,
                               query_type="clarification", query={"question": text},
                               data=None, completeness={}, context=context)
@@ -787,7 +787,7 @@ class PmcCapabilityQueries:
                                       or row.get("book_shortage_qty"),
                                       purchase_cost=None, currency=None, supplier=None, lead_time_days=None,
                                       risk_level=None,
-                                      reason=["按账面缺口计算的补货数量（未取得权威MOQ/包装倍数参数，未作估算）"],
+                                      reason=["按已核算库存缺口列示补料数量"],
                                       missing_fields=["MOQ", "order_multiple", "lead_time_days", "price"]))
         # 不可核算物料（无记录/重复待核验/单位冲突/单位未知）一律不生成确定采购数量。
         unknown = [dict(material=row["material_code"], name=row.get("name"), unit=row.get("unit"),
@@ -809,17 +809,16 @@ class PmcCapabilityQueries:
         answer = (f"{_product_label(product, rows)}投产 {quantity}{unit} 的库存核对结果："
                   + ("账面库存不足。" if sufficient is False else
                      "账面库存满足本次需求。" if sufficient is True else
-                     "部分物料缺少可核验库存记录或单位无法核对，完整齐套结论待确认。") + " ")
+                     "已核算物料结果见明细，其余库存或单位待核实。") + " ")
         if gaps:
             answer += "缺料清单：" + "；".join(gaps) + "。 "
         if purchase_rows:
             answer += (f"已自动生成需要采购的BOM表单：共 {len(purchase_rows)} 种物料需采购，"
-                       f"表单已标明建议采购数量（按缺口/需求量列示；未取得权威MOQ、包装倍数与价格参数，未作估算）。")
+                       f"补料数量按已核算缺口列示。建议核实库存及在途数量，并结合供应商交期与未交付订单安排补料。")
         else:
             answer += "当前没有可核实的采购缺口。" if no_record else "无需生成采购清单。"
         if unknown:
-            answer += f" 另有{len(unknown)}种物料未生成确定缺口与采购数量（见待核验清单）。"
-        answer += " 本核算为账面数量核对，不代表正式工单放行或采购已下单。"
+            answer += f" 另有{len(unknown)}种物料未生成确定缺口与采购数量，需人工核验。"
 
         if not purchase_rows:
             return self._turn("production_capacity", "ok", answer, query_type="production_capacity",
@@ -898,20 +897,17 @@ class PmcCapabilityQueries:
                           f"其中 {len(gaps)} 种存在缺口。缺料/急缺物料清单：{listing}。"
                           f" 结论：当前账面库存不能满足投产 {quantity}{unit}，"
                           f"缺口合计约 {format(total_gap, 'f')}（各物料数量之和，仅作规模参考）；"
-                          f"需按缺口补齐物料后方可齐套。")
+                          f"建议核实缺料物料的库存及在途情况。")
             else:
                 answer = (f"{label}生产 {quantity}{unit} 的缺料分析："
-                          f"已核验的 {len(data['materials'])} 种物料账面库存均满足本次需求，当前没有急缺物料。")
+                          f"已核算的 {data['comparable_material_count']} 种物料均满足本次需求，当前没有已核实的不足物料。")
             if no_record:
                 # 无记录不是“按需求全量采购”的依据：只说明需求已保留、未生成确定采购数量。
-                answer += (f" 另有 {len(no_record)} 种物料没有库存记录，需求已保留，"
-                           f"未生成确定采购数量（无记录不等于零库存）："
+                answer += (f" 另有 {len(no_record)} 种物料库存未匹配，未生成确定采购数量："
                            f"{'、'.join(display(r['material_code']) for r in no_record[:8])}。")
             if unverified:
-                answer += (f" 另有 {len(unverified)} 种物料因单位冲突、单位未知或重复记录未核验而不可核算，"
-                           f"未生成确定缺口与采购数量："
+                answer += (f" 另有 {len(unverified)} 种物料因单位或重复记录问题不可核算，未生成确定缺口与采购数量："
                            f"{'、'.join(display(r['material_code']) for r in unverified[:8])}。")
-            answer += " 本分析为账面数量核对口径，不代表正式工单放行。"
             result = dict(status="ok", query=dict(product=product, quantity=quantity), data=data,
                           completeness=analysis.get("completeness") or {},
                           provenance=analysis.get("provenance"),
@@ -1032,7 +1028,7 @@ class PmcCapabilityQueries:
             batch_text += f"；其余 {len(details) - 8} 条见批次明细"
         if total is None and duplicate_unverified:
             answer = (f"{material_code}（{name}）：该料号有 {row.get('record_count')} 条重复观测记录，"
-                      f"尚未取得可核验的合并口径，未给出确定账面合计、未取最大值也未求和。"
+                      f"合并口径待核实，按批次分项展示。"
                       f" 原始批次明细：{batch_text}。")
         else:
             answer = (f"{material_code}（{name}）：账面库存合计 {total}{stock_unit or ''}"
@@ -1040,10 +1036,10 @@ class PmcCapabilityQueries:
                       f"{row.get('location_count')} 个库位）。"
                       f" 批次明细（先进先出，批次日期靠前优先）：{batch_text}。")
         if stock_unit is None:
-            answer += " 该料号缺少可核验的计量单位，未参与确定性缺口/采购计算。"
+            answer += " 库存单位待核实，暂不参与数量核算。"
         if resolved["aliases"]:
             answer += f" 展示别名：{'、'.join(resolved['aliases'])}。"
-        answer += " 数据来源：已核验主库存账面记录；不提供权威可用量/预留量，无记录不补零。"
+        answer += " 数据来源：已核验主库存记录。"
         data = dict(calculation_scope="excel_book_observation", materials=[row], product=material_code,
                     record_found=True,
                     source_summary=dict(source_file="主库存表", record_count=row.get("record_count"),

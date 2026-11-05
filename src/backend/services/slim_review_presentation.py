@@ -23,9 +23,9 @@ class SlimReviewPresentation:
         public = {key: copy.deepcopy(result.get(key)) for key in ("status", "completeness")}
         public["query"] = {key: copy.deepcopy(value) for key, value in result.get("query", {}).items()
             if key in ("product", "revision", "requested_quantity", "quantity", "requested_unit")}
-        public["warnings"] = ["结果仅适用于当前分析范围，不代表完整产品生产放行。"]
+        public["warnings"] = []
         if self.dataset["synthetic"]:
-            public["warnings"].append("本次包含演示库存，仅用于数量模拟。")
+            public["warnings"].append("库存类型：演示库存。")
         public["provenance"] = dict(filtered_dataset=dict(dataset_version=self.dataset["dataset_version"],
             retained_material_count=self.dataset["retained_material_count"],
             excluded_material_count=len(self.dataset["excluded"]), synthetic=self.dataset["synthetic"]),

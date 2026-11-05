@@ -4,15 +4,21 @@ from langchain_core.tools import StructuredTool
 
 def build_book_inventory_tools(service):
     def inventory(material_code: str) -> dict:
-        return service.inventory(material_code)
+        from services.chart_ai_pipeline import tool_execution
+        with tool_execution("enterprise_book_inventory_query"):
+            return service.inventory(material_code)
 
     def demand(product: str, revision: str | None = None, quantity: int | None = None,
                requested_unit: str | None = None) -> dict:
-        return service.analyze(product, revision, quantity, requested_unit)
+        from services.chart_ai_pipeline import tool_execution
+        with tool_execution("enterprise_book_demand_analysis"):
+            return service.analyze(product, revision, quantity, requested_unit)
 
     def capacity(product: str, revision: str | None = None) -> dict:
         from services.book_capacity_query_service import BookCapacityQueryService
-        return BookCapacityQueryService(service).query(product, revision)
+        from services.chart_ai_pipeline import tool_execution
+        with tool_execution("enterprise_book_capacity_query"):
+            return BookCapacityQueryService(service).query(product, revision)
 
     return {
         "enterprise_book_capacity_query": StructuredTool.from_function(capacity,

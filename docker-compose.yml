@@ -9,6 +9,12 @@ services:
       PMC_RUNTIME_ROOT: /app/data/runtime
       HOST: 0.0.0.0
       PORT: 8000
+      PMC_CHART_AI_MODE: ${PMC_CHART_AI_MODE:-1}
+      LLM_PROVIDER: deepseek
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+      LLM_TIMEOUT_SECONDS: ${LLM_TIMEOUT_SECONDS:-25}
+      LLM_MAX_RETRIES: ${LLM_MAX_RETRIES:-0}
     volumes:
       - pmc_runtime:/app/data/runtime
     restart: unless-stopped

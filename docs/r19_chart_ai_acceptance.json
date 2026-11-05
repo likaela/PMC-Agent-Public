@@ -1,0 +1,756 @@
+{
+  "edition": "R19 Chart AI Edition",
+  "model": "deepseek-chat",
+  "http_passed": 21,
+  "understanding_llm": 21,
+  "chart_llm": 10,
+  "public_files_checked": 17,
+  "public_files_changed": 0,
+  "query_summary": [
+    {
+      "input": "有哪些已发布产品？",
+      "status": "ok",
+      "intent": "fact_query",
+      "quantity": null,
+      "material_count": null,
+      "comparable": null,
+      "unmatched": null,
+      "shortage_count": 0,
+      "understanding_source": "llm",
+      "chart_source": "none",
+      "calculation_errors": []
+    },
+    {
+      "input": "查询KQ-Z112的BOM",
+      "status": "ok",
+      "intent": "bom",
+      "quantity": null,
+      "material_count": 34,
+      "comparable": 34,
+      "unmatched": 0,
+      "shortage_count": 0,
+      "understanding_source": "llm",
+      "chart_source": "none",
+      "calculation_errors": []
+    },
+    {
+      "input": "生产54片可以吗？",
+      "status": "ok",
+      "intent": "production_capacity",
+      "quantity": 54,
+      "material_count": 34,
+      "comparable": 34,
+      "unmatched": 0,
+      "shortage_count": 0,
+      "understanding_source": "llm",
+      "chart_source": "llm",
+      "calculation_errors": []
+    },
+    {
+      "input": "生产55片呢？",
+      "status": "ok",
+      "intent": "production_capacity",
+      "quantity": 55,
+      "material_count": 34,
+      "comparable": 34,
+      "unmatched": 0,
+      "shortage_count": 1,
+      "understanding_source": "llm",
+      "chart_source": "llm",
+      "calculation_errors": []
+    },
+    {
+      "input": "为什么不能生产？",
+      "status": "ok",
+      "intent": "production_capacity",
+      "quantity": 55,
+      "material_count": 34,
+      "comparable": 34,
+      "unmatched": 0,
+      "shortage_count": 1,
+      "understanding_source": "llm",
+      "chart_source": "llm",
+      "calculation_errors": []
+    },
+    {
+      "input": "查看来源。",
+      "status": "ok",
+      "intent": "production_capacity",
+      "quantity": 55,
+      "material_count": 34,
+      "comparable": 34,
+      "unmatched": 0,
+      "shortage_count": 1,
+      "understanding_source": "llm",
+      "chart_source": "none",
+      "calculation_errors": []
+    },
+    {
+      "input": "生产100片并生成采购清单。",
+      "status": "ok",
+      "intent": "purchase_planning",
+      "quantity": 100,
+      "material_count": 34,
+      "comparable": 34,
+      "unmatched": 0,
+      "shortage_count": 3,
+      "understanding_source": "llm",
+      "chart_source": "none",
+      "calculation_errors": []
+    },
+    {
+      "input": "生产50片呢？",
+      "status": "ok",
+      "intent": "production_capacity",
+      "quantity": 50,
+      "material_count": 34,
+      "comparable": 34,
+      "unmatched": 0,
+      "shortage_count": 0,
+      "understanding_source": "llm",
+      "chart_source": "llm",
+      "calculation_errors": []
+    },
+    {
+      "input": "帮我生成采购建议。",
+      "status": "ok",
+      "intent": "production_capacity",
+      "quantity": 50,
+      "material_count": 34,
+      "comparable": 34,
+      "unmatched": 0,
+      "shortage_count": 0,
+      "understanding_source": "llm",
+      "chart_source": "llm",
+      "calculation_errors": []
+    },
+    {
+      "input": "生产0片。",
+      "status": "invalid_query",
+      "intent": "production_capacity",
+      "quantity": null,
+      "material_count": null,
+      "comparable": null,
+      "unmatched": null,
+      "shortage_count": 0,
+      "understanding_source": "llm",
+      "chart_source": "none",
+      "calculation_errors": []
+    },
+    {
+      "input": "那生产1片呢？",
+      "status": "ok",
+      "intent": "production_capacity",
+      "quantity": 1,
+      "material_count": 34,
+      "comparable": 34,
+      "unmatched": 0,
+      "shortage_count": 0,
+      "understanding_source": "llm",
+      "chart_source": "llm",
+      "calculation_errors": []
+    },
+    {
+      "input": "查询KQ-BHX3588M的BOM。",
+      "status": "ok",
+      "intent": "bom",
+      "quantity": null,
+      "material_count": 91,
+      "comparable": null,
+      "unmatched": null,
+      "shortage_count": 0,
+      "understanding_source": "llm",
+      "chart_source": "none",
+      "calculation_errors": []
+    },
+    {
+      "input": "看看库存。",
+      "status": "ok",
+      "intent": "inventory",
+      "quantity": null,
+      "material_count": 91,
+      "comparable": 58,
+      "unmatched": 33,
+      "shortage_count": 0,
+      "understanding_source": "llm",
+      "chart_source": "none",
+      "calculation_errors": []
+    },
+    {
+      "input": "最多可以生产多少片？",
+      "status": "ok",
+      "intent": "production_capacity",
+      "quantity": null,
+      "material_count": 91,
+      "comparable": 58,
+      "unmatched": 33,
+      "shortage_count": 0,
+      "understanding_source": "llm",
+      "chart_source": "none",
+      "calculation_errors": []
+    },
+    {
+      "input": "生产1片可以吗？",
+      "status": "ok",
+      "intent": "production_capacity",
+      "quantity": 1,
+      "material_count": 91,
+      "comparable": 58,
+      "unmatched": 33,
+      "shortage_count": 0,
+      "understanding_source": "llm",
+      "chart_source": "llm",
+      "calculation_errors": []
+    },
+    {
+      "input": "生产100片呢？",
+      "status": "ok",
+      "intent": "production_capacity",
+      "quantity": 100,
+      "material_count": 91,
+      "comparable": 58,
+      "unmatched": 33,
+      "shortage_count": 5,
+      "understanding_source": "llm",
+      "chart_source": "llm",
+      "calculation_errors": []
+    },
+    {
+      "input": "为什么不足？",
+      "status": "ok",
+      "intent": "production_capacity",
+      "quantity": 100,
+      "material_count": 91,
+      "comparable": 58,
+      "unmatched": 33,
+      "shortage_count": 5,
+      "understanding_source": "llm",
+      "chart_source": "llm",
+      "calculation_errors": []
+    },
+    {
+      "input": "查看来源。",
+      "status": "ok",
+      "intent": "production_capacity",
+      "quantity": 100,
+      "material_count": 91,
+      "comparable": 58,
+      "unmatched": 33,
+      "shortage_count": 5,
+      "understanding_source": "llm",
+      "chart_source": "none",
+      "calculation_errors": []
+    },
+    {
+      "input": "生产1/2片。",
+      "status": "invalid_query",
+      "intent": "production_capacity",
+      "quantity": null,
+      "material_count": null,
+      "comparable": null,
+      "unmatched": null,
+      "shortage_count": 0,
+      "understanding_source": "llm",
+      "chart_source": "none",
+      "calculation_errors": []
+    },
+    {
+      "input": "你好。",
+      "status": "ok",
+      "intent": "clarification",
+      "quantity": null,
+      "material_count": null,
+      "comparable": null,
+      "unmatched": null,
+      "shortage_count": 0,
+      "understanding_source": "llm",
+      "chart_source": "none",
+      "calculation_errors": []
+    },
+    {
+      "input": "这单10片的料够不够",
+      "status": "ok",
+      "intent": "production_capacity",
+      "quantity": 10,
+      "material_count": 34,
+      "comparable": 34,
+      "unmatched": 0,
+      "shortage_count": 0,
+      "understanding_source": "llm",
+      "chart_source": "llm",
+      "calculation_errors": []
+    }
+  ],
+  "fixed_cases": [
+    {
+      "input": "生产54片可以吗？",
+      "answer": "已完成 KQ-Z112 本次生产需求核对。当前BOM包含34种物料。按账面数量逐项核对34种物料：34种满足、0种不足；当前产品满足生产54片对应的物料需求。",
+      "quantity": 54,
+      "chart_ai": {
+        "status": "ok",
+        "source": "llm",
+        "egress_policy": "approved_chart_projection_v1",
+        "sections": {
+          "conclusion": "KQ-Z112当前库存满足生产54片的物料需求。",
+          "findings": [
+            "已核算34项物料，共34项。"
+          ],
+          "impact": "本次数量的物料需求均已覆盖。",
+          "actions": [
+            "按本次数量准备对应物料。"
+          ]
+        }
+      },
+      "execution_trace": [
+        {
+          "stage": "understanding",
+          "status": "ok",
+          "duration_ms": 1178.16,
+          "summary": "DeepSeek已识别本次任务",
+          "details": {
+            "intent": "production",
+            "product_code": "KQ-Z112",
+            "material_code": null,
+            "quantity": 54,
+            "unit": "片"
+          }
+        },
+        {
+          "stage": "rules",
+          "status": "ok",
+          "summary": "已检查产品、数量、单位与会话",
+          "details": {
+            "product_code": "KQ-Z112",
+            "quantity": 54,
+            "unit": "片"
+          },
+          "duration_ms": 158.69
+        },
+        {
+          "stage": "tool",
+          "status": "ok",
+          "summary": "enterprise_book_demand_analysis",
+          "duration_ms": 4.5
+        },
+        {
+          "stage": "calculation",
+          "status": "ok",
+          "summary": "已完成物料数量核算",
+          "details": {
+            "requested_quantity": 54,
+            "comparable_material_count": 34,
+            "missing_stock_material_count": 0
+          }
+        },
+        {
+          "stage": "answer",
+          "status": "ok",
+          "summary": "已按业务结果生成回答",
+          "duration_ms": 5.79
+        },
+        {
+          "stage": "chart_ai",
+          "status": "ok",
+          "summary": "DeepSeek已完成图表解读",
+          "duration_ms": 1091.33
+        }
+      ],
+      "shortages": []
+    },
+    {
+      "input": "生产55片呢？",
+      "answer": "已完成 KQ-Z112 本次生产需求核对。当前BOM包含34种物料。按账面数量逐项核对34种物料：33种满足、1种不足；当前产品不能满足生产55片对应的物料需求；不足物料详见下面列表。",
+      "quantity": 55,
+      "chart_ai": {
+        "status": "ok",
+        "source": "llm",
+        "egress_policy": "approved_chart_projection_v1",
+        "sections": {
+          "conclusion": "KQ-Z112生产55片存在1项物料缺口。",
+          "findings": [
+            "已核算34项物料，共34项。",
+            "MAT-004：需求1320.0片，核对库存1308片，缺口12.0片。"
+          ],
+          "impact": "本次数量受已核实缺料约束。",
+          "actions": [
+            "核实MAT-004的库存及未交付订单。",
+            "结合供应商交期及未交付订单评估补料安排。"
+          ]
+        }
+      },
+      "execution_trace": [
+        {
+          "stage": "understanding",
+          "status": "ok",
+          "duration_ms": 1699.51,
+          "summary": "DeepSeek已识别本次任务",
+          "details": {
+            "intent": "production",
+            "product_code": "KQ-Z112",
+            "material_code": null,
+            "quantity": 55,
+            "unit": "片"
+          }
+        },
+        {
+          "stage": "rules",
+          "status": "ok",
+          "summary": "已检查产品、数量、单位与会话",
+          "details": {
+            "product_code": "KQ-Z112",
+            "quantity": 55,
+            "unit": "片"
+          },
+          "duration_ms": 110.2
+        },
+        {
+          "stage": "tool",
+          "status": "ok",
+          "summary": "enterprise_book_demand_analysis",
+          "duration_ms": 4.52
+        },
+        {
+          "stage": "calculation",
+          "status": "ok",
+          "summary": "已完成物料数量核算",
+          "details": {
+            "requested_quantity": 55,
+            "comparable_material_count": 34,
+            "missing_stock_material_count": 0
+          }
+        },
+        {
+          "stage": "answer",
+          "status": "ok",
+          "summary": "已按业务结果生成回答",
+          "duration_ms": 6.56
+        },
+        {
+          "stage": "chart_ai",
+          "status": "ok",
+          "summary": "DeepSeek已完成图表解读",
+          "duration_ms": 1444.9
+        }
+      ],
+      "shortages": [
+        {
+          "material_code": "MAT-004",
+          "qty_per": "24.0",
+          "required_qty": "1320.0",
+          "recorded_stock_qty": "1308",
+          "book_shortage_qty": "12.0",
+          "unit": "片"
+        }
+      ]
+    },
+    {
+      "input": "生产100片并生成采购清单。",
+      "answer": "KQ-Z112（飞腾八核核心板）投产 100片 的库存核对结果：账面库存不足。 缺料清单：MAT-030（表贴电容）需求 1600.0片、账面 1579片、缺口 21.0片；MAT-004（表贴电阻）需求 2400.0片、账面 1308片、缺口 1092.0片；MAT-002（表贴电阻）需求 3700.0片、账面 2805片、缺口 895.0片。 已自动生成需要采购的BOM表单：共 3 种物料需采购，补料数量按已核算缺口列示。建议核实库存及在途数量，并结合供应商交期与未交付订单安排补料。",
+      "quantity": 100,
+      "chart_ai": {
+        "status": "not_applicable",
+        "source": "none",
+        "sections": null
+      },
+      "execution_trace": [
+        {
+          "stage": "understanding",
+          "status": "ok",
+          "duration_ms": 1408.39,
+          "summary": "DeepSeek已识别本次任务",
+          "details": {
+            "intent": "production",
+            "product_code": "KQ-Z112",
+            "material_code": null,
+            "quantity": 100,
+            "unit": "片"
+          }
+        },
+        {
+          "stage": "rules",
+          "status": "ok",
+          "summary": "已检查产品、数量、单位与会话",
+          "details": {
+            "product_code": "KQ-Z112",
+            "quantity": 100,
+            "unit": "片"
+          }
+        },
+        {
+          "stage": "service",
+          "status": "ok",
+          "summary": "PmcCapabilityQueries.run",
+          "duration_ms": 15.67
+        },
+        {
+          "stage": "calculation",
+          "status": "ok",
+          "summary": "已完成物料数量核算",
+          "details": {
+            "requested_quantity": 100,
+            "comparable_material_count": 34,
+            "missing_stock_material_count": 0
+          }
+        },
+        {
+          "stage": "answer",
+          "status": "ok",
+          "summary": "已按业务结果生成回答"
+        },
+        {
+          "stage": "chart_ai",
+          "status": "not_applicable",
+          "summary": "本轮无数量对比图",
+          "duration_ms": 0.8
+        }
+      ],
+      "shortages": [
+        {
+          "material_code": "1121522061401",
+          "qty_per": "16.0",
+          "required_qty": "1600.0",
+          "recorded_stock_qty": "1579",
+          "book_shortage_qty": "21.0",
+          "unit": "片"
+        },
+        {
+          "material_code": "105A510014201",
+          "qty_per": "24.0",
+          "required_qty": "2400.0",
+          "recorded_stock_qty": "1308",
+          "book_shortage_qty": "1092.0",
+          "unit": "片"
+        },
+        {
+          "material_code": "105A503904101",
+          "qty_per": "37.0",
+          "required_qty": "3700.0",
+          "recorded_stock_qty": "2805",
+          "book_shortage_qty": "895.0",
+          "unit": "片"
+        }
+      ]
+    },
+    {
+      "input": "生产50片呢？",
+      "answer": "已完成 KQ-Z112 本次生产需求核对。当前BOM包含34种物料。按账面数量逐项核对34种物料：34种满足、0种不足；当前产品满足生产50片对应的物料需求。",
+      "quantity": 50,
+      "chart_ai": {
+        "status": "ok",
+        "source": "llm",
+        "egress_policy": "approved_chart_projection_v1",
+        "sections": {
+          "conclusion": "KQ-Z112当前库存满足生产50片的物料需求。",
+          "findings": [
+            "已核算34项物料，共34项。"
+          ],
+          "impact": "本次数量的物料需求均已覆盖。",
+          "actions": [
+            "按本次数量准备对应物料。"
+          ]
+        }
+      },
+      "execution_trace": [
+        {
+          "stage": "understanding",
+          "status": "ok",
+          "duration_ms": 1263.02,
+          "summary": "DeepSeek已识别本次任务",
+          "details": {
+            "intent": "production",
+            "product_code": "KQ-Z112",
+            "material_code": null,
+            "quantity": 50,
+            "unit": "片"
+          }
+        },
+        {
+          "stage": "rules",
+          "status": "ok",
+          "summary": "已检查产品、数量、单位与会话",
+          "details": {
+            "product_code": "KQ-Z112",
+            "quantity": 50,
+            "unit": "片"
+          },
+          "duration_ms": 176.08
+        },
+        {
+          "stage": "tool",
+          "status": "ok",
+          "summary": "enterprise_book_demand_analysis",
+          "duration_ms": 4.4
+        },
+        {
+          "stage": "calculation",
+          "status": "ok",
+          "summary": "已完成物料数量核算",
+          "details": {
+            "requested_quantity": 50,
+            "comparable_material_count": 34,
+            "missing_stock_material_count": 0
+          }
+        },
+        {
+          "stage": "answer",
+          "status": "ok",
+          "summary": "已按业务结果生成回答",
+          "duration_ms": 6.88
+        },
+        {
+          "stage": "chart_ai",
+          "status": "ok",
+          "summary": "DeepSeek已完成图表解读",
+          "duration_ms": 1257.19
+        }
+      ],
+      "shortages": []
+    },
+    {
+      "input": "帮我生成采购建议。",
+      "answer": "KQ-Z112（飞腾八核核心板）投产 50片 的库存核对结果：账面库存满足本次需求。 无需生成采购清单。",
+      "quantity": 50,
+      "chart_ai": {
+        "status": "ok",
+        "source": "llm",
+        "egress_policy": "approved_chart_projection_v1",
+        "sections": {
+          "conclusion": "KQ-Z112当前库存满足生产50片的物料需求。",
+          "findings": [
+            "已核算34项物料，共34项。"
+          ],
+          "impact": "本次数量的物料需求均已覆盖。",
+          "actions": [
+            "按本次数量准备对应物料。"
+          ]
+        }
+      },
+      "execution_trace": [
+        {
+          "stage": "understanding",
+          "status": "ok",
+          "duration_ms": 1372.96,
+          "summary": "DeepSeek已识别本次任务",
+          "details": {
+            "intent": "purchase",
+            "product_code": "KQ-Z112",
+            "material_code": null,
+            "quantity": 50,
+            "unit": "片"
+          }
+        },
+        {
+          "stage": "rules",
+          "status": "ok",
+          "summary": "已检查产品、数量、单位与会话",
+          "details": {
+            "product_code": "KQ-Z112",
+            "quantity": 50,
+            "unit": "片"
+          }
+        },
+        {
+          "stage": "service",
+          "status": "ok",
+          "summary": "PmcCapabilityQueries.run",
+          "duration_ms": 15.62
+        },
+        {
+          "stage": "calculation",
+          "status": "ok",
+          "summary": "已完成物料数量核算",
+          "details": {
+            "requested_quantity": 50,
+            "comparable_material_count": 34,
+            "missing_stock_material_count": 0
+          }
+        },
+        {
+          "stage": "answer",
+          "status": "ok",
+          "summary": "已按业务结果生成回答"
+        },
+        {
+          "stage": "chart_ai",
+          "status": "ok",
+          "summary": "DeepSeek已完成图表解读",
+          "duration_ms": 1435.24
+        }
+      ],
+      "shortages": []
+    },
+    {
+      "input": "这单10片的料够不够",
+      "answer": "KQ-Z112（飞腾八核核心板）生产 10片 的缺料分析：已核算的 34 种物料均满足本次需求，当前没有已核实的不足物料。",
+      "quantity": 10,
+      "chart_ai": {
+        "status": "ok",
+        "source": "llm",
+        "egress_policy": "approved_chart_projection_v1",
+        "sections": {
+          "conclusion": "KQ-Z112当前库存满足生产10片的物料需求。",
+          "findings": [
+            "已核算34项物料，共34项。"
+          ],
+          "impact": "本次数量的物料需求均已覆盖。",
+          "actions": [
+            "按本次数量准备对应物料。"
+          ]
+        }
+      },
+      "execution_trace": [
+        {
+          "stage": "understanding",
+          "status": "ok",
+          "duration_ms": 1161.87,
+          "summary": "DeepSeek已识别本次任务",
+          "details": {
+            "intent": "shortage",
+            "product_code": "KQ-Z112",
+            "material_code": null,
+            "quantity": 10,
+            "unit": "片"
+          }
+        },
+        {
+          "stage": "rules",
+          "status": "ok",
+          "summary": "已检查产品、数量、单位与会话",
+          "details": {
+            "product_code": "KQ-Z112",
+            "quantity": 10,
+            "unit": "片"
+          }
+        },
+        {
+          "stage": "service",
+          "status": "ok",
+          "summary": "PmcCapabilityQueries.run",
+          "duration_ms": 16.34
+        },
+        {
+          "stage": "calculation",
+          "status": "ok",
+          "summary": "已完成物料数量核算",
+          "details": {
+            "requested_quantity": 10,
+            "comparable_material_count": 34,
+            "missing_stock_material_count": 0
+          }
+        },
+        {
+          "stage": "answer",
+          "status": "ok",
+          "summary": "已按业务结果生成回答"
+        },
+        {
+          "stage": "chart_ai",
+          "status": "ok",
+          "summary": "DeepSeek已完成图表解读",
+          "duration_ms": 1188.59
+        }
+      ],
+      "shortages": []
+    }
+  ]
+}

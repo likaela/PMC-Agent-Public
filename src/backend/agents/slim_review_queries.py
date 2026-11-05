@@ -51,7 +51,7 @@ class SlimReviewQueries:
                 # 料号在当前查询范围内查不到：明确说“未找到”，不能只提示产品范围，也不能当作零库存。
                 return OrchestratedTurn(dict(intent="inventory", status="item_not_found",
                     answer=(f"未找到物料编码 {parsed.material_code} 的匹配记录，请核对料号。"
-                            f" 当前查询范围（{product}）内未找到该料号；这不代表库存为零。"),
+                            f" 查询范围：{product}。"),
                     structured_data=dict(query_type="inventory", query=dict(material_code=parsed.material_code),
                         data=dict(material_code=parsed.material_code, record_found=False, scope="current_query_range"),
                         completeness={"record_found": False}, completed_steps=[]),
@@ -140,7 +140,7 @@ class SlimReviewQueries:
         result = self.presentation.result(result)
         data = result.get("data") or {}
         if result["status"] != "ok":
-            answer = "BOM需求已计算，库存数据暂不可核对，尚未生成物料满足结论。" if data.get("stock_read_failed") else "本次分析数据暂不可计算，请核对数据来源后重试。"
+            answer = "BOM需求已计算；库存读取失败，请重试。" if data.get("stock_read_failed") else "本次分析数据暂不可计算，请核对数据来源后重试。"
         else:
             maximum = data["theoretical_max_quantity"]
             current = self.service.dataset.get("current_business")
@@ -150,7 +150,7 @@ class SlimReviewQueries:
             if show_maximum:
                 answer += f"{'最大满足数量' if current else '当前范围最大满足数量'}为{maximum}片。"
             if data["synthetic"]:
-                answer += "本次包含演示库存，仅用于数量模拟。"
+                answer += "库存类型：演示库存。"
             n = data["requested_quantity"]
             if n is not None:
                 rows = data.get("materials") or []
@@ -169,11 +169,11 @@ class SlimReviewQueries:
             if re.search(r"来源|哪里", message):
                 answer += "BOM单耗来自当前业务BOM文件，库存数量来自已核验业务库存文件；可在来源区查看本次依据。" if self.service.dataset.get("current_business") else "BOM单耗来自已发布记录，库存数量来自已核验主库存记录；可在来源区查看本次依据。"
                 if data["synthetic"]:
-                    answer += "演示库存补充逐项单独记录，不是原主库存数量。"
+                    answer += "库存补充记录见来源详情。"
             if reused:
                 answer = "依据本会话已有证据：" + answer
             if not current:
-                answer += "结果仅适用于当前分析范围，不代表完整产品生产放行。"
+                answer += f"核算范围：{data['total_material_count']}项物料。"
         structured = dict(query_type=kind, query=result["query"], data=result["data"],
             completeness=result["completeness"], response_source="deterministic", analysis_level="slim_review",
             presentation=dict(show_maximum=show_maximum),

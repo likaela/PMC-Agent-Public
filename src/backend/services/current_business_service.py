@@ -59,8 +59,7 @@ class CurrentBusinessPresentation(SlimReviewPresentation):
             revision=self.dataset["revision"], material_count=len(self.aliases))
         value["provenance"]["bom"].update(source_file="当前业务BOM", dataset_version=self.dataset["dataset_version"])
         value["provenance"]["inventory"].update(source_file="当前业务库存", dataset_version=self.dataset["dataset_version"])
-        value["warnings"] = (["物料数量核对不等于正式工单审批。"]
-                             if data and data.get("requested_quantity") is not None else [])
+        value["warnings"] = []
         return value
 
     def session(self, session):

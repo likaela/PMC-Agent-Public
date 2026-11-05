@@ -32,11 +32,13 @@ def initialize(data_root=None):
     db=runtime/("agent-"+source_hash+".db")
     if not db.exists():
         with sqlite3.connect(settings["facts_path"].as_uri()+"?mode=ro",uri=True) as src, sqlite3.connect(db) as dst:src.backup(dst)
+    os.environ.setdefault("PMC_CHART_AI_MODE", "1")
+    os.environ.setdefault("LLM_PROVIDER", "deepseek")
     os.environ.update(PMC_PUBLIC_DATA_ROOT=str(public),PMC_RUNTIME_ROOT=str(runtime),PMC_LOCAL_REVIEW="1",
         PMC_FACT_DATABASE_URL="sqlite:///"+db.as_posix(),PMC_REVIEW_MODE="1",PMC_TRIAL_MODE="0",
         LANGSMITH_TRACING="false",LANGCHAIN_TRACING_V2="false",LANGCHAIN_TRACING="false")
-    # ReviewBinding/ResponseGenerator provide evidence-grounded replies without
-    # external model calls. Public distribution does not grant model egress.
+    # The Chart AI gateway exports only the approved task/chart projection.
+    # Facts, calculations and final numeric statements remain deterministic.
     from repositories.fact_store import SQLiteFactStore
     SQLiteFactStore(db).migrate()
     return settings

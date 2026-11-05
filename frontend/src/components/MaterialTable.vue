@@ -182,8 +182,7 @@ const rows = computed(() =>
       </div>
       <div class="table-footnote">
         <span
-          ><Icon name="info" :size="14" />未提供 ≠
-          0；缺口来自固定样例或后端结果</span
+          ><Icon name="info" :size="14" />物料数量与本次核算结果一致</span
         ><span>共 {{ rows.length }} 项物料</span>
       </div></template
     >
@@ -196,7 +195,7 @@ const rows = computed(() =>
             : "发起一次查询后，物料明细会显示在这里"
         }}
       </p>
-      <small>仅展示明确提供的数据，不从自然语言中猜测数值</small>
+      <small>可按物料编码或名称查找</small>
     </div>
   </section>
 </template>

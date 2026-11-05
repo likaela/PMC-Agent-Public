@@ -18,6 +18,7 @@ class UnifiedAgentRequest(BaseModel):
     fact_session_id: str | None = Field(default=None, min_length=1, max_length=64)
     active_context: Literal["pmc_analysis", "fact_query"] | None = None
     session_id: str | None = Field(default=None, min_length=1, max_length=64)
+    understanding_id: str | None = Field(default=None, min_length=1, max_length=128)
     persist_session: bool = False
     scenario_id: ScenarioId | None = None
     # Order of the catalog actually displayed in this conversation, never a permission grant.
